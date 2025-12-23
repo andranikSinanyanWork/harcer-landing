@@ -1,0 +1,1192 @@
+{
+  "titles_data": {
+      "firstbook": {
+          "title": "Անգլերեն շտեմարան 1",
+          "subtitle": "2003 թվական",
+          "isFree": true,
+          "sections": {
+              "firstSection": {
+                  "title": "Section 1",
+                  "title_description": "Կարդալ տեքստը և պատասխանել հարցերին՝ ընտրելով ճիշտ տարբերակը։"
+              },
+              "secondSection": {
+                  "title": "Section 2",
+                  "title_description": "Ընտրել ճիշտ տարբերակը։"
+              },
+              "thirdSection": {
+                  "title": "Section 3",
+                  "title_description": "Ընտրել նախադասության բովանդակությունը համապատասխան տարբերակը։"
+              },
+              "fourthSection": {
+                  "title": "Section 4",
+                  "title_description": "Ընտրել համատեքստին համապատասխանող խոսքիմասային ձևը։"
+              },
+              "fifthSection": {
+                  "title": "Section 5",
+                  "title_description": "Ընտրել նախադասության բովանդակությունը համապատասխանող տարբերակը։"
+              },
+              "sixth": {
+                  "title": "Section 6",
+                  "title_description": "Ընտրել ճիշտ փոխակերպված նախադասությունները։"
+              },
+              "seventh": {
+                  "title": "Section 7",
+                  "title_description": "Ընտրել ճիշտ փոխակերպված նախադասությունները։"
+              },
+              "eighth": {
+                  "title": "Section 8",
+                  "title_description": "Ընտրել քերականորեն ճիշտ ձևակերպված հարցական նախադասությունները։"
+              },
+              "nineth": {
+                  "title": "Section 9",
+                  "title_description": "Լրացնել տեքստը՝ տեղադրելով համապատասխան նախդիրները/մակբայները (տրված տարբերակներից երկուսն ավելորդ են)։"
+              },
+              "tenth": {
+                  "title": "Section 10",
+                  "title_description": "Ընտրել այն նախադասությունները որոնցում կա ավելորդ բառ։"
+              },
+              "eleventh": {
+                  "title": "Section 11",
+                  "title_description": "Տրված նախադասություններից ո՞րոնք են կրավորական սեռով ճիշտ ձևակերպված։"
+              },
+              "twelve": {
+                  "title": "Section 12",
+                  "title_description": "Համապատասխանեցնել բառերը և սահմանումները։"
+              },
+              "third": {
+                  "title": "Section 13",
+                  "title_description": "Համապատասխանեցնել նախադասության երկու մասերը։"
+              }
+          }
+      },
+      "d06c2bc2-a487-423f-8bd2-9f3d7350b0c6": {
+          "title": "Անգլերեն շտեմարան 2",
+          "subtitle": "2003 թվական",
+          "isFree": false,
+          "sections": {}
+      }
+  },
+  "data": {
+      "firstbook": {
+          "firstSection": {
+              "title": "Section 1",
+              "section_name": "Section 1",
+              "itemsCount": 50,
+              "freeItemsCount": 1,
+              "item_title": "Section 1",
+              "data": [
+                  {
+                      "text": "Text 1\nLine number\n1. Walt Disney was born in 1901 in Chicago, but soon moved to a\n2. small farm near Marceline, Missouri. From this rural and rather humble\n3. beginning, he later became one of the most famous and beloved\n4. motion-picture producers in history. Although he died in 1966, his\n5. name and artistic legacy continue to influence the lives of millions of\n6. people throughout the world.\n7. After several years of barely making ends meet as a cartoon artist\n8. operating from his Los Angeles garage, Disney had his first success in\n9. 1928, with his release of Mickey Mouse cartoon. Throughout the next\n10. decade, he continued to produce a number of cartoons, and developed\n11. more of his highly profitable and enduring creations, such as Donald\n12. Duck and Pluto. In the late 1930s, he issued the first full-length\n13. cartoon film. Snow White became an instant commercial and critical\n14. success. This was only the first of many films, both animated and not,\n15. produced by Disney and his studio.\n16. But as renowned as Disney name is for cartoons and movies, it is\n17. probably best known for a string of spectacular amusement and theme\n18. parks. Starting with California’s Disneyland in 1955 and culminating\n19. with the fantastically successful Disney World and EPCOT Center in\n20. Florida, Disney became a household name. In recent years, the theme\n21. park concept has become international, with openings in Tokyo and\n22. Paris. With the continuing success of Disney, the creation of future\n23. theme parks is under discussion.",
+                      "variants": [
+                          {
+                              "question": "1. Which of the following best states the topic of the text?",
+                              "variants": [
+                                  "%tr%a) Walt Disney and his Legacy.",
+                                  "b) The history of Disney World and Disneyland.",
+                                  "c) Walt Disney's Boyhood Years.",
+                                  "d) Walt Disney and Animated Cartoons."
+                              ]
+                          },
+                          {
+                              "question": "2. According to the text",
+                              "variants": [
+                                  "a) Disney first achieved success after his death",
+                                  "b) Mickey Mouse was Disney's only cartoon creation.",
+                                  "%tr%c) Snow White was the first full-length cartoon film.",
+                                  "d) Disney's first concern was always profit."
+                              ]
+                          },
+                          {
+                              "question": "3. The word enduring in line 11 is closest in meaning to",
+                              "variants": [
+                                  "a) difficult",
+                                  "b) suffering",
+                                  "c) famous",
+                                  "%tr%d) lasting"
+                              ]
+                          },
+                          {
+                              "question": "4. In future years it's most likely that",
+                              "variants": [
+                                  "a) the remaining theme parks will also close.",
+                                  "b) Disney will produce only cartoons.",
+                                  "c) the Paris theme park will become successful.",
+                                  "%tr%d) the Disney name will stay well-known."
+                              ]
+                          },
+                          {
+                              "question": "5. According to the text",
+                              "variants": [
+                                  "a) Snow White was Disney's most successful film",
+                                  "%tr%b) Disney created cartoon movies and \"noncartoon\" movies",
+                                  "c) the Tokyo theme park is in financial difficulty",
+                                  "d) the California theme park is now closed"
+                              ]
+                          }
+                      ],
+                      "id": "8c596170-1f6d-4c14-b4e9-40c91a44ae4b"
+                  }
+              ]
+          },
+          "secondSection": {
+              "title": "Section 2",
+              "section_name": "Section 2",
+              "itemsCount": 70,
+              "freeItemsCount": 3,
+              "item_title": "Section 2",
+              "data": [
+                  {
+                      "text": " 1. Yesterday we had a houseful of children for my son‟s sixth birthday party. In the\nmiddle of the party the phone (1)__________, so I (2)__________\nleave the children\nalone for a moment. When I came back into the room, most of the children still\n(3)__________ together nicely. Only Annie (4)__________ Bobby‟s car and now didn‟t\nwant to give it back to him. I quickly ran over because they (5)__________\nharm each other.",
+                      "variants": [
+                          {
+                              "question": "1",
+                              "variants": [
+                                  "%tr%a) rang",
+                                  "b) was ringing",
+                                  "c) had rung",
+                                  "d) has rung"
+                              ]
+                          },
+                          {
+                              "question": "2",
+                              "variants": [
+                                  " a) must",
+                                  " b) was obliged",
+                                  "%tr%c) had to",
+                                  "d) was able to"
+                              ]
+                          },
+                          {
+                              "question": "3",
+                              "variants": [
+                                  "%tr%a) were playing",
+                                  "b) had been playing",
+                                  "c) have played",
+                                  "d) played"
+                              ]
+                          },
+                          {
+                              "question": "4",
+                              "variants": [
+                                  "a) took",
+                                  "b) was taking",
+                                  "c) had been taking",
+                                  "%tr%d) had taken"
+                              ]
+                          },
+                          {
+                              "question": "5",
+                              "variants": [
+                                  "a) can",
+                                  "b) were able to",
+                                  "c) had to",
+                                  "%tr%d) might"
+                              ]
+                          }
+                      ],
+                      "id": "f9921ea5-62bd-40df-82b8-db20200b5f38"
+                  },
+                  {
+                      "text": "2. –Hi. Where are you going in such a hurry?\n-I (1)__________ post a letter and after that I (2)__________get something\nto eat before my driving lesson. I am starving.\n-I did not know you (3)__________ to drive. How is it going?\n-Fine.",
+                      "variants": [
+                          {
+                              "question": "1",
+                              "variants": [
+                                  "a) may",
+                                  "b) could",
+                                  "c) am able to",
+                                  "%tr%d) have to"
+                              ]
+                          },
+                          {
+                              "question": "2",
+                              "variants": [
+                                  "a) ought",
+                                  "b) had to",
+                                  "%tr%c) must",
+                                  "d) am able to"
+                              ]
+                          },
+                          {
+                              "question": "3",
+                              "variants": [
+                                  "a) learnt",
+                                  "%tr%b) were learning",
+                                  "c) would learn",
+                                  "d) had learnt"
+                              ]
+                          }
+                      ],
+                      "id": "738d1423-a87f-496a-b65e-83bbc88861f7"
+                  },
+                  {
+                      "text": "3. Scientists (1) __________ that organic and non-organic food contain pretty much the same amounts and kinds of vitamins and other nutrients. This (2) __________ be surprising news for those of us who choose to buy organic food believing it to be healthier. Researchers from America‟s Stanford University concluded that there might not be any extra health benefits to buying organic food, thus people might be better off saving their money and buying non-organic produce. Lead researcher Dr. Crystal Smith-Spangle said there (3) __________ no difference in the vitamin content in fruit, vegetables, meat and dairy products in organically- and conventionally-produced food. She said the only difference was slightly more phosphorus in the organic products. Dr. Smith-Spangle‟s review of over 200 different reports on organic food (4) __________ people (5) __________ perhaps revise their shopping choices, based on the levels of pesticides.",
+                      "variants": [
+                          {
+                              "question": "1",
+                              "variants": [
+                                  "a) were revealing",
+                                  "b) had revealed",
+                                  "c) would reveal",
+                                  "%tr%d) have revealed"
+                              ]
+                          },
+                          {
+                              "question": "2",
+                              "variants": [
+                                  "a) is to",
+                                  "%tr%b) might",
+                                  "c) has to",
+                                  "d) ought to"
+                              ]
+                          },
+                          {
+                              "question": "3",
+                              "variants": [
+                                  "a) will be",
+                                  "b) has been",
+                                  "c) would be",
+                                  "%tr%d) was"
+                              ]
+                          },
+                          {
+                              "question": "4",
+                              "variants": [
+                                  "a) had suggested",
+                                  "b) will suggest",
+                                  "c) would suggest",
+                                  "%tr%d) suggests"
+                              ]
+                          },
+                          {
+                              "question": "5",
+                              "variants": [
+                                  "a) could",
+                                  "b) might",
+                                  "%tr%c) should",
+                                  "d) are able to"
+                              ]
+                          }
+                      ],
+                      "id": "6bbf8c72-9a92-41ed-be54-019074d0a4c3"
+                  }
+              ]
+          },
+          "thirdSection": {
+              "title": "Section 3",
+              "section_name": "Section 3",
+              "itemsCount": 300,
+              "item_title": "Section 3",
+              "freeItemsCount": 3,
+              "data": [
+                  {
+                      "text": "1. When population is not checked by artificial means, ______ increases, putting more strain on limited natural resources.",
+                      "variants": [
+                          "a) they",
+                          "b) them",
+                          "c) its",
+                          "%tr%d) it"
+                      ],
+                      "id": "36e58080-03c3-46ec-a358-6a8bd1c78649"
+                  },
+                  {
+                      "text": "2. The portion of a mountain ______ trees cannot grow is called the tree line.",
+                      "variants": [
+                          "a) there",
+                          "b) that",
+                          "c) so",
+                          "%tr%d) where"
+                      ],
+                      "id": "e374fc2c-c656-4b75-ac89-eff10457f032"
+                  },
+                  {
+                      "text": "3. In 1892, Dr. James Naismith invented the game of basketball ______ college students with exercise during the winter months.",
+                      "variants": [
+                          "a) provide",
+                          "b) provided",
+                          "c) to have provided",
+                          "%tr%d) to provide"
+                      ],
+                      "id": "f7d2d79e-f71d-45a4-a785-1c4f9fabb1c2"
+                  }
+              ]
+          },
+          "fourthSection": {
+              "title": "Section 4",
+              "section_name": "Section 4",
+              "itemsCount": 30,
+              "freeItemsCount": 3,
+              "item_title": "Section 4",
+              "data": [
+                  {
+                      "text": "Text 1\n In 332 BC Alexander the Great, king of Macedonia, (1) __________ Egypt. In 305 BC Alexander‟s general Ptolemy of Egypt, and his (2) __________, the Ptolemies, for almost 300 years ruled Egypt. Although Ptolemy was Macedonian by birth and the Ptolemies remained tied to Greek culture, they were (3) __________ for one of the greatest periods of building and decorating temples in Egypt. The Ptolemies did so to win acceptance for their (4) __________ from their Egyptian subjects. The Ptolemaic dynasty ended when Cleopatra, queen of Egypt, committed suicide after the Romans (5) __________ her forces at the Battle of Actium in 31 BC.",
+                      "variants": [
+                          {
+                              "question": "1.",
+                              "variants": [
+                                  "a) conquest",
+                                  "b) conquering",
+                                  "c) conqueror",
+                                  "%tr%d) conquered"
+                              ]
+                          },
+                          {
+                              "question": "2.",
+                              "variants": [
+                                  "%tr%a) descendants",
+                                  "b) descendible",
+                                  "c) descend",
+                                  "d) descending"
+                              ]
+                          },
+                          {
+                              "question": "3.",
+                              "variants": [
+                                  "a) responsibly",
+                                  "b) responsibility",
+                                  "c) responsive",
+                                  "%tr%d) responsible"
+                              ]
+                          },
+                          {
+                              "question": "4.",
+                              "variants": [
+                                  "%tr%a) commitment",
+                                  "b) committing",
+                                  "c) commit",
+                                  "d) committed"
+                              ]
+                          },
+                          {
+                              "question": "5.",
+                              "variants": [
+                                  "a) defeatism",
+                                  "b) defeat",
+                                  "c) defeating",
+                                  "%tr%d) defeated"
+                              ]
+                          }
+                      ],
+                      "id": "80c49ce6-aab6-4f95-94a3-e4dbb5ad71f4"
+                  },
+                  {
+                      "text": "Text 2\n A number of (1)__________ diamonds have become (2)__________ because of the size. The largest of all known diamonds is the Cullinan, which was discovered in South Africa in 1905 and was presented to Edward VII, king of the United Kingdom of Great Britain and Northern Ireland, by the government of the Transvaal. The Cullinan weighed 3, 106 carats before cutting and was pronounced by crystallographers to be a fragment of a (3)__________ larger stone. When the stone was cut, a total of 105 gems were produced, weighing 1, 063 carats in all. The largest of these was a stone called the Star of Africa, the biggest cut diamond in (4)__________, and now set in the British (5)__________ scepter.",
+                      "variants": [
+                          {
+                              "question": "1.",
+                              "variants": [
+                                  "a) individuality",
+                                  "b) individum",
+                                  "%tr%c) individual",
+                                  "d) individually"
+                              ]
+                          },
+                          {
+                              "question": "2.",
+                              "variants": [
+                                  "a) famed",
+                                  "%tr%b) famous",
+                                  "c) famously",
+                                  "d) fame"
+                              ]
+                          },
+                          {
+                              "question": "3.",
+                              "variants": [
+                                  "%tr%a) considerably",
+                                  "b) considerable",
+                                  "c) considering",
+                                  "d) considered"
+                              ]
+                          },
+                          {
+                              "question": "4.",
+                              "variants": [
+                                  "a) exist",
+                                  "b) existing",
+                                  "c) existed",
+                                  "%tr%d) existence"
+                              ]
+                          },
+                          {
+                              "question": "5.",
+                              "variants": [
+                                  "a) royally",
+                                  "%tr%b) royal",
+                                  "c) royalty",
+                                  "d) royals"
+                              ]
+                          }
+                      ],
+                      "id": "22d6e5d1-4001-4cf4-9b7d-dd52eaaeb282"
+                  },
+                  {
+                      "text": "Text 3\n Quebec has several problems with (1) __________. Because of its location at the northeast corner of North America, winds from the southwest carry pollution to the (2) __________. Acid rain has (3)__________damaged (4) __________ lakes and some forestlands, with maple trees the hardest hit. About half of the sulfur compounds that cause acid rain originate at power plants and industrial sites in the United States, a quarter originate in Ontario, and a quarter originate within Quebec. In (5) __________, large parts of the St. Lawrence River are polluted by fertilizer runoff and toxic industrial discharges.",
+                      "variants": [
+                          {
+                              "question": "1.",
+                              "variants": [
+                                  "a) pollute",
+                                  "b) polluted",
+                                  "c) polluter",
+                                  "%tr%d) pollution"
+                              ]
+                          },
+                          {
+                              "question": "2.",
+                              "variants": [
+                                  "a) provincialism",
+                                  "b) provincial",
+                                  "%tr%c) province",
+                                  "d) provincially"
+                              ]
+                          },
+                          {
+                              "question": "3.",
+                              "variants": [
+                                  "%tr%a) seriously",
+                                  "b) serious",
+                                  "c) seriousness",
+                                  "d) seriosity"
+                              ]
+                          },
+                          {
+                              "question": "4.",
+                              "variants": [
+                                  "a) numerously",
+                                  "b) numerate",
+                                  "%tr%c) numerous",
+                                  "d) numerated"
+                              ]
+                          },
+                          {
+                              "question": "5.",
+                              "variants": [
+                                  "a) additional",
+                                  "%tr%b) addition",
+                                  "c) add",
+                                  "d) added"
+                              ]
+                          }
+                      ],
+                      "id": "052550c2-65c8-408f-aa0f-8122d09b6b85"
+                  }
+              ]
+          },
+          "fifthSection": {
+              "title": "Section 5",
+              "section_name": "Section 5",
+              "itemsCount": 160,
+              "freeItemsCount": 3,
+              "item_title": "Section 5",
+              "data": [
+                  {
+                      "text": "1. The melting point is the temperature a solid changes to a liquid.",
+                      "variants": [
+                          "%tr%a) at which",
+                          "b) when",
+                          "c) unless",
+                          "d) while"
+                      ],
+                      "id": "49b623d4-fa02-436d-8a19-2414588eb923"
+                  },
+                  {
+                      "text": "2. Most folk songs are ballads have simple words and tell simple stories.",
+                      "variants": [
+                          "a) what",
+                          "%tr%b) that",
+                          "c) when",
+                          "d) although"
+                      ],
+                      "id": "2623f875-b506-4d1f-9828-52e4e4fe6395"
+                  },
+                  {
+                      "text": "3. In 1850, Yale University established Sheffield Scientific School, .",
+                      "variants": [
+                          "%tr%a) where engineers were educated",
+                          "b) engineers were educated there",
+                          "c) in which were engineers educated",
+                          "d) where were engineers educated"
+                      ],
+                      "id": "715cee65-bd81-405b-8a2a-8e7e53769044"
+                  }
+              ]
+          },
+          "sixth": {
+              "title": "Section 6",
+              "section_name": "Section 6",
+              "itemsCount": 30,
+              "item_title": "Section 6",
+              "view_version": "v3t",
+              "data": [
+                  {
+                      "test": 1,
+                      "variants": [
+                          {
+                              "sentence": "\"I am going to call him this afternoon,\" she said.",
+                              "transformed": "She said that she was going to call him that afternoon.",
+                              "is_right": true
+                          },
+                          {
+                              "sentence": "Bella says to her brother: \"Where are you planning to go this summer?\"",
+                              "transformed": "Bella asked her brother where he was planning to go this summer."
+                          },
+                          {
+                              "sentence": "\"Don't forget to buy some milk, Andy,\" said Clare.",
+                              "transformed": "Clare reminded Andy to buy some milk.",
+                              "is_right": true
+                          },
+                          {
+                              "sentence": "\"Me? No, I didn't take Sue's calculator,\" said Bob.",
+                              "transformed": "Bob denied taking Sue's calculator.",
+                              "is_right": true
+                          },
+                          {
+                              "sentence": "The secretary asked me to fill up that form.",
+                              "transformed": "\"Would you like to fill up this form?\" said the secretary."
+                          }
+                      ],
+                      "id": "9de7c04b-fd63-4f1b-b13a-ccdf432ab408"
+                  },
+                  {
+                      "test": 2,
+                      "variants": [
+                          {
+                              "sentence": "\"I intended to do it tomorrow,\" he said, \"but now I don't think I'll be able to.\"",
+                              "transformed": "He said he had intended to do it the next day but then he didn't think he would be able to.",
+                              "is_right": true
+                          },
+                          {
+                              "sentence": "David said to me:\"What were you doing when I called?\"",
+                              "transformed": "David asked me if what I was doing when he called."
+                          },
+                          {
+                              "sentence": "\"Do you want to buy any newspapers?\" said Jack.",
+                              "transformed": "Jack asks if I wanted to buy any newspapers."
+                          },
+                          {
+                              "sentence": "\"Don't touch the gates, lady,\" said the lift operator.",
+                              "transformed": "The lift operator warned the lady not to touch the gates.",
+                              "is_right": true
+                          },
+                          {
+                              "sentence": "The traveler asked me to book him a seat in a non-smoker.",
+                              "transformed": "\"Please, ask her to book me a seat in a non-smoker,\" said the traveler."
+                          }
+                      ],
+                      "id": "7a46e4d1-858f-4998-8f96-ce380cc7f16d"
+                  },
+                  {
+                      "test": 3,
+                      "variants": [
+                          {
+                              "sentence": "\"I'll come with you as soon as I am ready,\" she said.",
+                              "transformed": "She said she would come with me as soon as she was ready.",
+                              "is_right": true
+                          },
+                          {
+                              "sentence": "\"Do you want to buy any second-hand books?\" said Bill.",
+                              "transformed": "Bill asked if I wanted to buy any second-hand books.",
+                              "is_right": true
+                          },
+                          {
+                              "sentence": "\"I can lend you $50,\" my aunt said to me, \"and you can take your time about paying it back.\"",
+                              "transformed": "My aunt told me that she could lend me $50 and I could take my time about paying it back.",
+                              "is_right": true
+                          },
+                          {
+                              "sentence": "His teacher said to him, \"Come back in ten minutes. We are going to begin the discussion.\"",
+                              "transformed": "His teacher told him come back in ten minutes as we were going to begin the discussion."
+                          },
+                          {
+                              "sentence": "The director asked the boys what they were doing there.",
+                              "transformed": "\"What are the boys doing here?\" the director asked."
+                          }
+                      ],
+                      "id": "f23f0ed6-bcb3-4f45-a7cd-6d41de83b234"
+                  }
+              ]
+          },
+          "seventh": {
+              "title": "Section 7",
+              "section_name": "Section 7",
+              "itemsCount": 35,
+              "item_title": "Նախադասություններ",
+              "view_version": "v2",
+              "data": [
+                  {
+                      "textArray": [
+                          "Before the ",
+                          "%tr%",
+                          " of money, people used to get the goods and services they wanted by swapping things with others. The system was entirely ",
+                          "%tr%",
+                          " on an agreement between both people, each of whom needed to have what the other wanted to exchange. The system of exchange started to work much more ",
+                          "%tr%",
+                          " with the introduction of money. By using precious metals which had been officially ",
+                          "%tr%",
+                          " and made into coins, it became possible to sell what you produced in ",
+                          "%tr%",
+                          " for coins, and then use the coins to buy anything you wanted from a third party."
+                      ],
+                      "variants": [
+                          {
+                              "question": "Text 1",
+                              "variants": [
+                                  "1.weighed",
+                                  "2.invention",
+                                  "3.smoothly",
+                                  "4.place",
+                                  "5.dependent",
+                                  "6.return",
+                                  "7.fast"
+                              ],
+                              "rightVariantsOrdering": [
+                                  2,
+                                  5,
+                                  3,
+                                  1,
+                                  6
+                              ]
+                          }
+                      ],
+                      "id": "baf193f2-7cc8-4d71-8998-4077604ca1d5"
+                  },
+                  {
+                      "textArray": [
+                          "Interpreting the feelings of other people is not always easy, as we all know, and we ",
+                          "%tr%",
+                          " as much on what they seem to be telling us, as on the actual words they say. Facial ",
+                          "%tr%",
+                          " and tone of voice are obvious ways of showing our ",
+                          "%tr%",
+                          " to something, and it may well be that we ",
+                          "%tr%",
+                          " express views that we are trying to hide. Body movements in general may also indicate feelings and interviewers often ",
+                          "%tr%",
+                          " particular attention to the way a candidate for a job walks into the rooms and sits down."
+                      ],
+                      "variants": [
+                          {
+                              "question": "Text 2",
+                              "variants": [
+                                  "1.expression",
+                                  "2.deliberately",
+                                  "3.rely",
+                                  "4.pay",
+                                  "5.reaction",
+                                  "6.believe",
+                                  "7.unconsciously"
+                              ],
+                              "rightVariantsOrdering": [
+                                  3,
+                                  1,
+                                  5,
+                                  7,
+                                  4
+                              ]
+                          }
+                      ],
+                      "id": "b20badf4-2f81-4244-9230-2b94ba72829f"
+                  },
+                  {
+                      "textArray": [
+                          "The experience of going to a football match in Brazil is something which even people who are not fans of the game will really enjoy. You watch the big ",
+                          "%tr%",
+                          " together with thousands of screaming football enthusiasts accompanied by the beating of drums and waving of flags. It‟s not just that football is great, there is a deep love for the game which can be seen from the way that rival fans ",
+                          "%tr%",
+                          " peacefully together. In addition to this, Brazil has the most beautiful stadiums in the world. Even small towns frequently have football grounds which ",
+                          "%tr%",
+                          " to international standards. It won‟t cost you much to see a game and the stadiums are not usually full, so it‟s quite easy to get a ticket at the gate, instead of having to pay in ",
+                          "%tr%",
+                          ". Football is an almost year-round activity in much of Latin America and although many of the best teams in Brazilian cities have some key players ",
+                          "%tr%",
+                          " from Europe, there are plenty of local stars and certainly enough to provide some very exciting football."
+                      ],
+                      "variants": [
+                          {
+                              "question": "Text 3",
+                              "variants": [
+                                  "1.advance",
+                                  "2.time",
+                                  "3.beforehand",
+                                  "4.mix",
+                                  "5.correspond",
+                                  "6.event",
+                                  "7.invited"
+                              ],
+                              "rightVariantsOrdering": [
+                                  6,
+                                  4,
+                                  5,
+                                  1,
+                                  7
+                              ]
+                          }
+                      ],
+                      "id": "ff184169-2b75-4d07-b954-4f0ff04aed1a"
+                  }
+              ]
+          },
+          "eighth": {
+              "title": "Section 8",
+              "section_name": "Section 8",
+              "itemsCount": 80,
+              "item_title": "Նախադասություններ",
+              "view_version": "v3",
+              "data": [
+                  {
+                      "id": "f106be66-f98e-46f1-bff3-c4075ce530d0",
+                      "text": "Question",
+                      "variants": [
+                          {
+                              "question": "1",
+                              "variants": [
+                                  "1. Had you to read all these articles for your graduation work?",
+                                  "2. Are you working still on your report or you finished it?",
+                                  "%tr%3. Ted‟s got used to going to bed late, hasn‟t he?",
+                                  "%tr%4. What do you think he will do to save the situation?",
+                                  "%tr%5. Are you through with your work yet?"
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "id": "4aef3874-9cce-4cdf-9c00-4829d0dd66f7",
+                      "text": "Question",
+                      "variants": [
+                          {
+                              "question": "2",
+                              "variants": [
+                                  "%tr%1. You shouldn‟t deliver goods to their company, should you?",
+                                  "%tr%2. Has John translated the novel or is he still working on it?",
+                                  "3. What do you think when will he visit them?",
+                                  "%tr%4. Can you show me how I have to paint the walls?",
+                                  "5. Since when Jane hasn‟t gone in for swimming?"
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "id": "7b58be85-fe1c-4cfc-a0e9-2f9584748651",
+                      "text": "Question",
+                      "variants": [
+                          {
+                              "question": "3",
+                              "variants": [
+                                  "%tr%1. He had completed the work before I came, hadn‟t he?",
+                                  "%tr%2. Do you know where his brother-in-law works?",
+                                  "3. He‟d better accept their proposal, wouldn‟t he?",
+                                  "%tr%4. When do you think they will arrive in Holland?",
+                                  "%tr%5. Do they have to announce the verdict today?"
+                              ]
+                          }
+                      ]
+                  }
+              ]
+          },
+          "nineth": {
+              "title": "Section 9",
+              "section_name": "Section 9",
+              "itemsCount": 15,
+              "item_title": "Նախադասություններ",
+              "view_version": "v2",
+              "data": [
+                  {
+                      "textArray": [
+                          "The other day, as I was walking",
+                          "%tr%",
+                          "the river, I saw a large crowd watching a man who was walking",
+                          "%tr%",
+                          "on a tight-rope. Nobody moved, and as I couldn't get",
+                          "%tr%",
+                          "anyway, I stood and watched, too. The man was wearing funny clothes and making jokes. Once or twice he almost seemed to fall",
+                          "%tr%",
+                          "the rope, which the audience found very amusing. So did I. He then asked me to try the rope, too. But it seemed too risky. He invited everybody but",
+                          "%tr%",
+                          "success. People like to watch, but they don't want to be active themselves."
+                      ],
+                      "variants": [
+                          {
+                              "question": "Text 1",
+                              "variants": [
+                                  "1. without",
+                                  "2. before",
+                                  "3. across",
+                                  "4. along",
+                                  "5. on",
+                                  "6. off",
+                                  "7. with"
+                              ],
+                              "rightVariantsOrdering": [
+                                  4,
+                                  3,
+                                  5,
+                                  6,
+                                  1
+                              ]
+                          }
+                      ],
+                      "id": "f72eeef1-4636-4c18-93eb-10ed805183c1"
+                  },
+                  {
+                      "textArray": [
+                          "As Monsieur, watchmaker",
+                          "%tr%",
+                          "profession, was strolling",
+                          "%tr%",
+                          "the boulevard one bright January morning, his hands in his trousers pockets and stomach empty, he suddenly came face",
+                          "%tr%",
+                          "face with an acquaintance – Monsieur Sauvage, a fishing chum.",
+                          "Before the war broke out Morissot had been",
+                          "%tr%",
+                          "the habit of setting forth with a bamboo rod in his hand and a tin of box on his back. He took the train, got out at Colombes and walked to Ile Marante. The moment he arrived at this place of his dreams he began fishing and fished",
+                          "%tr%",
+                          "nightfall."
+                      ],
+                      "variants": [
+                          {
+                              "question": "Text 2",
+                              "variants": [
+                                  "1. in",
+                                  "2. between",
+                                  "3. till",
+                                  "4. by",
+                                  "5. to",
+                                  "6. out",
+                                  "7. along"
+                              ],
+                              "rightVariantsOrdering": [
+                                  4,
+                                  7,
+                                  5,
+                                  1,
+                                  3
+                              ]
+                          }
+                      ],
+                      "id": "371150b1-fd52-498b-aa3e-85b9084f0ee7"
+                  },
+                  {
+                      "textArray": [
+                          "Something unusual",
+                          "%tr%",
+                          "lions is that they hunt in groups. Group hunting is beneficial",
+                          "%tr%",
+                          "lions because it means that much larger prey can be captured by the lions. It also means that individual lions spend much less energy",
+                          "%tr%",
+                          "a hunt.",
+                          "There is a standard pattern to the process of hunting in groups. The process is initiated by a single female, who stations herself at a raised elevation to serve",
+                          "%tr%",
+                          "a lookout to spot potential prey. When prey is spotted, a group of young lionesses advances on the herd and pushes the herd",
+                          "%tr%",
+                          "a different lioness who has hidden herself downwind."
+                      ],
+                      "variants": [
+                          {
+                              "question": "Text 3",
+                              "variants": [
+                                  "1. like",
+                                  "2. towards",
+                                  "3. as",
+                                  "4. outside",
+                                  "5. during",
+                                  "6. to",
+                                  "7. about"
+                              ],
+                              "rightVariantsOrdering": [
+                                  7,
+                                  6,
+                                  5,
+                                  3,
+                                  2
+                              ]
+                          }
+                      ],
+                      "id": "042a9151-47ec-4f22-9b1e-fe2ce0a7185c"
+                  }
+              ]
+          },
+          "tenth": {
+              "title": "Section 10",
+              "section_name": "Section 10",
+              "itemsCount": 30,
+              "item_title": "Նախադասություններ",
+              "view_version": "v3",
+              "data": [
+                  {
+                      "id": "0ece2be5-91ce-41f2-ae7d-5b511362a7a2",
+                      "text": "Question 1",
+                      "variants": [
+                          {
+                              "question": "1",
+                              "variants": [
+                                  "%tr%1. Our team train day and night but so far we have had no success.",
+                                  "%tr%2. Mr. Mortimer‟s assistant was seen to leave the office hurriedly.",
+                                  "%tr%3. I had read this evening that a new advertising agency has been founded.",
+                                  "4. I played so much football yesterday that I wore out of two pairs of boots.",
+                                  "5. If you want to make a woman to change her mind, you must agree with her categorically."
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "id": "1bc97a28-827c-4969-865d-ede33947c163",
+                      "text": "Question 2",
+                      "variants": [
+                          {
+                              "question": "2",
+                              "variants": [
+                                  "%tr%1. You will regret it if you go on at annoying people like that.",
+                                  "%tr%2. That rocking chair is broken – it needs being repairing.",
+                                  "%tr%3. R.L. Carson began her writing career at the age of ten years.",
+                                  "4. The young man was made to do that hard work alone.",
+                                  "5. Although he was interested in many fields, Einstein is best known for his work in the sphere of physics."
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "id": "e04d96b5-c244-412d-8562-273c3774f3b7",
+                      "text": "Question 3",
+                      "variants": [
+                          {
+                              "question": "3",
+                              "variants": [
+                                  "%tr%1. I am not sure that whether Jack will be able to come or not.",
+                                  "%tr%2. Heathrow Airport which near London is the world‟s busiest international airport.",
+                                  "3. After having a quick shower, I set out to see the sights of the city.",
+                                  "%tr%4. Mabel made up her mind to get marry her beloved by all means.",
+                                  "5. Among the five Great Lakes, only Lake Michigan is located entirely within the territorial boundaries of the United States."
+                              ]
+                          }
+                      ]
+                  }
+              ]
+          },
+          "eleventh": {
+              "title": "Section 11",
+              "section_name": "Section 11",
+              "itemsCount": 60,
+              "item_title": "Նախադասություններ",
+              "view_version": "v3",
+              "data": [
+                  {
+                      "id": "925a95eb-0d4f-481a-8108-e58bff4e84c7",
+                      "text": "Question 1",
+                      "variants": [
+                          {
+                              "question": "1",
+                              "variants": [
+                                  "%tr%1. The workers must be stimulated by an offer to share in the firm‟s profits.",
+                                  "2. I can assure you everything will have arranged in time.",
+                                  "%tr%3. His old shoes were thrown away.",
+                                  "4. After the accident the young man had taken to hospital.",
+                                  "%tr%5. Invented by an Indiana housewife in 1889, the first dishwasher was operated by a steam engine."
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "id": "6c0e6a11-0571-4572-b311-59f27ea6891d",
+                      "text": "Question 2",
+                      "variants": [
+                          {
+                              "question": "2",
+                              "variants": [
+                                  "1. Throughout the trial, the prisoner insisted on his lack of guilt.",
+                                  "%tr%2. Was this trade centre opened last year?",
+                                  "%tr%3. All the books mentioned in this catalogue can be borrowed from the library.",
+                                  "4. The hall hasn‟t decorated with artificial flowers.",
+                                  "5. Citizens forced into poverty by unfair government policies will usually support a new candidate."
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "id": "b6cf5bea-ddde-4bde-8e1f-ad877e40a432",
+                      "text": "Question 3",
+                      "variants": [
+                          {
+                              "question": "3",
+                              "variants": [
+                                  "%tr%1. Who is this wedding hall being decorated by?",
+                                  "%tr%2. The teacher was impressed by the student‟s answer.",
+                                  "%tr%3. This message isn‟t to be e-mailed now.",
+                                  "%tr%4. The drug was claimed to produce no undesirable side-effects.",
+                                  "5. Julius Ceasar, Hannibal, Napoleon, Mussolini, Hitler had born with teeth."
+                              ]
+                          }
+                      ]
+                  }
+              ]
+          },
+          "twelve": {
+              "title": "Section 12",
+              "section_name": "Section 12",
+              "itemsCount": 40,
+              "item_title": "Նախադասություններ",
+              "view_version": "v4",
+              "data": [
+                  {
+                      "question_number": 1,
+                      "textArray": [
+                          "A) Leisure",
+                          "B) Entertainment",
+                          "C) Opportunity",
+                          "D) Occupation"
+                      ],
+                      "variants": [
+                          "1) a favourable position or chance",
+                          "2) a job or profession",
+                          "3) something that serves for amusement",
+                          "4) free or unoccupied time",
+                          "5) hard physical work"
+                      ],
+                      "rightVariantsOrdering": [
+                          4,
+                          3,
+                          1,
+                          2
+                      ],
+                      "id": "56d8d60f-c504-41fe-81ed-0b77cdd5406b"
+                  },
+                  {
+                      "question_number": 2,
+                      "textArray": [
+                          "A) Calm",
+                          "B) Intelligent",
+                          "C) Brave",
+                          "D) Independent"
+                      ],
+                      "variants": [
+                          "1) able to think, understand, and learn things quickly and well",
+                          "2) not excited, nervous or troubled",
+                          "3) willing to do things which are difficult or dangerous",
+                          "4) free from outside control",
+                          "5) feeling or showing love"
+                      ],
+                      "rightVariantsOrdering": [
+                          2,
+                          1,
+                          3,
+                          4
+                      ],
+                      "id": "26543b91-8a16-4e08-b745-d9d0d57d1a14"
+                  },
+                  {
+                      "question_number": 3,
+                      "textArray": [
+                          "A) Miniature",
+                          "B) Signature",
+                          "C) Adventure",
+                          "D) Gesture"
+                      ],
+                      "variants": [
+                          "1) the name of a person or a sign representing his name, marked by himself",
+                          "2) an exciting or dangerous experience",
+                          "3) a verbal, written, or recorded message",
+                          "4) a movement of part of the body to express an idea or meaning",
+                          "5) a model or copy of something on a very small scale"
+                      ],
+                      "rightVariantsOrdering": [
+                          5,
+                          1,
+                          2,
+                          4
+                      ],
+                      "id": "81abe285-fb06-434c-a17d-dfb46a29d4ae"
+                  }
+              ]
+          },
+          "third": {
+              "title": "Section 13",
+              "section_name": "Section 13",
+              "itemsCount": 80,
+              "item_title": "Նախադասություններ",
+              "view_version": "v4",
+              "data": [
+                  {
+                      "question_number": 1,
+                      "textArray": [
+                          "A) Nowadays it is quite common for",
+                          "B) The first curry house in England was",
+                          "C) Fish and chips is the oldest kind of British food",
+                          "D) It is common to find British restaurants that"
+                      ],
+                      "variants": [
+                          "1) operated by an Indian immigrant.",
+                          "2) still eaten today.",
+                          "3) both parents to work.",
+                          "4) that has recently been invented.",
+                          "5) have food from other cultures.",
+                          "6) three meals a day."
+                      ],
+                      "rightVariantsOrdering": [
+                          3,
+                          1,
+                          2,
+                          5
+                      ],
+                      "id": "f3884710-307a-44f8-88be-b1cd47469dbc"
+                  },
+                  {
+                      "question_number": 2,
+                      "textArray": [
+                          "A) The writer Kazuo Isiguro was born in Japan,",
+                          "B) Although his first book was about Brazil,",
+                          "C) Orlando‟s daughter lost her hearing",
+                          "D) The boys got a job at the supermarket"
+                      ],
+                      "variants": [
+                          "1) after they finish high school.",
+                          "2) but his family emigrated to Britain when he was five.",
+                          "3) as they have become older.",
+                          "4) at the age of one.",
+                          "5) he didn‟t visit the country for many years.",
+                          "6) through a special programme."
+                      ],
+                      "rightVariantsOrdering": [
+                          2,
+                          5,
+                          4,
+                          6
+                      ],
+                      "id": "845ff4e9-c364-47ec-9574-8b5b7c89a10b"
+                  },
+                  {
+                      "question_number": 3,
+                      "textArray": [
+                          "A) The authorities warned",
+                          "B) He announced",
+                          "C) Mary told",
+                          "D) Fred should tell the manager that"
+                      ],
+                      "variants": [
+                          "1) the public about the imminent danger.",
+                          "2) his retirement from international football.",
+                          "3) to the woman who came in.",
+                          "4) a final decision hasn‟t been reached yet.",
+                          "5) the man who approached him.",
+                          "6) me she had found a well-paid job."
+                      ],
+                      "rightVariantsOrdering": [
+                          1,
+                          2,
+                          6,
+                          4
+                      ],
+                      "id": "df0c8985-6dc3-437d-b169-f64c2dbee483"
+                  }
+              ]
+          }
+      },
+      "d06c2bc2-a487-423f-8bd2-9f3d7350b0c6": {}
+  },
+  "config": {
+      "freeTier": true,
+      "embeddedFallback": true,
+      "version": "1.0.0",
+      "freeItemsPerSection": 3,
+      "message": "📦 Free Tier - First 3 items per section. Upgrade for full access!"
+  }
+}
