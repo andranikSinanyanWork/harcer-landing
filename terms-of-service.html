@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - harcer.am</title>
+    <meta name="description" content="harcer.am terms of service - rules and guidelines for using our application">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0a7ea4;
+            --primary-dark: #023c69;
+            --secondary: #4F6D7B;
+            --accent: #FFB347;
+            --dark: #11181C;
+            --dark-light: #1e293b;
+            --text: #334155;
+            --text-light: #64748b;
+            --light: #f8fafc;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--light);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        nav {
+            position: fixed;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .page-header {
+            padding: 140px 2rem 60px;
+            background: linear-gradient(135deg, #0a7ea4 0%, #4F6D7B 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-section h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .content-section h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin: 1.5rem 0 1rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content-section ul, .content-section ol {
+            margin: 1rem 0 1rem 1.5rem;
+            color: var(--text);
+        }
+
+        .content-section ul li, .content-section ol li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e0f7fa 0%, #f0f8fa 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #fff8f0 100%);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box p {
+            margin: 0;
+            color: #8b5a00;
+        }
+
+        .danger-box {
+            background: linear-gradient(135deg, #ffebee 0%, #fff5f5 100%);
+            border-left: 4px solid #e53935;
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+
+        .danger-box p {
+            margin: 0;
+            color: #b71c1c;
+        }
+
+        .last-updated {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+
+        footer {
+            background: var(--dark-light);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-light);
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .page-header h1 { font-size: 2rem; }
+            .content-section { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">harcer.am</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <h1>Terms of Service</h1>
+        <p>Please read these terms carefully before using our application</p>
+    </section>
+
+    <div class="content-container">
+        <div class="content-section">
+            <h2>1. Acceptance of Terms</h2>
+            <p>By downloading, installing, accessing, or using the harcer.am mobile application ("Application", "Service", "App"), you agree to be bound by these Terms of Service ("Terms") and our Privacy Policy.</p>
+            
+            <div class="highlight-box">
+                <p><strong>IMPORTANT:</strong> These Terms constitute a legally binding agreement between you ("User", "you", "your") and DegreeBounds ("Company", "we", "us", "our"), the developer and operator of harcer.am.</p>
+            </div>
+
+            <p>If you do not agree to these Terms, you must not download, install, or use the Application.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>2. Eligibility</h2>
+            <ul>
+                <li>You must be at least <strong>13 years old</strong> to create an account and use this Application;</li>
+                <li>If you are between 13 and 18 years old, you represent that your parent or legal guardian has reviewed and agreed to these Terms;</li>
+                <li>By using the Application, you represent that you meet these eligibility requirements.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>3. Description of Service</h2>
+            <p>harcer.am is an educational mobile application designed to help users prepare for unified examinations in Armenia. Our services include:</p>
+            <ul>
+                <li>Practice questions organized by subject and topic;</li>
+                <li>Mock exams simulating real examination conditions;</li>
+                <li>Progress tracking and performance history;</li>
+                <li>Offline access to study materials;</li>
+                <li>Cross-device progress synchronization (for registered users).</li>
+            </ul>
+            <p>The Application is available on iOS (Apple App Store) and Android (Google Play Store).</p>
+        </div>
+
+        <div class="content-section">
+            <h2>4. User Accounts</h2>
+            
+            <h3>4.1 Account Registration</h3>
+            <p>To access the full features of the Application, you must create an account by providing:</p>
+            <ul>
+                <li>Your name;</li>
+                <li>A valid email address;</li>
+                <li>A secure password.</li>
+            </ul>
+
+            <h3>4.2 Account Responsibilities</h3>
+            <p>You agree to:</p>
+            <ul>
+                <li>Provide accurate and truthful information during registration;</li>
+                <li>Keep your password confidential and secure;</li>
+                <li>Notify us immediately if you suspect unauthorized access to your account;</li>
+                <li>Be responsible for all activities that occur under your account.</li>
+            </ul>
+
+            <h3>4.3 One Account Per User</h3>
+            <p>Each user may only maintain one active account. Creating multiple accounts to abuse free features or promotions is prohibited.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>5. Subscriptions and Payments</h2>
+            
+            <div class="danger-box">
+                <p><strong>AUTO-RENEWAL NOTICE:</strong> All subscriptions automatically renew unless you cancel at least 24 hours before the end of the current billing period. Your payment method will be charged for renewal within 24 hours prior to the end of the current period at the same price.</p>
+            </div>
+
+            <h3>5.1 Subscription Options</h3>
+            <p>The Application offers the following subscription tiers:</p>
+            <ul>
+                <li><strong>Free Tier:</strong> Limited access to questions and basic features;</li>
+                <li><strong>Premium Subscription:</strong> Full access to all questions, mock exams, and premium features. Available in weekly, monthly, 3-month, and annual plans.</li>
+            </ul>
+
+            <h3>5.2 Billing</h3>
+            <ul>
+                <li>All payments are processed through Apple App Store (iOS) or Google Play Store (Android);</li>
+                <li>Prices are displayed in your local currency and include applicable taxes;</li>
+                <li>Payment is charged to your Apple ID or Google account upon purchase confirmation;</li>
+                <li>We do not have access to your payment information (credit card, etc.).</li>
+            </ul>
+
+            <h3>5.3 Auto-Renewal</h3>
+            <ul>
+                <li>Subscriptions automatically renew at the end of each billing period;</li>
+                <li>You will be charged the same price as your original subscription unless we notify you of a price change;</li>
+                <li>You can manage or cancel auto-renewal at any time (see below);</li>
+                <li>Cancellation takes effect at the end of the current billing period - you retain access until then.</li>
+            </ul>
+
+            <h3>5.4 How to Cancel Your Subscription</h3>
+            <p><strong>iOS (Apple App Store):</strong></p>
+            <ol>
+                <li>Open <strong>Settings</strong> on your iPhone/iPad;</li>
+                <li>Tap your <strong>name</strong> at the top;</li>
+                <li>Tap <strong>Subscriptions</strong>;</li>
+                <li>Select <strong>harcer.am</strong>;</li>
+                <li>Tap <strong>Cancel Subscription</strong>.</li>
+            </ol>
+            <p><strong>Android (Google Play Store):</strong></p>
+            <ol>
+                <li>Open the <strong>Google Play Store</strong> app;</li>
+                <li>Tap your <strong>profile icon</strong> → <strong>Payments & subscriptions</strong> → <strong>Subscriptions</strong>;</li>
+                <li>Select <strong>harcer.am</strong>;</li>
+                <li>Tap <strong>Cancel subscription</strong>.</li>
+            </ol>
+
+            <h3>5.5 Free Trials</h3>
+            <p>If a free trial is offered:</p>
+            <ul>
+                <li>You will have full premium access during the trial period;</li>
+                <li>Your subscription will automatically convert to a paid subscription when the trial ends unless cancelled;</li>
+                <li>Cancel before the trial ends to avoid being charged;</li>
+                <li>Free trials are available once per Apple ID or Google account.</li>
+            </ul>
+
+            <h3>5.6 Refunds</h3>
+            <p>Refunds are handled by Apple or Google according to their respective policies:</p>
+            <ul>
+                <li><strong>Apple:</strong> <a href="https://support.apple.com/en-us/HT204084" target="_blank" rel="noopener">Request a refund from Apple</a></li>
+                <li><strong>Google:</strong> <a href="https://support.google.com/googleplay/answer/2479637" target="_blank" rel="noopener">Request a refund from Google Play</a></li>
+            </ul>
+            <p>We cannot process refunds directly as all payments are handled by the app stores.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>6. Free vs. Premium Features</h2>
+            
+            <h3>6.1 Free Features</h3>
+            <p>All users (including guests) have access to:</p>
+            <ul>
+                <li>A limited selection of practice questions;</li>
+                <li>Basic progress tracking;</li>
+                <li>Sample content from each subject.</li>
+            </ul>
+
+            <h3>6.2 Premium Features</h3>
+            <p>Premium subscribers unlock:</p>
+            <ul>
+                <li>Unlimited access to all questions across all subjects;</li>
+                <li>Full mock exam library;</li>
+                <li>Detailed performance analytics and progress reports;</li>
+                <li>Offline access to all content;</li>
+                <li>Cross-device synchronization of progress;</li>
+                <li>Priority customer support.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>7. Acceptable Use</h2>
+            <p>You agree NOT to:</p>
+            <ul>
+                <li>Use the Application for any unlawful purpose;</li>
+                <li>Share your account credentials with others;</li>
+                <li>Attempt to access another user's account;</li>
+                <li>Copy, screenshot, record, or distribute exam questions or answers;</li>
+                <li>Reverse engineer, decompile, or disassemble the Application;</li>
+                <li>Use automated tools, bots, or scripts to access the Application;</li>
+                <li>Circumvent any security measures or access restrictions;</li>
+                <li>Create multiple accounts to abuse free features or trials;</li>
+                <li>Use the content for any commercial purpose without authorization;</li>
+                <li>Interfere with or disrupt the Application's functionality.</li>
+            </ul>
+
+            <div class="warning-box">
+                <p>Violation of these terms may result in immediate termination of your account without refund.</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>8. Intellectual Property</h2>
+            
+            <h3>8.1 Our Content</h3>
+            <p>All content in the Application is owned by DegreeBounds or used under license, including:</p>
+            <ul>
+                <li>Questions, answers, and explanations;</li>
+                <li>Educational materials and study content;</li>
+                <li>Graphics, logos, and visual elements;</li>
+                <li>Software code and user interface;</li>
+                <li>The "harcer.am" name and branding.</li>
+            </ul>
+
+            <h3>8.2 Limited License</h3>
+            <p>We grant you a limited, non-exclusive, non-transferable, revocable license to:</p>
+            <ul>
+                <li>Download and install the Application on your personal devices;</li>
+                <li>Use the content for personal, non-commercial educational purposes only.</li>
+            </ul>
+
+            <h3>8.3 Restrictions</h3>
+            <p>You may NOT:</p>
+            <ul>
+                <li>Reproduce, distribute, or publicly display any content;</li>
+                <li>Create derivative works based on the content;</li>
+                <li>Use the content for commercial purposes or in other applications;</li>
+                <li>Remove any copyright or proprietary notices.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>9. Disclaimers</h2>
+            
+            <div class="danger-box">
+                <p><strong>THE APPLICATION IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND.</strong></p>
+            </div>
+
+            <ul>
+                <li><strong>No Guarantee of Results:</strong> We do not guarantee that using the Application will result in passing any examination or achieving specific scores;</li>
+                <li><strong>Content Accuracy:</strong> While we strive for accuracy, we do not warrant that all content is error-free or up-to-date with current exam requirements;</li>
+                <li><strong>Supplementary Tool:</strong> The Application is a supplementary study tool and should not be your sole preparation resource;</li>
+                <li><strong>Availability:</strong> We do not guarantee uninterrupted or error-free operation of the Application;</li>
+                <li><strong>Compatibility:</strong> We do not guarantee compatibility with all devices or operating system versions.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>10. Limitation of Liability</h2>
+            <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW:</p>
+            <ul>
+                <li>DegreeBounds shall not be liable for any indirect, incidental, special, consequential, or punitive damages;</li>
+                <li>Our total liability shall not exceed the amount you paid for the Application in the 12 months preceding the claim;</li>
+                <li>We are not liable for examination results, grades, or academic outcomes;</li>
+                <li>We are not liable for any decisions made based on the Application's content.</li>
+            </ul>
+            <p>Some jurisdictions do not allow limitations on liability, so some of these limitations may not apply to you.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>11. Account Termination</h2>
+            
+            <h3>11.1 By You</h3>
+            <p>You may stop using the Application and request account deletion at any time by contacting support@harcer.am. Remember to cancel any active subscriptions first.</p>
+
+            <h3>11.2 By Us</h3>
+            <p>We may suspend or terminate your account:</p>
+            <ul>
+                <li>For violation of these Terms;</li>
+                <li>For fraudulent or illegal activity;</li>
+                <li>For abuse of the service or other users;</li>
+                <li>If required by law.</li>
+            </ul>
+
+            <h3>11.3 Effect of Termination</h3>
+            <ul>
+                <li>Your right to use the Application ceases immediately;</li>
+                <li>Your account data will be deleted (subject to legal retention requirements);</li>
+                <li>Active subscriptions should be cancelled separately through Apple/Google;</li>
+                <li>No refunds for unused subscription periods upon termination for cause.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>12. Changes to Terms</h2>
+            <p>We may update these Terms from time to time. When we make changes:</p>
+            <ul>
+                <li>The "Last Updated" date will be revised;</li>
+                <li>For material changes, we may notify you via email or in-app notification;</li>
+                <li>Continued use of the Application after changes constitutes acceptance of the new Terms.</li>
+            </ul>
+            <p>If you do not agree to modified Terms, you must stop using the Application.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>13. Governing Law</h2>
+            <p>These Terms shall be governed by and construed in accordance with the laws of the Republic of Armenia. Any disputes shall be resolved in the courts of Armenia.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>14. Apple App Store Terms</h2>
+            <p>If you downloaded the Application from Apple App Store, you acknowledge:</p>
+            <ul>
+                <li>These Terms are between you and DegreeBounds only, not Apple;</li>
+                <li>Apple has no obligation to provide maintenance or support for the Application;</li>
+                <li>Apple is not responsible for any product liability claims;</li>
+                <li>Apple is not responsible for addressing any claims related to the Application;</li>
+                <li>Apple and its subsidiaries are third-party beneficiaries of these Terms;</li>
+                <li>You must comply with any applicable third-party terms (e.g., your wireless data agreement).</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>15. Google Play Store Terms</h2>
+            <p>If you downloaded the Application from Google Play Store, you acknowledge:</p>
+            <ul>
+                <li>You must comply with Google Play Terms of Service;</li>
+                <li>Google is not responsible for the Application or its content;</li>
+                <li>Billing and refunds are subject to Google Play's policies.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>16. Severability</h2>
+            <p>If any provision of these Terms is found invalid or unenforceable, the remaining provisions will continue in full force. The invalid provision will be modified to the minimum extent necessary to make it valid.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>17. Contact Information</h2>
+            <p>For questions about these Terms of Service, please contact us:</p>
+            <ul>
+                <li><strong>Email:</strong> support@harcer.am</li>
+                <li><strong>Developer:</strong> DegreeBounds</li>
+            </ul>
+            <p>We will respond within 30 days.</p>
+        </div>
+
+        <p class="last-updated">Last Updated: January 16, 2025</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 harcer.am (DegreeBounds). All rights reserved.</p>
+        <p style="margin-top: 1rem;">
+            <a href="index.html">Home</a> · 
+            <a href="privacy-policy.html">Privacy Policy</a>
+        </p>
+    </footer>
+</body>
+</html>

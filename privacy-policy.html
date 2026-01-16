@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - harcer.am</title>
+    <meta name="description" content="harcer.am privacy policy - how we collect, use, and protect your data">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0a7ea4;
+            --primary-dark: #023c69;
+            --secondary: #4F6D7B;
+            --accent: #FFB347;
+            --dark: #11181C;
+            --dark-light: #1e293b;
+            --text: #334155;
+            --text-light: #64748b;
+            --light: #f8fafc;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--light);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        nav {
+            position: fixed;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .page-header {
+            padding: 140px 2rem 60px;
+            background: linear-gradient(135deg, #0a7ea4 0%, #4F6D7B 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-section h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .content-section h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin: 1.5rem 0 1rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content-section ul {
+            margin: 1rem 0 1rem 1.5rem;
+            color: var(--text);
+        }
+
+        .content-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e0f7fa 0%, #f0f8fa 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #fff8f0 100%);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box p {
+            margin: 0;
+            color: #8b5a00;
+        }
+
+        .last-updated {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+
+        footer {
+            background: var(--dark-light);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-light);
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .page-header h1 { font-size: 2rem; }
+            .content-section { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">harcer.am</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="terms-of-service.html">Terms of Service</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <h1>Privacy Policy</h1>
+        <p>Your privacy is important to us</p>
+    </section>
+
+    <div class="content-container">
+        <div class="content-section">
+            <h2>1. Introduction</h2>
+            <p>Welcome to harcer.am ("Application", "Service", "we", "us", or "our"), operated by DegreeBounds. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application available on iOS (Apple App Store) and Android (Google Play Store) platforms.</p>
+            
+            <div class="highlight-box">
+                <p><strong>By using our Application, you agree to the collection and use of information in accordance with this Privacy Policy.</strong> If you do not agree with our policies and practices, please do not download, register with, or use this Application.</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>2. Information We Collect</h2>
+            
+            <h3>2.1 Information You Provide</h3>
+            <p>When you register for an account, we collect:</p>
+            <ul>
+                <li><strong>Name:</strong> Your display name for personalization;</li>
+                <li><strong>Email Address:</strong> Used for account creation, login, and password recovery;</li>
+                <li><strong>Password:</strong> Securely hashed and stored by Firebase Authentication (we never see or store your actual password).</li>
+            </ul>
+
+            <h3>2.2 Information Generated Through Use</h3>
+            <p>As you use the Application, we collect:</p>
+            <ul>
+                <li><strong>Quiz Results:</strong> Your test scores, correct/incorrect answer counts;</li>
+                <li><strong>Learning Progress:</strong> Which sections and topics you have completed;</li>
+                <li><strong>Study Data:</strong> Your performance history to track your improvement.</li>
+            </ul>
+
+            <h3>2.3 Information Stored Locally</h3>
+            <p>The following data is stored only on your device:</p>
+            <ul>
+                <li><strong>Offline Content:</strong> Questions and study materials for offline access;</li>
+                <li><strong>App Preferences:</strong> Your settings and display preferences;</li>
+                <li><strong>Authentication Token:</strong> To keep you logged in between sessions.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <p><strong>What we do NOT collect:</strong> We do not collect IP addresses, location data, advertising identifiers (IDFA/GAID), contacts, photos, or any other personal data beyond what is listed above.</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>3. How We Use Your Information</h2>
+            <p>We use your information solely for the following purposes:</p>
+            <ul>
+                <li><strong>Account Management:</strong> To create and manage your user account;</li>
+                <li><strong>Service Delivery:</strong> To provide access to educational content and features;</li>
+                <li><strong>Progress Tracking:</strong> To save and display your learning progress across devices;</li>
+                <li><strong>Subscription Management:</strong> To verify your subscription status and provide access to premium features;</li>
+                <li><strong>Password Recovery:</strong> To send password reset emails when requested;</li>
+                <li><strong>Customer Support:</strong> To respond to your inquiries and provide assistance.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>4. Third-Party Services</h2>
+            <p>We use the following third-party services to operate the Application:</p>
+            
+            <h3>4.1 Firebase (Google)</h3>
+            <ul>
+                <li><strong>Firebase Authentication:</strong> Handles secure user login and registration;</li>
+                <li><strong>Firebase Realtime Database:</strong> Stores your quiz results and learning progress;</li>
+                <li><strong>Firebase Firestore:</strong> Stores subscription status and app content.</li>
+            </ul>
+            <p>Firebase Privacy Policy: <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">https://firebase.google.com/support/privacy</a></p>
+
+            <h3>4.2 RevenueCat</h3>
+            <p>RevenueCat manages subscription purchases and syncs your premium status across devices. RevenueCat receives:</p>
+            <ul>
+                <li>Your anonymous user ID (linked to your Firebase account);</li>
+                <li>Subscription purchase information from Apple/Google.</li>
+            </ul>
+            <p>RevenueCat Privacy Policy: <a href="https://www.revenuecat.com/privacy" target="_blank" rel="noopener">https://www.revenuecat.com/privacy</a></p>
+
+            <h3>4.3 Apple App Store / Google Play Store</h3>
+            <p>In-app purchases and subscriptions are processed entirely by Apple or Google. We do not receive or store your payment information (credit card, billing address, etc.).</p>
+
+            <div class="warning-box">
+                <p><strong>We do NOT sell, rent, or share your personal information with third parties for marketing purposes.</strong></p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>5. Data Storage and Security</h2>
+            
+            <h3>5.1 Where Your Data is Stored</h3>
+            <ul>
+                <li><strong>Cloud Storage:</strong> Account data and progress are stored securely on Firebase (Google Cloud Platform) servers;</li>
+                <li><strong>Local Storage:</strong> Offline content and preferences are stored on your device using secure local databases.</li>
+            </ul>
+
+            <h3>5.2 Security Measures</h3>
+            <p>We implement industry-standard security measures:</p>
+            <ul>
+                <li>All data transmission uses SSL/TLS encryption;</li>
+                <li>Passwords are securely hashed (never stored in plain text);</li>
+                <li>Firebase Security Rules restrict data access to authorized users only;</li>
+                <li>Authentication tokens are stored securely using platform-specific secure storage (iOS Keychain, Android EncryptedSharedPreferences).</li>
+            </ul>
+
+            <h3>5.3 Data Retention</h3>
+            <p>We retain your data for as long as your account is active. Upon account deletion:</p>
+            <ul>
+                <li>Your personal information and progress data will be permanently deleted;</li>
+                <li>Subscription records may be retained by Apple/Google per their policies;</li>
+                <li>Anonymized, aggregated data may be retained for service improvement.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>6. Your Rights and Choices</h2>
+            <p>You have the following rights regarding your data:</p>
+            <ul>
+                <li><strong>Access:</strong> View your account information within the Application;</li>
+                <li><strong>Correction:</strong> Update your name or email through account settings;</li>
+                <li><strong>Deletion:</strong> Request deletion of your account and all associated data;</li>
+                <li><strong>Password Reset:</strong> Reset your password via email at any time.</li>
+            </ul>
+
+            <h3>How to Delete Your Account</h3>
+            <p>You can request account deletion by:</p>
+            <ul>
+                <li>Contacting us at <strong>support@harcer.am</strong>;</li>
+                <li>Using the account deletion feature in the Application (if available).</li>
+            </ul>
+            <p>Note: Deleting your account does not automatically cancel active subscriptions. Please cancel subscriptions through Apple App Store or Google Play Store before requesting deletion.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>7. Subscriptions and Purchases</h2>
+            <p>Our Application offers premium subscriptions:</p>
+            <ul>
+                <li>All payments are processed by Apple App Store or Google Play Store;</li>
+                <li>We receive notification of your subscription status (active/expired) but NOT your payment details;</li>
+                <li>RevenueCat helps sync your subscription across devices using your anonymous user ID;</li>
+                <li>For billing issues or refunds, contact Apple or Google directly.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>8. Children's Privacy</h2>
+            <p>Our Application is an educational tool designed for students preparing for examinations.</p>
+            
+            <div class="warning-box">
+                <p><strong>Age Requirement:</strong> Users must be at least 13 years old to create an account. Users between 13-18 should have parental consent.</p>
+            </div>
+
+            <p>We do not knowingly collect personal information from children under 13. If you believe a child under 13 has provided us with personal information, please contact us at support@harcer.am, and we will delete such information.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>9. International Users</h2>
+            <p>Our Application is primarily intended for users in Armenia preparing for unified examinations. If you access the Application from outside Armenia, please be aware that your data may be transferred to and processed on servers located in other countries (Google Cloud Platform).</p>
+            <p>By using the Application, you consent to such transfer and processing.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>10. California Privacy Rights (CCPA)</h2>
+            <p>If you are a California resident, you have the right to:</p>
+            <ul>
+                <li>Know what personal information we collect;</li>
+                <li>Request deletion of your personal information;</li>
+                <li>Non-discrimination for exercising your privacy rights.</li>
+            </ul>
+            <p><strong>We do not sell personal information.</strong></p>
+        </div>
+
+        <div class="content-section">
+            <h2>11. European Privacy Rights (GDPR)</h2>
+            <p>If you are in the European Economic Area, you have additional rights including:</p>
+            <ul>
+                <li>Right to access and receive a copy of your data;</li>
+                <li>Right to rectification of inaccurate data;</li>
+                <li>Right to erasure;</li>
+                <li>Right to data portability;</li>
+                <li>Right to lodge a complaint with a supervisory authority.</li>
+            </ul>
+            <p><strong>Legal Basis:</strong> We process your data based on your consent (account creation) and contract performance (providing the service).</p>
+        </div>
+
+        <div class="content-section">
+            <h2>12. Changes to This Privacy Policy</h2>
+            <p>We may update this Privacy Policy from time to time. When we make changes:</p>
+            <ul>
+                <li>The "Last Updated" date at the bottom will be revised;</li>
+                <li>For significant changes, we may notify you via email or in-app notification;</li>
+                <li>Continued use of the Application after changes constitutes acceptance.</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>13. Contact Us</h2>
+            <p>If you have questions about this Privacy Policy or wish to exercise your data rights, please contact us:</p>
+            <ul>
+                <li><strong>Email:</strong> support@harcer.am</li>
+                <li><strong>Developer:</strong> DegreeBounds</li>
+            </ul>
+            <p>We will respond to your inquiry within 30 days.</p>
+        </div>
+
+        <p class="last-updated">Last Updated: January 16, 2025</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 harcer.am (DegreeBounds). All rights reserved.</p>
+        <p style="margin-top: 1rem;">
+            <a href="index.html">Home</a> · 
+            <a href="terms-of-service.html">Terms of Service</a>
+        </p>
+    </footer>
+</body>
+</html>
