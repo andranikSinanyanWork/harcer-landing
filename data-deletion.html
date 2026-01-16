@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Deletion - harcer.am</title>
+    <meta name="description" content="Data deletion request instructions for harcer.am">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0a7ea4;
+            --primary-dark: #023c69;
+            --secondary: #4F6D7B;
+            --accent: #FFB347;
+            --dark: #11181C;
+            --dark-light: #1e293b;
+            --text: #334155;
+            --text-light: #64748b;
+            --light: #f8fafc;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--light);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        nav {
+            position: fixed;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .page-header {
+            padding: 140px 2rem 60px;
+            background: linear-gradient(135deg, #0a7ea4 0%, #4F6D7B 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-section h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content-section a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .content-section a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            background: var(--dark-light);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-light);
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .page-header h1 { font-size: 2rem; }
+            .content-section { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">harcer.am</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                <li><a href="terms-of-service.html">Terms of Service</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <h1>Data Deletion Request</h1>
+        <p>How to request deletion of your account data</p>
+    </section>
+
+    <div class="content-container">
+        <div class="content-section">
+            <h2>Account and Data Deletion</h2>
+            <p>The data stored in the harcer.am App may be deleted at the account holder’s request.</p>
+            <p>Please contact us at <a href="mailto:ando.sinanyan@gmail.com">ando.sinanyan@gmail.com</a> and request closure and deletion of your account.</p>
+            <p>We will anonymize your data and delete all user information, including name, address, email address, and telephone number. The pictures and the data collected on the images will be anonymized and maintained.</p>
+            <p>Please review our <a href="privacy-policy.html">Privacy Policy</a> and <a href="terms-of-service.html">Terms of Service</a>.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 harcer.am (DegreeBounds). All rights reserved.</p>
+        <p style="margin-top: 1rem;">
+            <a href="index.html">Home</a> · 
+            <a href="privacy-policy.html">Privacy Policy</a> ·
+            <a href="terms-of-service.html">Terms of Service</a>
+        </p>
+    </footer>
+</body>
+</html>
