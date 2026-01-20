@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>harcer.am - Նախապատրաստվեք Միասնական Քննություններին</title>
-    <meta name="description" content="Հարցեր.am-ը լավագույն հավելվածն է Միասնական քննություններին նախապատրաստվելու համար: Անցեք ցանկացած շեմարանով: iOS և Android։">
+    <title>Harcer.am - Նախապատրաստվեք Միասնական Քննություններին</title>
+    <meta name="description" content="Հարցեր.am-ը լավագույն հավելվածն է Միասնական քննություններին նախապատրաստվելու համար: Անցեք ցանկացած շեմարանով: iOS, Android և Web։">
     
     <style>
         * {
@@ -77,6 +77,10 @@
             align-items: center;
         }
 
+        .nav-links li:last-child {
+            margin-left: -1rem;
+        }
+
         .nav-links a {
             text-decoration: none;
             color: var(--text);
@@ -103,6 +107,26 @@
         .cta-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(10, 126, 164, 0.4);
+        }
+
+        .web-app-button {
+            background: white;
+            color: var(--primary);
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            display: inline-block;
+            border: 2px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(10, 126, 164, 0.1);
+        }
+
+        .web-app-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(10, 126, 164, 0.2);
+            background: var(--primary) !important;
+            color: white !important;
         }
 
         /* Hamburger Menu */
@@ -174,6 +198,23 @@
             gap: 1rem;
             flex-wrap: wrap;
             animation: fadeInUp 0.8s ease 0.4s backwards;
+            justify-content: center;
+        }
+
+        .hero-buttons .btn-full-width {
+            flex: 0 0 auto;
+            background: white;
+            color: var(--primary);
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero-buttons .btn-full-width:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .btn-primary {
@@ -720,13 +761,14 @@
     <!-- Navigation -->
     <nav id="navbar">
         <div class="nav-container">
-            <div class="logo">harcer.am</div>
+            <div class="logo">Harcer.am</div>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#home">Գլխավոր</a></li>
                 <li><a href="#features">Հնարավորություններ</a></li>
                 <li><a href="#how-it-works">Ինչպես Աշխատում է</a></li>
                 <li><a href="#testimonials">Ինչու Մենք</a></li>
                 <li><a href="#download" class="cta-button">Ներբեռնել Հիմա</a></li>
+                <li><a href="https://app.harcer.am" class="web-app-button" target="_blank" rel="noopener noreferrer">🌐 Մուտք</a></li>
             </ul>
             <div class="hamburger" id="hamburger">
                 <span></span>
@@ -748,6 +790,9 @@
                     </a>
                     <a href="#how-it-works" class="btn-secondary">
                         Իմանալ Ավելին →
+                    </a>
+                    <a href="https://app.harcer.am" class="btn-primary btn-full-width" target="_blank" rel="noopener noreferrer">
+                        🌐 Բացել Վեբ Հավելվածը
                     </a>
                 </div>
             </div>
@@ -778,8 +823,8 @@
                 <p>Բոլոր Առարկաները</p>
             </div>
             <div class="stat-item">
-                <h3>⚡</h3>
-                <p>Օֆլայն Աշխատում</p>
+                <h3>📱</h3>
+                <p>iOS, Android & Web</p>
             </div>
             <div class="stat-item">
                 <h3>🎯</h3>
@@ -817,8 +862,8 @@
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📱</div>
-                <h3>Օֆլայն Աշխատանք</h3>
-                <p>Սովորեք ցանկացած վայրում, ցանկացած ժամանակ՝ առանց ինտերնետի և ավտոմատ սինքրոնացումով։</p>
+                <h3>Բոլոր Հարթակներում</h3>
+                <p>Հասանելի է iOS, Android և Web-ի վրա։ Սովորեք ցանկացած սարքով, ցանկացած վայրում և ցանկացած ժամանակ՝ ավտոմատ սինքրոնացումով։</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎯</div>
@@ -909,7 +954,7 @@
     <section class="cta-section" id="download">
         <div class="cta-content">
             <h2>Պատրա՞ստ եք Անցնելու Միասնական Քննությունները</h2>
-            <p>Ներբեռնեք harcer.am այսօր և սկսեք ձեր ճանապարհը դեպի հաջողություն ցանկացած շեմարանով։ Անվճար և առանց գովազդի։</p>
+            <p>Ներբեռնեք Harcer.am այսօր և սկսեք ձեր ճանապարհը դեպի հաջողություն ցանկացած շեմարանով։ Անվճար և առանց գովազդի։ Հասանելի է iOS, Android և Web-ի վրա։</p>
             <div class="download-buttons">
                 <a href="#" class="download-btn">
                     <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -929,6 +974,15 @@
                         Google Play
                     </div>
                 </a>
+                <a href="https://app.harcer.am" class="download-btn" target="_blank" rel="noopener noreferrer">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 19.93C7.05 19.44 4 16.08 4 12C4 11.38 4.08 10.79 4.21 10.21L9 15V16C9 17.1 9.9 18 11 18V19.93ZM17.9 17.39C17.64 16.58 16.9 16 16 16H15V13C15 12.45 14.55 12 14 12H8V10H10C10.55 10 11 9.55 11 9V7H13C14.1 7 15 6.1 15 5V4.59C17.93 5.78 20 8.65 20 12C20 14.08 19.2 15.97 17.9 17.39Z" fill="currentColor"/>
+                    </svg>
+                    <div>
+                        <small style="display: block; font-size: 0.7rem; font-weight: 400;">Բացել</small>
+                        Web Հավելվածը
+                    </div>
+                </a>
             </div>
         </div>
     </section>
@@ -937,7 +991,7 @@
     <footer>
         <div class="footer-container">
             <div class="footer-section">
-                <h3>harcer.am</h3>
+                <h3>Harcer.am</h3>
                 <p style="color: var(--text-light); line-height: 1.8;">Ձեր վստահելի գործընկերը Միասնական քննություններին նախապատրաստվելու համար։ Անցեք ցանկացած շեմարանով մեր բարձրորակ գործիքներով։</p>
             </div>
             <div class="footer-section">
@@ -970,7 +1024,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 harcer.am (DegreeBounds). Բոլոր իրավունքները պաշտպանված են։</p>
+            <p>&copy; 2026 Harcer.am Բոլոր իրավունքները պաշտպանված են։</p>
         </div>
     </footer>
 
