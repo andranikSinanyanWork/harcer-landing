@@ -253,8 +253,25 @@
                 <li><strong>Authentication Token:</strong> To keep you logged in between sessions.</li>
             </ul>
 
+            <h3>2.4 AI Tutor Conversations</h3>
+            <p>The Application includes an optional AI Tutor that helps explain quiz questions and answers. When you use this feature, we collect and process:</p>
+            <ul>
+                <li><strong>Your messages:</strong> The questions and text you type to the AI Tutor;</li>
+                <li><strong>Quiz context:</strong> The relevant question, answer options, reading passage, and which answer you selected, so the AI can give a useful explanation;</li>
+                <li><strong>Conversation history:</strong> Your AI Tutor exchanges are stored in our database (linked to your account) so you can return to them and so we can enforce daily usage limits.</li>
+            </ul>
+            <p>To generate responses, this content is sent to <strong>Google's Gemini API</strong> through our secure server. We do not send your name, email, or password to the AI service. See Section 4.4 for details.</p>
+
+            <h3>2.5 Analytics and Usage Data</h3>
+            <p>To understand how the Application is used and to improve it, we collect pseudonymous analytics through Google Analytics for Firebase, including:</p>
+            <ul>
+                <li><strong>Interaction events:</strong> Which screens you view and features you use (e.g. starting a test, opening the AI Tutor, viewing the subscription screen);</li>
+                <li><strong>Device information:</strong> Device model, operating system version, and app version;</li>
+                <li><strong>A pseudonymous app-instance identifier</strong> and coarse, country-level location derived from your IP address (the IP address itself is not retained for analytics).</li>
+            </ul>
+
             <div class="highlight-box">
-                <p><strong>What we do NOT collect:</strong> We do not collect IP addresses, location data, advertising identifiers (IDFA/GAID), contacts, photos, or any other personal data beyond what is listed above.</p>
+                <p><strong>What we do NOT collect:</strong> We do not collect advertising identifiers (IDFA/GAID), precise/GPS location, your contacts, or your photos. We do not track you across other companies' apps or websites, and we do not use your data for advertising.</p>
             </div>
         </div>
 
@@ -265,7 +282,9 @@
                 <li><strong>Account Management:</strong> To create and manage your user account;</li>
                 <li><strong>Service Delivery:</strong> To provide access to educational content and features;</li>
                 <li><strong>Progress Tracking:</strong> To save and display your learning progress across devices;</li>
+                <li><strong>AI Tutor:</strong> To generate explanations of quiz questions and answers, and to enforce fair daily usage limits;</li>
                 <li><strong>Subscription Management:</strong> To verify your subscription status and provide access to premium features;</li>
+                <li><strong>Analytics &amp; Improvement:</strong> To understand how features are used and improve the Application;</li>
                 <li><strong>Password Recovery:</strong> To send password reset emails when requested;</li>
                 <li><strong>Customer Support:</strong> To respond to your inquiries and provide assistance.</li>
             </ul>
@@ -278,8 +297,10 @@
             <h3>4.1 Firebase (Google)</h3>
             <ul>
                 <li><strong>Firebase Authentication:</strong> Handles secure user login and registration;</li>
-                <li><strong>Firebase Realtime Database:</strong> Stores your quiz results and learning progress;</li>
-                <li><strong>Firebase Firestore:</strong> Stores subscription status and app content.</li>
+                <li><strong>Firebase Realtime Database:</strong> Stores your quiz results, learning progress, and AI Tutor usage counters;</li>
+                <li><strong>Firebase Firestore:</strong> Stores subscription status, app content, and your AI Tutor conversation history;</li>
+                <li><strong>Cloud Functions for Firebase:</strong> Securely processes AI Tutor requests on our server;</li>
+                <li><strong>Google Analytics for Firebase:</strong> Collects pseudonymous usage and device data (see Section 2.5).</li>
             </ul>
             <p>Firebase Privacy Policy: <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">https://firebase.google.com/support/privacy</a></p>
 
@@ -293,6 +314,10 @@
 
             <h3>4.3 Apple App Store / Google Play Store</h3>
             <p>In-app purchases and subscriptions are processed entirely by Apple or Google. We do not receive or store your payment information (credit card, billing address, etc.).</p>
+
+            <h3>4.4 Google Gemini API (Generative AI)</h3>
+            <p>The AI Tutor is powered by Google's Gemini generative AI. When you use this feature, your message and the related quiz context (see Section 2.4) are sent to the Gemini API to generate a response. We do not send your name, email, or other account identifiers to Gemini.</p>
+            <p>According to Google, data submitted through the Gemini API is <strong>not used to train Google's models</strong>. Google Gemini API Terms: <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener">https://ai.google.dev/gemini-api/terms</a></p>
 
             <div class="warning-box">
                 <p><strong>We do NOT sell, rent, or share your personal information with third parties for marketing purposes.</strong></p>
@@ -339,8 +364,8 @@
             <h3>How to Delete Your Account</h3>
             <p>You can request account deletion by:</p>
             <ul>
-                <li>Contacting us at <strong>support@harcer.am</strong>;</li>
-                <li>Using the account deletion feature in the Application (if available).</li>
+                <li>Using the <strong>"Delete Account"</strong> option in your Profile screen within the Application, which permanently removes your account and associated data; or</li>
+                <li>Contacting us at <strong>support@harcer.am</strong>.</li>
             </ul>
             <p>Note: Deleting your account does not automatically cancel active subscriptions. Please cancel subscriptions through Apple App Store or Google Play Store before requesting deletion.</p>
         </div>
@@ -417,11 +442,11 @@
             <p>We will respond to your inquiry within 30 days.</p>
         </div>
 
-        <p class="last-updated">Last Updated: January 16, 2025</p>
+        <p class="last-updated">Last Updated: June 1, 2026</p>
     </div>
 
     <footer>
-        <p>&copy; 2025 harcer.am (DegreeBounds). All rights reserved.</p>
+        <p>&copy; 2026 harcer.am (DegreeBounds). All rights reserved.</p>
         <p style="margin-top: 1rem;">
             <a href="index.html">Home</a> · 
             <a href="terms-of-service.html">Terms of Service</a> ·
