@@ -34,7 +34,7 @@
     linear-gradient(rgba(185,207,200,.28) 1px, transparent 1px), linear-gradient(90deg, rgba(185,207,200,.28) 1px, transparent 1px);
   --font: -apple-system, BlinkMacSystemFont, "SF Armenian", "Segoe UI", Roboto, "Noto Sans Armenian", system-ui, sans-serif;
 }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; background: #2B414B; }
 body { margin: 0; font-family: var(--font); color: var(--ink); background: #F8FAFC; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 a { color: inherit; }
 img { max-width: 100%; }
@@ -104,8 +104,16 @@ body[data-theme="sun"] .topbar .get { background: var(--ink); color: #fff; }
 
 /* ---- pinned mode ---- */
 .js .story { position: relative; }
-/* clip, not hidden: a hidden box can still be scrolled by the browser when the address names a chapter (#exam) */
-.js .stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; overflow: clip; color: var(--ink); transition: color .5s; }
+/* Height: the screen with the browser's bars slid away (lvh; plain vh means the same on phones). Sized to
+   the small viewport, the stage stopped short of the bottom once the address bar hid, and the page showed under it.
+   clip, not hidden: a hidden box can still be scrolled by the browser when the address names a chapter (#exam). */
+.js .stage { position: sticky; top: 0; height: 100vh; height: 100lvh; overflow: hidden; overflow: clip; color: var(--ink); transition: color .5s; }
+/* and whatever a browser may still show past the stage wears the chapter's colour, not white */
+.js .story { transition: background-color .7s; }
+.js body[data-theme="teal"] .story { background: #2F4752; }
+.js body[data-theme="sun"] .story { background: var(--sun2); }
+.js body[data-theme="paper"] .story { background: #FCFCFA; }
+.js body[data-theme="violet"] .story { background: #E6DAFD; }
 .js .stage[data-theme="teal"] { color: #fff; }
 .js .bgs { display: block; }
 .js .bgs i { position: absolute; inset: 0; opacity: 0; transition: opacity .7s; }
@@ -558,7 +566,9 @@ footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); pa
   function swap(st, lively) {
     const el = layers[st.s];
     if (!el || el === shown) return;
-    if (shown) { const old = shown; old.className = 'ly was'; setTimeout(() => old !== shown && old.classList.remove('was'), 450); }
+    // the screen being left stays underneath for a second: a slow phone needs a moment to draw a screen it has
+    // not shown before, and the glass must not be empty meanwhile
+    if (shown) { const old = shown; old.className = 'ly was'; setTimeout(() => old !== shown && old.classList.remove('was'), 1100); }
     el.className = 'ly on' + (lively && st.fx ? ' fx-' + st.fx : '');
     shown = el;
     clearInterval(typer);
