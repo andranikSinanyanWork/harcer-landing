@@ -1,1100 +1,641 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hy">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harcer.am - Նախապատրաստվեք Միասնական Քննություններին</title>
-    <meta name="description" content="Հարցեր.am-ը լավագույն հավելվածն է Միասնական քննություններին նախապատրաստվելու համար: Անցեք ցանկացած շեմարանով: iOS, Android և Web։">
-    <link rel="icon" type="image/png" href="assets/images/favicon.png">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #0a7ea4;
-            --primary-dark: #023c69;
-            --secondary: #4F6D7B;
-            --accent: #FFB347;
-            --dark: #11181C;
-            --dark-light: #1e293b;
-            --text: #334155;
-            --text-light: #64748b;
-            --light: #f8fafc;
-            --white: #ffffff;
-            --success: #10b981;
-            --warning: #f59e0b;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: var(--text);
-            overflow-x: hidden;
-        }
-
-        /* Smooth Scroll */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        nav.scrolled {
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-links li:last-child {
-            margin-left: -1rem;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text);
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        .cta-button {
-            background: var(--accent);
-            color: white;
-            padding: 0.7rem 1.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: inline-block;
-            box-shadow: 0 4px 15px rgba(255, 179, 71, 0.3);
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(10, 126, 164, 0.4);
-        }
-
-        .web-app-button {
-            background: white;
-            color: var(--primary);
-            padding: 0.7rem 1.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-            display: inline-block;
-            border: 2px solid var(--primary);
-            box-shadow: 0 2px 8px rgba(10, 126, 164, 0.1);
-        }
-
-        .web-app-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(10, 126, 164, 0.2);
-            background: var(--primary) !important;
-            color: white !important;
-        }
-
-        /* Hamburger Menu */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 4px;
-        }
-
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background: var(--primary);
-            border-radius: 3px;
-            transition: all 0.3s ease;
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 120px 2rem 80px;
-            background: linear-gradient(135deg, #0a7ea4 0%, #4F6D7B 100%);
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,165.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
-            background-size: cover;
-            opacity: 0.5;
-        }
-
-        .hero-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-content h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            animation: fadeInUp 0.8s ease;
-        }
-
-        .hero-content p {
-            font-size: 1.25rem;
-            line-height: 1.8;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-            animation: fadeInUp 0.8s ease 0.2s backwards;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            animation: fadeInUp 0.8s ease 0.4s backwards;
-            justify-content: center;
-        }
-
-        .hero-buttons .btn-full-width {
-            flex: 0 0 auto;
-            background: white;
-            color: var(--primary);
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            margin-top: 0.5rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .hero-buttons .btn-full-width:hover {
-            background: rgba(255, 255, 255, 0.95);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 8px 25px rgba(255, 179, 71, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 179, 71, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: white;
-        }
-
-        .hero-image {
-            position: relative;
-            animation: fadeInRight 1s ease;
-        }
-
-        .phone-mockup {
-            width: 100%;
-            max-width: 450px;
-            margin: 0 auto;
-            position: relative;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .phone-mockup img {
-            width: 100%;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            border: 8px solid #1e293b;
-        }
-
-        .screenshot-placeholder {
-            width: 100%;
-            max-width: 450px;
-            aspect-ratio: 9/19.5;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 30px;
-            border: 8px solid #1e293b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            text-align: center;
-            padding: 2rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Stats Section */
-        .stats {
-            background: var(--secondary);
-            color: white;
-            padding: 3rem 2rem;
-        }
-
-        .stats-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 3rem;
-            text-align: center;
-        }
-
-        .stat-item h3 {
-            font-size: 3rem;
-            font-weight: 900;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-item p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        /* Features Section */
-        .features {
-            padding: 100px 2rem;
-            background: var(--light);
-        }
-
-        .section-header {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto 4rem;
-        }
-
-        .section-header h2 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
-
-        .section-header p {
-            font-size: 1.2rem;
-            color: var(--text-light);
-        }
-
-        .features-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(10, 126, 164, 0.2);
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
-
-        .feature-card p {
-            color: var(--text-light);
-            line-height: 1.8;
-        }
-
-        /* How It Works Section */
-        .how-it-works {
-            padding: 100px 2rem;
-            background: white;
-        }
-
-        .steps-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .step {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-            margin-bottom: 5rem;
-        }
-
-        .step:nth-child(even) {
-            direction: rtl;
-        }
-
-        .step:nth-child(even) > * {
-            direction: ltr;
-        }
-
-        .step-content {
-            position: relative;
-        }
-
-        .step-number {
-            display: inline-block;
-            width: 60px;
-            height: 60px;
-            background: var(--accent);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 15px rgba(255, 179, 71, 0.3);
-        }
-
-        .step-content h3 {
-            font-size: 2rem;
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
-
-        .step-content p {
-            color: var(--text-light);
-            font-size: 1.1rem;
-            line-height: 1.8;
-        }
-
-        .step-image {
-            background: linear-gradient(135deg, #e0f2f7, #f0f8fa);
-            border-radius: 20px;
-            padding: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 300px;
-        }
-
-        .step-image-placeholder {
-            font-size: 5rem;
-        }
-
-        /* Testimonials Section */
-        .testimonials {
-            padding: 100px 2rem;
-            background: linear-gradient(135deg, #4F6D7B, #0a7ea4);
-            color: white;
-        }
-
-        .testimonials-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .testimonial-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .testimonial-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .testimonial-avatar {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .testimonial-info h4 {
-            font-size: 1.1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .testimonial-info p {
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .stars {
-            color: #fbbf24;
-            margin-bottom: 1rem;
-        }
-
-        .testimonial-text {
-            line-height: 1.8;
-            opacity: 0.95;
-        }
-
-        /* CTA Section */
-        .cta-section {
-            padding: 100px 2rem;
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            color: white;
-            text-align: center;
-        }
-
-        .cta-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .cta-content h2 {
-            font-size: 3rem;
-            font-weight: 900;
-            margin-bottom: 1.5rem;
-        }
-
-        .cta-content p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            color: var(--text-light);
-        }
-
-        .download-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .download-btn {
-            background: white;
-            color: var(--dark);
-            padding: 1rem 2rem;
-            border-radius: 15px;
-            text-decoration: none;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .download-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(255, 179, 71, 0.3);
-            border-color: var(--accent);
-        }
-
-        .download-btn img {
-            width: 30px;
-            height: 30px;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark-light);
-            color: white;
-            padding: 4rem 2rem 2rem;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            margin-bottom: 3rem;
-        }
-
-        .footer-section h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 0.75rem;
-        }
-
-        .footer-section a {
-            color: var(--text-light);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--primary);
-        }
-
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            color: var(--text-light);
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 968px) {
-            .nav-links {
-                position: fixed;
-                top: 70px;
-                left: -100%;
-                width: 100%;
-                height: calc(100vh - 70px);
-                background: white;
-                flex-direction: column;
-                padding: 2rem;
-                transition: left 0.3s ease;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            }
-
-            .nav-links.active {
-                left: 0;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            .hero-container {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero-buttons {
-                justify-content: center;
-            }
-
-            .hero-image {
-                order: -1;
-            }
-
-            .step {
-                grid-template-columns: 1fr;
-            }
-
-            .step:nth-child(even) {
-                direction: ltr;
-            }
-
-            .cta-content h2 {
-                font-size: 2rem;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .hero-content h1 {
-                font-size: 2rem;
-            }
-
-            .hero-content p {
-                font-size: 1.1rem;
-            }
-
-            .section-header h2 {
-                font-size: 2rem;
-            }
-
-            .stat-item h3 {
-                font-size: 2rem;
-            }
-
-            .features-grid,
-            .testimonials-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Հարցեր.am — միասնական քննությունների շտեմարանները հեռախոսում</title>
+<meta name="description" content="Անգլերենի, հայոց լեզվի, մաթեմատիկայի, կենսաբանության և հայոց պատմության շտեմարանների 23 000-ից ավելի հարց՝ քայլ առ քայլ բացատրություններով, AI ուսուցչով և փորձնական քննությամբ։ iOS և Android։">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://harcer.am/">
+<meta property="og:title" content="Հարցեր.am — պատրաստվի՛ր միասնական քննություններին">
+<meta property="og:description" content="5 առարկա, 16 շտեմարան, 23 000+ հարց՝ բացատրություններով, AI ուսուցչով և փորձնական քննությամբ։">
+<meta property="og:image" content="https://harcer.am/site/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#4F6D7B">
+<link rel="icon" type="image/png" href="site/favicon.png">
+<link rel="apple-touch-icon" href="site/apple-touch-icon.png">
+<link rel="stylesheet" href="site/kit.css">
+<!-- the icon font of the phone screens and its map: fetched alongside the page instead of after kit.js has run, but behind the stylesheet -->
+<link rel="preload" href="site/ionicons.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
+<link rel="preload" href="site/ionicons.json" as="fetch" crossorigin fetchpriority="low">
+<script>document.documentElement.className = 'js';</script>
+<style>
+/* The landing page. One pinned phone runs the whole story: each scroll brings the next feature
+   (a headline and one line), and the phone plays that feature as a short loop of the app's real
+   screens (site/kit.js — the studio's screen kit).
+   Without JavaScript the chapters are plain sections, one under another. */
+*, *::before, *::after { box-sizing: border-box; }
+:root {
+  --teal: #3E5966; --teal2: #4F6D7B; --sun: #FFB216; --sun2: #F59E0B; --ink: #1A202C;
+  --bg-teal: radial-gradient(120% 70% at 85% 0%, #5F8291 0%, var(--teal2) 35%, var(--teal) 75%, #2F4752 100%);
+  --bg-sun: radial-gradient(120% 70% at 15% 0%, #FFD36B 0%, var(--sun) 40%, var(--sun2) 100%);
+  --bg-violet: radial-gradient(120% 70% at 15% 0%, #FDFBFF 0%, #F3EEFF 45%, #E6DAFD 100%);
+  --grid: linear-gradient(rgba(185,207,200,.42) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(185,207,200,.42) 1.5px, transparent 1.5px),
+    linear-gradient(rgba(185,207,200,.28) 1px, transparent 1px), linear-gradient(90deg, rgba(185,207,200,.28) 1px, transparent 1px);
+  --font: -apple-system, BlinkMacSystemFont, "SF Armenian", "Segoe UI", Roboto, "Noto Sans Armenian", system-ui, sans-serif;
+}
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; font-family: var(--font); color: var(--ink); background: #F8FAFC; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+img { max-width: 100%; }
+h1, h2, h3, p { margin: 0; }
+.keep { white-space: nowrap; }
+.io { font-family: Ionicons; font-style: normal; font-weight: normal; line-height: 1; display: inline-block; }
+
+/* ───────── top bar ───────── */
+.topbar { position: absolute; left: 0; right: 0; top: 0; z-index: 100; height: 64px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(18px, 4vw, 44px); transition: background .3s, box-shadow .3s; }
+.js .topbar { position: fixed; }
+.topbar .logo { display: block; line-height: 0; }
+.topbar .logo img { height: 30px; width: auto; display: block; }
+.topbar .logo .t { display: none; }
+body:not([data-theme="teal"]) .topbar .logo .w { display: none; }
+body:not([data-theme="teal"]) .topbar .logo .t { display: block; }
+body[data-theme="page"] .topbar { background: rgba(255,255,255,.9); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 1px 0 rgba(15,23,42,.08); }
+.topbar .get { height: 40px; padding: 0 18px; border-radius: 20px; background: #FFC107; color: var(--ink); font-weight: 800; font-size: 14px;
+  display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: background .3s, color .3s, transform .15s; }
+.topbar .get:hover { transform: translateY(-1px); }
+body[data-theme="sun"] .topbar .get { background: var(--ink); color: #fff; }
+
+/* ───────── the story ───────── */
+.bgs, .rail, .prog, .device { display: none; }
+.chap { padding: 96px 24px 64px; }
+.chap > * { max-width: 640px; margin-left: auto; margin-right: auto; }
+.chap[data-theme="teal"] { background: var(--bg-teal); color: #fff; }
+.chap[data-theme="sun"] { background: var(--bg-sun); }
+.chap[data-theme="paper"] { background-color: #FCFCFA; background-image: var(--grid); background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px; }
+.chap[data-theme="violet"] { background: var(--bg-violet); }
+
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; letter-spacing: .01em; padding: 7px 14px; border-radius: 999px; white-space: nowrap; }
+.chap[data-theme="teal"] .eyebrow { background: rgba(255,255,255,.12); color: #FFD58A; }
+.chap[data-theme="sun"] .eyebrow { background: rgba(26,32,44,.09); color: #5B3B00; }
+.chap[data-theme="paper"] .eyebrow { background: #EAF0F2; color: var(--teal); }
+.chap[data-theme="violet"] .eyebrow { background: #fff; color: #5B21B6; }
+.chap h1, .chap h2 { font-weight: 800; letter-spacing: -.022em; line-height: 1.1; margin-top: 18px; text-wrap: balance; }
+.chap h1 { font-size: clamp(34px, 4.7vw, 64px); }
+.chap h2 { font-size: clamp(27px, 3.7vw, 50px); }
+.chap em { font-style: normal; }
+.chap[data-theme="teal"] em { color: #FFC24D; }
+.chap[data-theme="sun"] em { color: #fff; text-shadow: 0 3px 0 rgba(140,80,0,.18); }
+/* on paper the emphasis is a stroke of the highlighter */
+.chap[data-theme="paper"] em { background: linear-gradient(transparent 58%, #FFD978 58%, #FFD978 92%, transparent 92%); }
+.chap[data-theme="violet"] em { color: #6D28D9; }
+.chap .lead { margin-top: 18px; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.55; opacity: .86; max-width: 33em; text-wrap: pretty; }
+.chap .fine { margin-top: 14px; font-size: 13.5px; font-weight: 600; opacity: .72; }
+
+
+.stores { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.store { height: 56px; padding: 0 20px 0 16px; border-radius: 15px; background: #0B0D10; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.2); transition: transform .15s, box-shadow .15s; }
+.store:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,.26); }
+.store .io { font-size: 27px; width: 27px; }
+.store span { display: flex; flex-direction: column; font-size: 17px; font-weight: 700; line-height: 1.15; white-space: nowrap; }
+.store small { font-size: 11px; font-weight: 500; opacity: .75; }
+/* a phone only needs its own store */
+[data-os="android"] .store.ios, [data-os="ios"] .store.android { display: none; }
+[data-os] .store { flex: 1; justify-content: center; max-width: 340px; }
+/* the line above a headline can change with what the phone shows */
+.eyebrow { transition: opacity .2s; }
+.eyebrow.swap { opacity: 0; }
+/* "there is more below", on the first screen only */
+.more { display: none; }
+.more .io { animation: nudge 1.6s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateY(4px); } }
+
+/* ---- pinned mode ---- */
+.js .story { position: relative; }
+/* clip, not hidden: a hidden box can still be scrolled by the browser when the address names a chapter (#exam) */
+.js .stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; overflow: clip; color: var(--ink); transition: color .5s; }
+.js .stage[data-theme="teal"] { color: #fff; }
+.js .bgs { display: block; }
+.js .bgs i { position: absolute; inset: 0; opacity: 0; transition: opacity .7s; }
+.bgs .b-teal { background: var(--bg-teal); }
+.bgs .b-sun { background: var(--bg-sun); }
+.bgs .b-paper { background-color: #FCFCFA; background-image: var(--grid); background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px; }
+.bgs .b-violet { background: var(--bg-violet); }
+.stage[data-theme="teal"] .bgs .b-teal, .stage[data-theme="sun"] .bgs .b-sun, .stage[data-theme="paper"] .bgs .b-paper, .stage[data-theme="violet"] .bgs .b-violet { opacity: 1; }
+/* soft rings, as on the store screenshots: they echo the logo's circle */
+.ring { position: absolute; border-radius: 50%; border: 64px solid currentColor; opacity: .055; pointer-events: none; }
+.ring.a { width: 980px; height: 980px; right: -420px; top: -360px; transform: translateY(calc(var(--p, 0) * 140px)); }
+.ring.b { width: 620px; height: 620px; left: -360px; bottom: -300px; transform: translateY(calc(var(--p, 0) * -180px)); }
+
+.js .wrap { position: relative; height: 100%; max-width: 1180px; margin: 0 auto; padding: 84px 56px 40px; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 32px; align-items: center; }
+.js .caps { display: grid; align-items: center; }
+.js .chap { grid-area: 1 / 1; padding: 0; background: none; color: inherit; opacity: 0; visibility: hidden; transform: translateY(16px);
+  transition: opacity .3s, transform .4s, visibility 0s .3s; }
+.js .chap > * { max-width: none; margin-left: 0; margin-right: 0; }
+.js .chap .lead { max-width: 31em; }
+.js .chap.on { opacity: 1; visibility: visible; transform: none; transition: opacity .45s .1s, transform .55s .1s; }
+.js .more { display: flex; position: absolute; left: 50%; bottom: 20px; width: 40px; height: 40px; margin-left: -20px; border-radius: 20px; align-items: center; justify-content: center;
+  font-size: 18px; background: rgba(255,255,255,.12); opacity: 0; transition: opacity .4s; pointer-events: none; z-index: 8; }
+.stage[data-ch="top"] .more { opacity: .9; }
+
+/* the phone: an iPhone-style frame around the live 402×874 kit screens */
+.js .device { display: flex; justify-content: center; align-items: center; position: relative; }
+.phone { --r: calc(62px * var(--k) + var(--b)); position: relative; flex: none; border-radius: var(--r); padding: var(--b); background: #0B0D10;
+  box-shadow: 0 0 0 calc(var(--b) * .28) #8A8F96 inset, 0 0 0 calc(var(--b) * .55) #3A3E44 inset, 0 44px 90px rgba(0,0,0,.3), 0 16px 32px rgba(0,0,0,.2); }
+.phone .side { position: absolute; width: 4px; border-radius: 2px; background: linear-gradient(90deg, #55595f, #9aa0a6); }
+.glass { position: relative; width: calc(402px * var(--k)); height: calc(874px * var(--k)); border-radius: calc(var(--r) - var(--b)); overflow: hidden; background: var(--teal2); }
+.ly { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .3s; pointer-events: none; }
+.ly > .scr { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; transform: scale(var(--k)); }
+.ly.on { opacity: 1; visibility: visible; z-index: 2; }
+.ly.was { opacity: 1; visibility: visible; z-index: 1; }
+/* how a state arrives: a sheet rises, a popup pops, a message lands */
+.ly.fx-rise { transition: none; }
+.ly.fx-rise .xs, .ly.fx-rise .ts { animation: rise .55s cubic-bezier(.2,.8,.2,1) both; }
+.ly.fx-rise .dim { animation: fade .4s both; }
+.ly.fx-pop .pop { animation: pop .34s cubic-bezier(.2,.9,.3,1.25) both; transform-origin: var(--caret, 40px) -8px; }
+.ly.fx-msg .ts > div:nth-child(4) > :last-child, .ly.fx-msg2 .ts > div:nth-child(4) > :nth-last-child(-n+2) { animation: msg .4s cubic-bezier(.2,.8,.2,1) both; }
+.ly.fx-msg2 .ts > div:nth-child(4) > :last-child { animation-delay: .25s; }
+@keyframes rise { from { transform: translateY(100%); } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(.8); } }
+@keyframes msg { from { opacity: 0; transform: translateY(14px); } }
+.tin.typing::after { content: ""; display: inline-block; width: 1.5px; height: 1.1em; margin-left: 1px; vertical-align: -2px; background: var(--primary); animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+/* the finger */
+.tap { position: absolute; z-index: 5; width: calc(56px * var(--k)); height: calc(56px * var(--k)); margin: calc(-28px * var(--k)) 0 0 calc(-28px * var(--k)); border-radius: 50%;
+  background: rgba(26,32,44,.2); box-shadow: inset 0 0 0 2px rgba(255,255,255,.75), 0 0 0 1px rgba(26,32,44,.15); opacity: 0; pointer-events: none; }
+.tap.go { animation: tap .55s ease-out; }
+@keyframes tap { 0% { opacity: 0; transform: scale(.5); } 25% { opacity: 1; transform: scale(.82); } 100% { opacity: 0; transform: scale(1.3); } }
+/* Android home-screen widget, next to the progress screen */
+.widget { position: absolute; z-index: 6; left: calc(-104px * var(--k)); bottom: 15%; transform-origin: 0 100%; transform: scale(var(--k)) rotate(-5deg) translateY(40px); opacity: 0; transition: opacity .45s, transform .6s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+.stage[data-ch="progress"] .widget { opacity: 1; transform: scale(var(--k)) rotate(-5deg); transition-delay: .25s; }
+
+.js .rail { display: flex; position: absolute; right: 24px; top: 50%; transform: translateY(-50%); flex-direction: column; gap: 9px; z-index: 8; }
+.rail a { position: relative; width: 9px; height: 9px; border-radius: 5px; background: currentColor; opacity: .28; transition: height .3s, opacity .3s; }
+.rail a.on { height: 26px; opacity: .95; }
+.rail a:hover { opacity: .8; }
+.rail a::after { content: attr(data-l); position: absolute; right: 20px; top: 50%; transform: translateY(-50%); white-space: nowrap; font-size: 12px; font-weight: 700; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.rail a:hover::after { opacity: .95; }
+
+@media (max-height: 720px) and (min-width: 900px) {
+  .chap h1 { font-size: clamp(30px, 4vw, 48px); }
+  .chap h2 { font-size: clamp(25px, 3.2vw, 40px); }
+  .js .wrap { padding-top: 72px; padding-bottom: 24px; }
+}
+
+/* ---- narrow screens: the words on top, the phone below, moved to what the words talk about ---- */
+@media (max-width: 899px) {
+  .topbar { height: 56px; }
+  .topbar .logo img { height: 26px; }
+  .topbar .get { height: 36px; padding: 0 15px; font-size: 13px; }
+  .chap { padding: 84px 22px 48px; }
+  .js .wrap { display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 60px 0 0; }
+  .js .caps { display: block; position: relative; flex: none; margin: 10px 22px 14px; }
+  .js .chap { position: absolute; left: 0; right: 0; top: 0; }
+  .chap h1 { font-size: clamp(30px, 8.6vw, 40px); margin-top: 12px; }
+  .chap h2 { font-size: clamp(23px, 6.6vw, 30px); margin-top: 10px; }
+  .chap .lead { margin-top: 10px; font-size: 14.5px; line-height: 1.45; }
+  .chap .fine { margin-top: 10px; font-size: 12.5px; }
+  .eyebrow { font-size: 12px; padding: 5px 12px; }
+  .stores { margin-top: 16px; }
+  .store { height: 52px; }
+  .js .more { display: none; }
+  .js .device { flex: 1; min-height: 0; display: block; overflow: hidden;
+    -webkit-mask-image: linear-gradient(transparent, #000 14px, #000 calc(100% - 30px), transparent); mask-image: linear-gradient(transparent, #000 14px, #000 calc(100% - 30px), transparent); }
+  .js .phone { position: absolute; left: 50%; top: 0; transform-origin: 50% 0; transform: translate(-50%, var(--pan, 0px)) scale(var(--z, 1)); transition: transform .75s cubic-bezier(.2,.75,.2,1); }
+  .widget { left: auto; right: calc(-14px * var(--k)); bottom: auto; top: 44%; transform-origin: 100% 0; }
+  .js .rail { display: none; }
+  .js .prog { display: block; position: absolute; left: 0; right: 0; top: 56px; height: 3px; background: rgba(127,127,127,.22); z-index: 8; }
+  .prog i { display: block; height: 100%; background: #FFC107; transform-origin: 0 50%; transform: scaleX(var(--p, 0)); }
+  .stage[data-theme="sun"] .prog i { background: var(--ink); }
+  .ring.a { width: 560px; height: 560px; right: -300px; top: -220px; border-width: 44px; }
+  .ring.b { display: none; }
+}
+
+/* ───────── after the story ───────── */
+.sec { padding: clamp(64px, 9vw, 116px) clamp(20px, 5vw, 48px); }
+.sec .in { max-width: 1040px; margin: 0 auto; }
+.sec h2 { font-size: clamp(27px, 3.5vw, 44px); font-weight: 800; letter-spacing: -.02em; line-height: 1.12; text-wrap: balance; }
+.sec .sub { margin-top: 12px; font-size: clamp(16px, 1.3vw, 18px); color: #475569; max-width: 36em; }
+
+.also { background: #fff; }
+.also ul { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px 24px; }
+.also li .ico { width: 46px; height: 46px; border-radius: 23px; background: #EAF0F2; color: var(--teal2); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.also li h3 { margin-top: 14px; font-size: 17px; font-weight: 700; }
+.also li p { margin-top: 6px; font-size: 15px; color: #475569; }
+
+.free { background-color: #FCFCFA; background-image: var(--grid); background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px; }
+.free .in { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 48px; align-items: center; }
+.free .note { margin-top: 22px; font-size: 15px; color: #475569; max-width: 34em; }
+.free .note + .note { margin-top: 12px; }
+.tbl { background: #fff; border-radius: 22px; box-shadow: 0 20px 50px rgba(15,23,42,.1), 0 0 0 1px rgba(15,23,42,.05); overflow: hidden; }
+.tbl table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+.tbl th, .tbl td { padding: 17px 16px; text-align: center; white-space: nowrap; }
+.tbl th:first-child, .tbl td:first-child { text-align: left; padding-left: 24px; font-weight: 600; white-space: normal; }
+.tbl thead th { font-size: 12.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #64748B; padding-top: 20px; padding-bottom: 14px; }
+.tbl tbody tr { border-top: 1px solid #EDF1F5; }
+.tbl td { color: #475569; }
+.tbl td:first-child { color: var(--ink); }
+.tbl .paid { background: #FFF8E1; color: var(--ink); font-weight: 800; }
+.tbl thead .paid { color: #8A6100; }
+.tbl .io { font-size: 20px; vertical-align: -4px; }
+
+.cta { background: var(--bg-sun); position: relative; overflow: hidden; text-align: center; }
+.cta .in { position: relative; display: flex; flex-direction: column; align-items: center; }
+.cta h2 { font-size: clamp(32px, 5vw, 64px); }
+.cta h2 em { font-style: normal; color: #fff; text-shadow: 0 3px 0 rgba(140,80,0,.18); }
+.cta .sub { color: var(--ink); opacity: .82; }
+.cta .stores { justify-content: center; margin-top: 30px; }
+.qr { margin-top: 34px; display: flex; align-items: center; gap: 16px; background: #fff; border-radius: 20px; padding: 14px 20px 14px 14px; box-shadow: 0 16px 40px rgba(120,70,0,.2); text-align: left; font-size: 14px; font-weight: 600; max-width: 330px; }
+.qr svg { width: 96px; height: 96px; flex: none; fill: var(--ink); }
+[data-os] .qr { display: none; }
+
+footer { background: #2B414B; color: rgba(255,255,255,.78); padding: 44px clamp(20px, 5vw, 48px) 36px; font-size: 14.5px; }
+footer .in { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 24px 48px; align-items: flex-start; justify-content: space-between; }
+footer img { height: 28px; width: auto; display: block; }
+footer .about { max-width: 26em; }
+footer .about p { margin-top: 12px; }
+footer nav { display: flex; flex-direction: column; gap: 8px; }
+footer a { text-decoration: none; }
+footer a:hover { color: #fff; text-decoration: underline; }
+footer .io { font-size: 16px; vertical-align: -2px; margin-right: 6px; }
+footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); padding-top: 18px; font-size: 13px; opacity: .7; }
+
+@media (max-width: 899px) {
+  .also ul { grid-template-columns: repeat(2, 1fr); }
+  .free .in { grid-template-columns: 1fr; gap: 32px; }
+  .tbl th, .tbl td { padding: 14px 8px; font-size: 14px; }
+  .tbl td:first-child { min-width: 9.5em; }
+  .tbl th:first-child, .tbl td:first-child { padding-left: 16px; }
+  .tbl thead th { font-size: 11px; }
+}
+@media (max-width: 480px) { .also ul { grid-template-columns: 1fr; gap: 22px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01s !important; }
+}
+</style>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav id="navbar">
-        <div class="nav-container">
-            <div class="logo">Harcer.am</div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#home">Գլխավոր</a></li>
-                <li><a href="#features">Հնարավորություններ</a></li>
-                <li><a href="#how-it-works">Ինչպես Աշխատում է</a></li>
-                <li><a href="#testimonials">Ինչու Մենք</a></li>
-                <li><a href="#download" class="cta-button">Ներբեռնել Հիմա</a></li>
-                <li><a href="https://app.harcer.am" class="web-app-button" target="_blank" rel="noopener noreferrer">🌐 Մուտք</a></li>
-            </ul>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+<body data-theme="teal">
+
+<header class="topbar">
+  <a class="logo" href="#top" aria-label="Հարցեր.am"><img class="w" src="site/logo-white.svg" alt="Հարցեր.am"><img class="t" src="site/logo-teal.svg" alt=""></a>
+  <a class="get" href="#download">Ներբեռնել</a>
+</header>
+
+<main>
+<div class="story" id="story">
+  <div class="stage" data-theme="teal" data-ch="top">
+    <div class="bgs" aria-hidden="true"><i class="b-teal"></i><i class="b-sun"></i><i class="b-paper"></i><i class="b-violet"></i><div class="ring a"></div><div class="ring b"></div></div>
+    <div class="prog" aria-hidden="true"><i></i></div>
+    <div class="wrap">
+      <div class="caps">
+
+        <section class="chap on" data-id="top" data-theme="teal" data-nav="Սկիզբ">
+          <span class="eyebrow">5 առարկա · 16 շտեմարան · 23&nbsp;000+ հարց</span>
+          <h1>Պատրաստվի՛ր <em>միասնական</em> քննություններին</h1>
+          <p class="lead">Շտեմարանների հարցերը՝ հեռախոսումդ։ Լուծի՛ր, հասկացի՛ր՝ ինչու, և կրկնի՛ր այն, ինչում սխալվել ես։</p>
+          <div class="stores">
+            <a class="store ios" href="https://apps.apple.com/am/app/harcer-am/id6751446057"><i class="io" data-ic="logo-apple"></i><span><small>Ներբեռնի՛ր</small>App Store-ից</span></a>
+            <a class="store android" href="https://play.google.com/store/apps/details?id=am.harcer.app"><i class="io" data-ic="logo-google-playstore"></i><span><small>Ներբեռնի՛ր</small>Google Play-ից</span></a>
+          </div>
+          <p class="fine">Ամեն բաժնի առաջին 2 հարցը՝ անվճար · առանց գովազդի</p>
+        </section>
+
+        <section class="chap" data-id="books" data-theme="sun" data-nav="Շտեմարաններ">
+          <span class="eyebrow">Անգլերեն · 3 շտեմարան · 2&nbsp;800 հարց</span>
+          <h2>Շտեմարանների հարցերը՝ <em>մեկ տեղում</em></h2>
+          <p class="lead">Ընտրի՛ր առարկան. նրա բոլոր շտեմարանները դարակում են՝ բաժին առ բաժին, ինչպես գրքում։</p>
+        </section>
+
+        <section class="chap" data-id="questions" data-theme="paper" data-nav="Հարցեր">
+          <span class="eyebrow">Հարցեր</span>
+          <h2>Ընտրի՛ր պատասխանը, <em>ստուգի՛ր</em></h2>
+          <p class="lead">Պատասխանի՛ր, և տեղում կտեսնես՝ ճիշտ էր, թե ոչ։</p>
+        </section>
+
+        <section class="chap" data-id="explain" data-theme="paper" data-nav="Բացատրություն">
+          <span class="eyebrow">Մաթեմատիկա · բացատրություն</span>
+          <h2>Ամեն խնդիր՝ <em>քայլ առ քայլ</em></h2>
+          <p class="lead">Ոչ միայն պատասխանը, այլև՝ ինչու. <span class="keep">5&nbsp;000-ից</span> ավելի խնդիր՝ քայլերով ու գրաֆիկներով։</p>
+        </section>
+
+        <section class="chap" data-id="ai" data-theme="teal" data-nav="AI ուսուցիչ">
+          <span class="eyebrow">AI ուսուցիչ</span>
+          <h2>Չհասկացա՞ր։ <em>Հարցրո՛ւ</em></h2>
+          <p class="lead">Գրի՛ր հարցդ հայերեն. AI ուսուցիչը տեսնում է խնդիրը և քո պատասխանը ու բացատրում՝ որտեղ է սխալը։</p>
+        </section>
+
+        <section class="chap" data-id="words" data-theme="paper" data-nav="Բառեր">
+          <span class="eyebrow">Անգլերեն · բառեր</span>
+          <h2>Անծանոթ բա՞ռ։ <em>Սեղմի՛ր վրան</em></h2>
+          <p class="lead">Թարգմանությունը բացվում է հենց տեքստի վրա, իսկ <span class="keep">«Պահել»-ը</span> բառը տանում է քո բառարան։</p>
+        </section>
+
+        <section class="chap" data-id="games" data-theme="violet" data-nav="Խաղեր">
+          <span class="eyebrow">Բառապաշար · խաղեր</span>
+          <h2>Պահած բառերը՝ <em>խաղի ձևով</em></h2>
+          <p class="lead">Երեք խաղ, որոնցում հանդիպում են հենց քո պահած բառերը։</p>
+        </section>
+
+        <section class="chap" data-id="mistakes" data-theme="paper" data-nav="Սխալներ">
+          <span class="eyebrow">Բոլոր սխալները</span>
+          <h2>Կրկնի՛ր այն, ինչում <em>սխալվել ես</em></h2>
+          <p class="lead">Ամեն սխալ պատասխան ինքն է հավաքվում մեկ ցուցակում, իսկ կարևոր հարցը կարող ես պահել մեկ հպումով։</p>
+        </section>
+
+        <section class="chap" data-id="exam" data-theme="teal" data-nav="Քննություն">
+          <span class="eyebrow">Փորձնական քննություն</span>
+          <h2>Իրական քննության պես՝ <em>ժամաչափով</em></h2>
+          <p class="lead">Ստանդարտ քննությունը կրկնում է իրականի կառուցվածքը, կամ կազմի՛ր քոնը՝ քո ընտրած գրքերից ու բաժիններից։</p>
+        </section>
+
+        <section class="chap" data-id="progress" data-theme="sun" data-nav="Առաջընթաց">
+          <span class="eyebrow">Առաջընթաց</span>
+          <h2>Ամեն օր՝ <em>մի քայլ առաջ</em></h2>
+          <p class="lead">Օրվա նպատակը, անընդմեջ օրերը և քննությանը մնացած օրերը՝ մեկ էկրանին, իսկ <span class="keep">Android-ում</span>՝ նաև վիջեթով։</p>
+        </section>
+
+      </div>
+      <div class="device" aria-hidden="true">
+        <div class="phone">
+          <i class="side" style="left:-3px;top:23%;height:4%"></i><i class="side" style="left:-3px;top:30%;height:7%"></i><i class="side" style="left:-3px;top:39%;height:7%"></i><i class="side" style="right:-3px;top:32%;height:11%"></i>
+          <div class="glass"><div class="tap"></div></div>
+          <div class="widget"></div>
         </div>
+      </div>
+    </div>
+    <div class="more" aria-hidden="true"><i class="io" data-ic="arrow-down"></i></div>
+    <nav class="rail" aria-label="Բաժիններ"></nav>
+  </div>
+</div>
+
+<section class="sec also">
+  <div class="in">
+    <h2>Եվ մի քանի հարմարություն</h2>
+    <ul>
+      <li><div class="ico"><i class="io" data-ic="text-outline"></i></div><h3>Տառաչափ և մուգ ռեժիմ</h3><p>Մեծացրո՛ւ տառերը կամ անցի՛ր մուգ ռեժիմի, երբ երկար ես պարապում։</p></li>
+      <li><div class="ico"><i class="io" data-ic="brush-outline"></i></div><h3>Գծի՛ր հարցի վրա</h3><p>Վրձինով նշի՛ր կարևորը կամ հաշվի՛ր հենց էկրանին։</p></li>
+      <li><div class="ico"><i class="io" data-ic="shield-checkmark-outline"></i></div><h3>Առանց գովազդի</h3><p>Ոչ մի գովազդ՝ ո՛չ անվճար, ո՛չ փաթեթով։</p></li>
+      <li><div class="ico"><i class="io" data-ic="phone-portrait-outline"></i></div><h3>iPhone և Android</h3><p>Հավելվածը կա <span class="keep">App Store-ում</span> և <span class="keep">Google Play-ում</span>։</p></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec free">
+  <div class="in">
+    <div>
+      <h2>Ի՞նչն է անվճար</h2>
+      <p class="sub">Սկսելու համար վճարել պետք չէ։ Փաթեթը բացում է մնացածը։</p>
+      <p class="note">Փաթեթ կարող ես վերցնել 1, 2 կամ 3 առարկայի համար՝ 1 կամ 3 ամսով, կամ բոլոր 5 առարկաների համար՝ մեկ տարով։ Գները՝ հավելվածում։</p>
+      <p class="note">Հարցեր.am-ը հավելյալ նյութ է՝ դպրոցի և կրկնուսույցի պարապմունքներին զուգահեռ ավելի շատ վարժվելու համար։</p>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th></th><th>Անվճար</th><th class="paid">Փաթեթով</th></tr></thead>
+        <tbody>
+          <tr><td>Հարցեր՝ ամեն բաժնից</td><td>առաջին 2-ը</td><td class="paid">բոլորը</td></tr>
+          <tr><td>AI ուսուցիչ</td><td>3 հարց/օր</td><td class="paid">15 հարց/օր</td></tr>
+          <tr><td>Փորձնական քննություն</td><td><i class="io" data-ic="remove" aria-label="չկա"></i></td><td class="paid"><i class="io" data-ic="infinite" aria-label="անսահմանափակ"></i></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="sec cta" id="download">
+  <div class="ring a" style="color:var(--ink)"></div>
+  <div class="in">
+    <h2>Սկսի՛ր <em>այսօր</em></h2>
+    <p class="sub">Ներբեռնի՛ր հավելվածը և փորձի՛ր ամեն բաժնի առաջին 2 հարցը՝ անվճար։</p>
+    <div class="stores">
+      <a class="store ios" href="https://apps.apple.com/am/app/harcer-am/id6751446057"><i class="io" data-ic="logo-apple"></i><span><small>Ներբեռնի՛ր</small>App Store-ից</span></a>
+      <a class="store android" href="https://play.google.com/store/apps/details?id=am.harcer.app"><i class="io" data-ic="logo-google-playstore"></i><span><small>Ներբեռնի՛ր</small>Google Play-ից</span></a>
+    </div>
+    <div class="qr"><svg viewBox="0 0 33 33" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h2v1h-2zM15 0h1v1h-1zM19 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h1v1h-1zM15 1h1v1h-1zM17 1h1v1h-1zM21 1h1v1h-1zM23 1h2v1h-2zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h1v1h-1zM11 2h2v1h-2zM14 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM11 3h3v1h-3zM15 3h1v1h-1zM17 3h1v1h-1zM19 3h1v1h-1zM22 3h2v1h-2zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM11 4h3v1h-3zM16 4h2v1h-2zM19 4h1v1h-1zM23 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM11 5h2v1h-2zM14 5h1v1h-1zM17 5h2v1h-2zM20 5h1v1h-1zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM10 7h2v1h-2zM17 7h8v1h-8zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h1v1h-1zM10 8h1v1h-1zM13 8h3v1h-3zM19 8h7v1h-7zM27 8h1v1h-1zM0 9h3v1h-3zM4 9h2v1h-2zM8 9h1v1h-1zM11 9h1v1h-1zM16 9h1v1h-1zM18 9h1v1h-1zM20 9h1v1h-1zM24 9h4v1h-4zM32 9h1v1h-1zM2 10h1v1h-1zM4 10h3v1h-3zM8 10h1v1h-1zM12 10h1v1h-1zM16 10h2v1h-2zM19 10h1v1h-1zM26 10h3v1h-3zM30 10h1v1h-1zM32 10h1v1h-1zM0 11h1v1h-1zM2 11h1v1h-1zM4 11h2v1h-2zM9 11h4v1h-4zM14 11h1v1h-1zM16 11h2v1h-2zM19 11h1v1h-1zM21 11h3v1h-3zM26 11h1v1h-1zM28 11h2v1h-2zM32 11h1v1h-1zM1 12h2v1h-2zM4 12h1v1h-1zM6 12h1v1h-1zM10 12h3v1h-3zM15 12h1v1h-1zM20 12h2v1h-2zM24 12h4v1h-4zM29 12h1v1h-1zM31 12h1v1h-1zM0 13h1v1h-1zM2 13h3v1h-3zM10 13h1v1h-1zM12 13h1v1h-1zM15 13h3v1h-3zM24 13h3v1h-3zM28 13h2v1h-2zM31 13h2v1h-2zM1 14h1v1h-1zM3 14h1v1h-1zM6 14h3v1h-3zM10 14h1v1h-1zM12 14h1v1h-1zM14 14h1v1h-1zM17 14h1v1h-1zM21 14h1v1h-1zM23 14h1v1h-1zM25 14h2v1h-2zM31 14h1v1h-1zM3 15h2v1h-2zM8 15h1v1h-1zM12 15h4v1h-4zM17 15h2v1h-2zM21 15h1v1h-1zM23 15h2v1h-2zM26 15h1v1h-1zM31 15h1v1h-1zM1 16h1v1h-1zM5 16h5v1h-5zM11 16h1v1h-1zM13 16h2v1h-2zM17 16h1v1h-1zM19 16h6v1h-6zM26 16h1v1h-1zM28 16h1v1h-1zM31 16h1v1h-1zM0 17h2v1h-2zM3 17h1v1h-1zM9 17h1v1h-1zM11 17h1v1h-1zM14 17h1v1h-1zM16 17h1v1h-1zM18 17h1v1h-1zM21 17h1v1h-1zM23 17h3v1h-3zM27 17h1v1h-1zM29 17h1v1h-1zM3 18h8v1h-8zM12 18h3v1h-3zM18 18h1v1h-1zM24 18h3v1h-3zM30 18h1v1h-1zM32 18h1v1h-1zM0 19h1v1h-1zM3 19h1v1h-1zM5 19h1v1h-1zM7 19h1v1h-1zM9 19h1v1h-1zM11 19h1v1h-1zM16 19h6v1h-6zM27 19h1v1h-1zM31 19h1v1h-1zM1 20h2v1h-2zM4 20h1v1h-1zM6 20h2v1h-2zM10 20h5v1h-5zM16 20h3v1h-3zM20 20h2v1h-2zM23 20h3v1h-3zM31 20h1v1h-1zM3 21h3v1h-3zM7 21h1v1h-1zM9 21h1v1h-1zM12 21h1v1h-1zM15 21h4v1h-4zM20 21h2v1h-2zM24 21h4v1h-4zM29 21h4v1h-4zM0 22h2v1h-2zM4 22h1v1h-1zM6 22h1v1h-1zM8 22h2v1h-2zM12 22h4v1h-4zM19 22h1v1h-1zM25 22h1v1h-1zM27 22h1v1h-1zM29 22h2v1h-2zM32 22h1v1h-1zM1 23h1v1h-1zM3 23h1v1h-1zM7 23h2v1h-2zM10 23h4v1h-4zM16 23h1v1h-1zM19 23h8v1h-8zM29 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h2v1h-2zM12 24h1v1h-1zM15 24h1v1h-1zM17 24h1v1h-1zM20 24h2v1h-2zM23 24h7v1h-7zM32 24h1v1h-1zM8 25h1v1h-1zM12 25h1v1h-1zM19 25h2v1h-2zM22 25h1v1h-1zM24 25h1v1h-1zM28 25h2v1h-2zM32 25h1v1h-1zM0 26h7v1h-7zM14 26h1v1h-1zM20 26h1v1h-1zM24 26h1v1h-1zM26 26h1v1h-1zM28 26h4v1h-4zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h1v1h-1zM13 27h2v1h-2zM16 27h1v1h-1zM20 27h3v1h-3zM24 27h1v1h-1zM28 27h1v1h-1zM32 27h1v1h-1zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM9 28h1v1h-1zM11 28h3v1h-3zM15 28h2v1h-2zM21 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h2v1h-2zM15 29h1v1h-1zM17 29h1v1h-1zM22 29h2v1h-2zM26 29h1v1h-1zM28 29h2v1h-2zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM9 30h2v1h-2zM12 30h1v1h-1zM24 30h1v1h-1zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM0 31h1v1h-1zM6 31h1v1h-1zM10 31h1v1h-1zM12 31h1v1h-1zM15 31h4v1h-4zM20 31h2v1h-2zM25 31h2v1h-2zM0 32h7v1h-7zM8 32h1v1h-1zM11 32h1v1h-1zM13 32h2v1h-2zM17 32h1v1h-1zM19 32h1v1h-1zM21 32h2v1h-2zM24 32h2v1h-2zM28 32h2v1h-2zM31 32h1v1h-1z"/></svg><span>Համակարգչո՞վ ես։ Սկանավորի՛ր հեռախոսի տեսախցիկով, և կբացվի քո խանութը։</span></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="in">
+    <div class="about">
+      <img src="site/logo-white.svg" alt="Հարցեր.am">
+      <p>Միասնական քննությունների շտեմարանները՝ հեռախոսում։</p>
+    </div>
+    <nav aria-label="Կապ">
+      <a href="mailto:support@harcer.am"><i class="io" data-ic="mail-outline"></i>support@harcer.am</a>
+      <a href="https://www.youtube.com/@harceram"><i class="io" data-ic="logo-youtube"></i>YouTube</a>
     </nav>
+    <nav aria-label="Փաստաթղթեր">
+      <a href="privacy-policy.html">Գաղտնիության քաղաքականություն</a>
+      <a href="terms-of-service.html">Ծառայության պայմաններ</a>
+      <a href="data-deletion.html">Տվյալների ջնջում</a>
+    </nav>
+    <div class="copy">© 2026 Հարցեր.am</div>
+  </div>
+</footer>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1>Անցեք Միասնական Քննությունները Վստահությամբ</h1>
-                <p>Նախապատրաստվեք Միասնական քննություններին մեր հավելվածով։ Անցեք ցանկացած շեմարանով։ Հազարավոր հարցեր, թեստեր և առաջընթացի հետևում։</p>
-                <div class="hero-buttons">
-                    <a href="#download" class="btn-primary">
-                        📱 Սկսել Անվճար
-                    </a>
-                    <a href="#how-it-works" class="btn-secondary">
-                        Իմանալ Ավելին →
-                    </a>
-                    <a href="https://app.harcer.am" class="btn-primary btn-full-width" target="_blank" rel="noopener noreferrer">
-                        🌐 Բացել Վեբ Հավելվածը
-                    </a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="phone-mockup">
-                    <!-- Replace 'assets/images/app-screenshot.png' with your actual app screenshot -->
-                    <img src="assets/images/app-screenshot.png" 
-                         alt="harcer.am App Screenshot" 
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="screenshot-placeholder" style="display:none;">
-                        📱<br>Add your app screenshot here<br>
-                        <small style="font-size:0.9rem; opacity:0.8;">assets/images/app-screenshot.png</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<script src="site/kit.js"></script>
+<script>
+(function () {
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const html = document.documentElement, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    <!-- Stats Section -->
-    <section class="stats">
-        <div class="stats-container">
-            <div class="stat-item">
-                <h3>💯</h3>
-                <p>Անվճար Հարցեր</p>
-            </div>
-            <div class="stat-item">
-                <h3>📚</h3>
-                <p>Բոլոր Առարկաները</p>
-            </div>
-            <div class="stat-item">
-                <h3>📱</h3>
-                <p>iOS, Android & Web</p>
-            </div>
-            <div class="stat-item">
-                <h3>🎯</h3>
-                <p>Միասնական Քննություններ</p>
-            </div>
-        </div>
-    </section>
+  // ───── store links ─────
+  // A phone gets its own store only. Campaign tags on this page's address travel to Google Play
+  // as the install referrer, the same way harcer.am/get passes them.
+  const ua = navigator.userAgent || '';
+  const os = /Android/i.test(ua) ? 'android' : /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) ? 'ios' : '';
+  const query = location.search.slice(1);
+  if (/(^|&)utm_/.test(query)) $$('a.store.android').forEach(a => (a.href += '&referrer=' + encodeURIComponent(query)));
+  if (os) { html.dataset.os = os; $('.topbar .get').href = $('a.store.' + os).href; }
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="section-header">
-            <h2>Ամեն Ինչ Հաջողության Համար</h2>
-            <p>Բարձրորակ գործիքներ և հնարավորություններ՝ Միասնական քննություններին արդյունավետ նախապատրաստվելու համար</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🎓</div>
-                <h3>Միասնական Քննություններ</h3>
-                <p>Նախապատրաստվեք Միասնական քննություններին իրական պայմաններում։ Անցեք ցանկացած շեմարանով։</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📝</div>
-                <h3>Մոկ Թեստեր</h3>
-                <p>Ամբողջական թեստեր, որոնք իրական քննությունների պայմաններում են՝ ճշգրիտ ժամանակացույցով և գնահատմամբ։</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>Առաջընթացի Հետևում</h3>
-                <p>Մանրակրկիտ վերլուծություն և ձեր ուժեղ ու թույլ կողմերի մասին հստակ պատկերացում։</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📚</div>
-                <h3>Հազարավոր Հարցեր</h3>
-                <p>Բազմալուծ, բաց, բազմընտրանքային և համապատասխանեցման հարցեր։</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h3>Բոլոր Հարթակներում</h3>
-                <p>Հասանելի է iOS, Android և Web-ի վրա։ Սովորեք ցանկացած սարքով, ցանկացած վայրում և ցանկացած ժամանակ՝ ավտոմատ սինքրոնացումով։</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Խելացի Ուսուցում</h3>
-                <p>Ադապտիվ ալգորիթմներ, որոնք կենտրոնանում են ձեր թույլ կողմերի վրա։</p>
-            </div>
-        </div>
-    </section>
+  if (!window.HK) { html.classList.remove('js'); return; }   // the kit did not load: stay a plain page
 
-    <!-- How It Works Section -->
-    <section class="how-it-works" id="how-it-works">
-        <div class="section-header">
-            <h2>Ինչպես է Աշխատում</h2>
-            <p>Սկսեք րոպեների ընթացքում և սկսեք ձեր ուղին դեպի հաջողություն</p>
-        </div>
-        <div class="steps-container">
-            <div class="step">
-                <div class="step-content">
-                    <div class="step-number">1</div>
-                    <h3>Ներբեռնեք և Գրանցվեք</h3>
-                    <p>Ներբեռնեք հավելվածը App Store-ից կամ Google Play-ից, ստեղծեք ձեր անվճար հաշիվը և ընտրեք Միասնական քննությունների բաժինը։</p>
-                </div>
-                <div class="step-image">
-                    <div class="step-image-placeholder">📲</div>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-content">
-                    <div class="step-number">2</div>
-                    <h3>Սկսեք Պարապել</h3>
-                    <p>Մուտք գործեք հազարավոր հարցերի և թեմաների: Պարապեք ձեր տեմպերով կամ անցեք ժամանակացույցով թեստեր՝ իրական քննությունների պայմաններում։</p>
-                </div>
-                <div class="step-image">
-                    <div class="step-image-placeholder">✍️</div>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-content">
-                    <div class="step-number">3</div>
-                    <h3>Հետևեք Առաջընթացին</h3>
-                    <p>Դիտեք մանրակրկիտ վերլուծություն, հայտնաբերեք թույլ կողմերը և դիտեք, թե ինչպես են ձեր արդյունքները բարելավվում ժամանակի ընթացքում։</p>
-                </div>
-                <div class="step-image">
-                    <div class="step-image-placeholder">📈</div>
-                </div>
-            </div>
-        </div>
-    </section>
+  const story = $('#story'), stage = $('.stage'), caps = $('.caps'), device = $('.device'), phone = $('.phone'), glass = $('.glass'), tapEl = $('.tap'), rail = $('.rail');
+  const chapters = $$('.chap', caps);
 
-    <!-- Why Choose Us Section -->
-    <section class="testimonials" id="testimonials">
-        <div class="section-header">
-            <h2 style="color: white;">Ինչու՞ Ընտրել Մեզ</h2>
-            <p style="color: rgba(255,255,255,0.8);">Նոր և ժամանակակից հավելված Միասնական քննություններին նախապատրաստվելու համար</p>
-        </div>
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <div class="testimonial-header">
-                    <div class="testimonial-avatar">🎓</div>
-                    <div class="testimonial-info">
-                        <h4>Ժամանակակից Մոտեցում</h4>
-                    </div>
-                </div>
-                <p class="testimonial-text">Նոր տեխնոլոգիաներ և ժամանակակից դիզայն։ Հավելվածը մշակված է հատուկ Միասնական քննություններին նախապատրաստվելու համար։</p>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-header">
-                    <div class="testimonial-avatar">📱</div>
-                    <div class="testimonial-info">
-                        <h4>Անվճար Մուտք</h4>
-                    </div>
-                </div>
-                <p class="testimonial-text">Հազարավոր հարցեր և թեստեր անվճար։ Սովորեք ցանկացած վայրում և ցանկացած ժամանակ՝ օֆլայն ռեժիմում։</p>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-header">
-                    <div class="testimonial-avatar">🎯</div>
-                    <div class="testimonial-info">
-                        <h4>Բարձրորակ Բովանդակություն</h4>
-                    </div>
-                </div>
-                <p class="testimonial-text">Մանրակրկիտ ընտրված հարցեր և պատասխաններ։ Առաջընթացի հետևում և մանրամասն վերլուծություն։</p>
-            </div>
-        </div>
-    </section>
+  // What the phone plays in each chapter: a short loop of real screens.
+  //   s     the screen                     t    how long it stays, ms
+  //   tap   where the finger lands first   fx   how the screen arrives (rise, pop, msg)
+  //   fy,z  narrow screens: the height of the screen to bring into view (points), and a zoom
+  //   slide the explanation's tangent moves along the curve
+  //   label the line above the headline while this screen shows
+  //   still the one screen shown to readers who asked for no motion
+  // The first screen's tap and entrance play only when the reader scrolls in from the chapter before.
+  const send = '.ts > div:last-child > div:last-child', nb = ' ';
+  const PLAY = {
+    top: [{ s: 'home-en', fy: 200 }],
+    books: [
+      { s: 'home-en', t: 1600, fy: 235, label: `Անգլերեն · 3 շտեմարան · 2${nb}800 հարց`, still: 1 },
+      { s: 'home-hy', t: 1600, fy: 235, label: `Հայոց լեզու · 4 շտեմարան · 5${nb}900 հարց` },
+      { s: 'home-math', t: 1600, fy: 235, label: `Մաթեմատիկա · 2 շտեմարան · 4${nb}100 հարց` },
+      { s: 'home-bio', t: 1600, fy: 235, label: `Կենսաբանություն · 4 շտեմարան · 5${nb}700 հարց` },
+      { s: 'home-hist', t: 1600, fy: 235, label: `Հայոց պատմություն · 3 շտեմարան · 4${nb}800 հարց` },
+    ],
+    questions: [{ s: 'q-idle', t: 1400, fy: 560 }, { s: 'q-picked', t: 1200, fy: 560, tap: '.ch@1' }, { s: 'q-no', t: 3200, fy: 560, tap: '.prim', still: 1 }],
+    explain: [{ s: 'ex-1', t: 3600, fy: 420, tap: '.xpill', fx: 'rise', slide: 1 }, { s: 'ex-2', t: 3600, fy: 420, slide: 2, still: 1 }, { s: 'ex-3', t: 2400, fy: 420 }, { s: 'ex-4', t: 3400, fy: 420 }],
+    ai: [{ s: 'ai-0', t: 2400, fy: 560, z: .8, fx: 'rise' }, { s: 'ai-1', t: 1500, fy: 560, z: .8, tap: send, fx: 'msg2' },
+      { s: 'ai-2', t: 2400, fy: 560, z: .8, fx: 'msg' }, { s: 'ai-3', t: 3800, fy: 560, z: .8, fx: 'msg', still: 1 }],
+    words: [{ s: 'tr-0', t: 1400, fy: 300 }, { s: 'tr-1', t: 2000, fy: 300, tap: '#hw', fx: 'pop', still: 1 }, { s: 'tr-2', t: 3000, fy: 300, tap: '.pop > div:last-child > div' }],
+    games: [{ s: 'words', t: 1600, fy: 300 }, { s: 'game-0', t: 1600, fy: 460, tap: '.gtile' }, { s: 'game-1', t: 3000, fy: 460, tap: '.gbtn@1', still: 1 }],
+    mistakes: [{ s: 'mistakes', t: 3200, fy: 280, still: 1 }, { s: 'saved', t: 2600, fy: 280, tap: '.pin' }],
+    exam: [{ s: 'exam-info', t: 2200, fy: 260 }, { s: 'exam-run', t: 3600, fy: 260, tap: '66,225', still: 1 }],
+    progress: [{ s: 'progress', fy: 330 }],
+  };
+  const id = ch => ch.dataset.id;
+  const SPAN = .8;   // one chapter = this share of the screen height, in scroll (the first one less)
+  const cum = [0]; chapters.forEach((c, i) => cum.push(cum[i] + (i ? 1 : .6)));
+  chapters.forEach((ch, ci) => {
+    const a = document.createElement('a'); a.href = '#' + id(ch); a.dataset.l = ch.dataset.nav; a.setAttribute('aria-label', ch.dataset.nav);
+    a.addEventListener('click', e => { e.preventDefault(); jump(ci); });
+    rail.appendChild(a);
+  });
 
-    <!-- CTA Section -->
-    <section class="cta-section" id="download">
-        <div class="cta-content">
-            <h2>Պատրա՞ստ եք Անցնելու Միասնական Քննությունները</h2>
-            <p>Ներբեռնեք Harcer.am այսօր և սկսեք ձեր ճանապարհը դեպի հաջողություն ցանկացած շեմարանով։ Անվճար և առանց գովազդի։ Հասանելի է iOS, Android և Web-ի վրա։</p>
-            <div class="download-buttons">
-               <a href="https://apps.apple.com/am/app/harcer-am/id6751446057" class="download-btn" target="_blank" rel="noopener noreferrer">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09997 22C7.78997 22.05 6.79997 20.68 5.95997 19.47C4.24997 17 2.93997 12.45 4.69997 9.39C5.56997 7.87 7.12997 6.91 8.81997 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z" fill="currentColor"/>
-                    </svg>
-                    <div>
-                        <small style="display: block; font-size: 0.7rem; font-weight: 400;">Ներբեռնել</small>
-                        App Store
-                    </div>
-                </a>
-              <a href="https://play.google.com/store/apps/details?id=am.harcer.app" class="download-btn" target="_blank" rel="noopener noreferrer">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.802 8.99l-2.303 2.303-8.635-8.635z" fill="currentColor"/>
-                    </svg>
-                    <div>
-                        <small style="display: block; font-size: 0.7rem; font-weight: 400;">Ներբեռնել</small>
-                        Google Play
-                    </div>
-                </a>
-                <a href="https://app.harcer.am" class="download-btn" target="_blank" rel="noopener noreferrer">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 19.93C7.05 19.44 4 16.08 4 12C4 11.38 4.08 10.79 4.21 10.21L9 15V16C9 17.1 9.9 18 11 18V19.93ZM17.9 17.39C17.64 16.58 16.9 16 16 16H15V13C15 12.45 14.55 12 14 12H8V10H10C10.55 10 11 9.55 11 9V7H13C14.1 7 15 6.1 15 5V4.59C17.93 5.78 20 8.65 20 12C20 14.08 19.2 15.97 17.9 17.39Z" fill="currentColor"/>
-                    </svg>
-                    <div>
-                        <small style="display: block; font-size: 0.7rem; font-weight: 400;">Բացել</small>
-                        Web Հավելվածը
-                    </div>
-                </a>
-            </div>
-        </div>
-    </section>
+  // ───── screens ─────
+  const layers = {};
+  let k = 1, bezel = 10, unit = 1, total = 1, mobile = false, lastW = 0;
+  let cur = -1, state = null, shown = null, swapTimer = 0, nextTimer = 0, typer = 0, raf = 0, t0 = 0;
+  // Screens are built when a chapter needs them: the first one at once, so the phone is not empty for
+  // long on a slow phone; the next chapter's while the reader is on this one; the rest in idle moments.
+  // The two mock-exam pictures are only fetched a chapter ahead of where they show.
+  let make = null;
+  function prepare() {
+    const S = HK.screens, T = HK.TUTOR, img = n => `<img class="scr" src="site/${n}.webp" alt="" style="width:402px;height:874px;display:block">`;
+    make = {
+      'home-en': () => S.home({ subject: 'en' }), 'home-hy': () => S.home({ subject: 'hy' }), 'home-math': () => S.home({ subject: 'math' }),
+      'home-bio': () => S.home({ subject: 'bio' }), 'home-hist': () => S.home({ subject: 'hist' }),
+      'q-idle': () => S.mathQ({ state: 'idle' }), 'q-picked': () => S.mathQ({ state: 'picked', pick: 1 }), 'q-no': () => S.mathQ({ state: 'no', pick: 1 }),
+      'ex-1': () => S.explain({ step: 1 }), 'ex-2': () => S.explain({ step: 2 }), 'ex-3': () => S.explain({ step: 3 }), 'ex-4': () => S.explain({ step: 4 }),
+      'ai-0': () => S.tutor({ msgs: T.slice(0, 1), input: T[1].t }), 'ai-1': () => S.tutor({ msgs: T.slice(0, 2), typing: true }),
+      'ai-2': () => S.tutor({ msgs: T.slice(0, 3) }), 'ai-3': () => S.tutor({ msgs: T }),
+      'tr-0': () => S.translate({ pop: false }), 'tr-1': () => S.translate(), 'tr-2': () => S.translate({ saved: true }),
+      'words': () => S.words(), 'game-0': () => S.wordGame({ kind: 'pick' }), 'game-1': () => S.wordGame({ kind: 'pick', state: 'ok' }),
+      'mistakes': () => S.mistakes(), 'saved': () => S.mathQ({ state: 'ok', saved: true }),
+      'exam-info': () => img('examinfo'), 'exam-run': () => img('mock'), 'progress': () => S.progress(),
+    };
+    $('.widget').innerHTML = HK.widget({ days: 115, streak: 12, today: '7/10' });
+    $$('[data-ic]').forEach(i => (i.textContent = HK.ic(i.dataset.ic).replace(/<[^>]+>/g, '')));
+  }
+  function screen(id) {
+    if (layers[id] || !make[id]) return;
+    const el = document.createElement('div'); el.className = 'ly'; el.innerHTML = make[id]();
+    glass.appendChild(el); HK.fix(el); layers[id] = el;
+  }
+  const ensure = ci => chapters[ci] && PLAY[id(chapters[ci])].forEach(st => screen(st.s));
+  const idle = window.requestIdleCallback ? f => requestIdleCallback(f, { timeout: 1500 }) : f => setTimeout(f, 80);
+  function buildRest() {   // one screen per idle moment, in story order, pictures left out
+    const id = Object.values(PLAY).flat().map(st => st.s).find(id => !layers[id] && !/^exam-/.test(id));
+    if (id) { screen(id); idle(buildRest); }
+  }
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-section">
-                <h3>Harcer.am</h3>
-                <p style="color: var(--text-light); line-height: 1.8;">Ձեր վստահելի գործընկերը Միասնական քննություններին նախապատրաստվելու համար։ Անցեք ցանկացած շեմարանով մեր բարձրորակ գործիքներով։</p>
-            </div>
-            <div class="footer-section">
-                <h3>Արագ Հղումներ</h3>
-                <ul>
-                    <li><a href="#home">Գլխավոր</a></li>
-                    <li><a href="#features">Հնարավորություններ</a></li>
-                    <li><a href="#how-it-works">Ինչպես Աշխատում է</a></li>
-                    <li><a href="#testimonials">Ինչու Մենք</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Աջակցություն</h3>
-                <ul>
-                    <li><a href="#">Օգնության Կենտրոն</a></li>
-                    <li><a href="#">Կապ Մեզ Հետ</a></li>
-                    <li><a href="privacy-policy.html">Գաղտնիության Քաղաքականություն</a></li>
-                    <li><a href="terms-of-service.html">Ծառայության Պայմաններ</a></li>
-                    <li><a href="data-deletion.html">Տվյալների Ջնջում</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Կապ</h3>
-                <ul>
-                    <li><a href="#">Facebook</a></li>
-                    <li><a href="#">Instagram</a></li>
-                    <li><a href="#">Twitter</a></li>
-                    <li><a href="#">LinkedIn</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Harcer.am Բոլոր իրավունքները պաշտպանված են։</p>
-        </div>
-    </footer>
+  // ───── sizes ─────
+  function layout() {
+    mobile = matchMedia('(max-width: 899px)').matches;
+    const sh = stage.offsetHeight, sw = stage.offsetWidth;
+    bezel = mobile ? 8 : 11;
+    k = mobile ? Math.min(.86, (sw - 52 - 2 * bezel) / 402)
+      : Math.max(.5, Math.min(.96, (sh - 128 - 2 * bezel) / 874, (device.clientWidth - 110 - 2 * bezel) / 402));
+    stage.style.setProperty('--k', k.toFixed(4)); stage.style.setProperty('--b', bezel + 'px');
+    unit = sh * SPAN; total = cum[chapters.length] * unit;
+    story.style.height = Math.round(sh + total) + 'px';
+    lastW = innerWidth;
+    fit();
+  }
+  // narrow screens: the words take the room they need, the phone window gets the rest and
+  // the phone moves so that the part being talked about is in it
+  function fit() {
+    const st = state || PLAY.top[0], z = st.z || 1;
+    if (!mobile) { caps.style.height = ''; phone.style.setProperty('--pan', '0px'); phone.style.setProperty('--z', 1); return; }
+    caps.style.height = chapters[Math.max(cur, 0)].offsetHeight + 'px';
+    const hw = device.clientHeight, hp = (874 * k + 2 * bezel) * z;
+    const pan = hp + 40 <= hw ? (hw - hp) / 2 : Math.min(18, Math.max(hw - hp - 22, hw / 2 - (bezel + st.fy * k) * z));
+    phone.style.setProperty('--pan', pan.toFixed(1) + 'px'); phone.style.setProperty('--z', z);
+  }
 
-    <script>
-        // Mobile menu toggle
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
+  // ───── the loop inside a chapter ─────
+  function target(st) {   // where the finger lands, in glass pixels
+    if (/^\d/.test(st.tap)) { const [x, y] = st.tap.split(',').map(Number); return [x * k, y * k]; }
+    const [sel, n] = st.tap.split('@'), el = $$(sel, layers[st.s])[+n || 0] || (shown && $$(sel, shown)[+n || 0]);
+    if (!el) return null;
+    // measured on screen, so undo the phone's zoom (narrow screens) to get the glass's own pixels
+    const r = el.getBoundingClientRect(), g = glass.getBoundingClientRect(), f = g.width / glass.offsetWidth || 1;
+    return [(r.left + r.width / 2 - g.left) / f, (r.top + r.height / 2 - g.top) / f];
+  }
+  function swap(st, lively) {
+    const el = layers[st.s];
+    if (!el || el === shown) return;
+    if (shown) { const old = shown; old.className = 'ly was'; setTimeout(() => old !== shown && old.classList.remove('was'), 450); }
+    el.className = 'ly on' + (lively && st.fx ? ' fx-' + st.fx : '');
+    shown = el;
+    clearInterval(typer);
+    if (st.s === 'ai-0') {   // the question is typed into the message field
+      const tin = $('.tin', el), text = HK.TUTOR[1].t;
+      if (reduce) tin.textContent = text;
+      else { let n = 0; tin.textContent = ''; tin.classList.add('typing');
+        typer = setInterval(() => { tin.textContent = text.slice(0, ++n); if (n >= text.length) { clearInterval(typer); tin.classList.remove('typing'); } }, 38); }
+    }
+    if (st.slide && !reduce && !raf) raf = requestAnimationFrame(slide);
+  }
+  // the tangent goes along the curve and back, as when the app's play button is pressed
+  function slide(now) {
+    raf = 0;
+    if (!state || !state.slide) return;
+    const el = layers[state.s], p = ((now - t0) / 3600) % 2, u = p < 1 ? p : 2 - p, x = +(-2.6 + 7 * u * u * (3 - 2 * u)).toFixed(2);
+    if (x !== el.at) { el.at = x; const svg = $('.xs svg', el); if (svg) svg.outerHTML = HK.graphSVG(state.slide, 402, state.slide >= 2 ? 330 : 300, x); }
+    raf = requestAnimationFrame(slide);
+  }
+  function label(ch, text) {
+    const e = $('.eyebrow', ch); if (e.textContent === text) return;
+    e.classList.add('swap'); setTimeout(() => { e.textContent = text; e.classList.remove('swap'); }, 200);
+  }
+  // one screen of the loop: the tap first, then the screen, then a timer for the next one
+  function show(ci, i, entry) {
+    const seq = PLAY[id(chapters[ci])], st = seq[i], lively = !reduce && (i > 0 || entry);
+    state = st;
+    clearTimeout(swapTimer); clearTimeout(nextTimer);
+    if (i === 0) t0 = performance.now();
+    if (st.label) label(chapters[ci], st.label);
+    fit();
+    const at = lively && st.tap && layers[st.s] ? target(st) : null;
+    if (at) {
+      tapEl.style.left = at[0] + 'px'; tapEl.style.top = at[1] + 'px';
+      tapEl.classList.remove('go'); void tapEl.offsetWidth; tapEl.classList.add('go');
+      swapTimer = setTimeout(() => swap(st, true), 200);
+    } else swap(st, lively);
+    if (seq.length > 1 && !reduce) nextTimer = setTimeout(() => show(ci, (i + 1) % seq.length, false), st.t + (at ? 200 : 0));
+  }
+  function stop() { clearTimeout(swapTimer); clearTimeout(nextTimer); clearInterval(typer); cancelAnimationFrame(raf); raf = 0; state = null; cur = -1; }
 
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
+  // ───── scroll picks the chapter ─────
+  function go(ci) {
+    const prev = cur, ch = chapters[ci], seq = PLAY[id(ch)]; cur = ci;
+    ensure(ci); idle(() => ensure(ci + 1));
+    chapters.forEach((c, n) => c.classList.toggle('on', n === ci));
+    stage.dataset.theme = ch.dataset.theme; stage.dataset.ch = id(ch);
+    $$('a', rail).forEach((a, n) => a.classList.toggle('on', n === ci));
+    show(ci, reduce ? Math.max(0, seq.findIndex(s => s.still)) : 0, ci === prev + 1);
+  }
+  function update() {
+    const r = story.getBoundingClientRect(), y = Math.min(total, Math.max(0, -r.top)), pos = y / unit;
+    let ci = chapters.length - 1;
+    for (let n = 0; n < chapters.length; n++) if (pos < cum[n + 1]) { ci = n; break; }
+    if (r.bottom < 0) { if (cur >= 0) stop(); }   // the story is above the screen: nothing to play
+    else if (ci !== cur) go(ci);
+    stage.style.setProperty('--p', (y / total).toFixed(4));
+    document.body.dataset.theme = r.bottom < 64 ? 'page' : chapters[ci].dataset.theme;
+  }
+  function jump(ci, smooth = !reduce) { scrollTo({ top: story.offsetTop + (cum[ci] + .04) * unit, behavior: smooth ? 'smooth' : 'auto' }); }
+  // an address that names a chapter (#exam) goes there; #download (where harcer.am/get sends computers) is a real anchor
+  function fromHash() {
+    const name = location.hash.slice(1), ci = chapters.findIndex(c => id(c) === name), el = name && document.getElementById(name);
+    if (ci > 0) jump(ci, false); else if (el) el.scrollIntoView();
+  }
 
-        // Close mobile menu when clicking on a link
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-            });
-        });
-
-        // Navbar scroll effect
-        const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // Intersection Observer for fade-in animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observe feature cards and steps
-        document.querySelectorAll('.feature-card, .step, .testimonial-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(el);
-        });
-
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Stats section animation removed - using emoji icons instead
-    </script>
+  HK.ready.then(() => {
+    prepare(); ensure(0); layout(); update(); idle(buildRest);
+    fromHash(); addEventListener('hashchange', fromHash);
+    stage.scrollTop = 0; stage.addEventListener('scroll', () => (stage.scrollTop = 0));   // older Safari has no overflow: clip
+    let tick = false;
+    addEventListener('scroll', () => { if (!tick) { tick = true; requestAnimationFrame(() => { tick = false; update(); }); } }, { passive: true });
+    // a phone's address bar hiding changes the height only: nothing to lay out again
+    addEventListener('resize', () => { if (innerWidth !== lastW || !mobile) { layout(); update(); } });
+    $$('a[href="#top"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); scrollTo(0, 0); }));
+  }).catch(() => html.classList.remove('js'));   // no screens: fall back to the plain page
+})();
+</script>
 </body>
 </html>
-
