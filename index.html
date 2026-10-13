@@ -124,16 +124,21 @@ body[data-theme="sun"] .topbar .get { background: var(--ink); color: #fff; }
 .stage[data-theme="teal"] .bgs .b-teal, .stage[data-theme="sun"] .bgs .b-sun, .stage[data-theme="paper"] .bgs .b-paper, .stage[data-theme="violet"] .bgs .b-violet { opacity: 1; }
 /* soft rings, as on the store screenshots: they echo the logo's circle */
 .ring { position: absolute; border-radius: 50%; border: 64px solid currentColor; opacity: .055; pointer-events: none; }
-.ring.a { width: 980px; height: 980px; right: -420px; top: -360px; transform: translateY(calc(var(--p, 0) * 140px)); }
-.ring.b { width: 620px; height: 620px; left: -360px; bottom: -300px; transform: translateY(calc(var(--p, 0) * -180px)); }
+.ring.a { width: 980px; height: 980px; right: -420px; top: -360px; }
+.ring.b { width: 620px; height: 620px; left: -360px; bottom: -300px; }
 
 .js .wrap { position: relative; height: 100%; max-width: 1180px; margin: 0 auto; padding: 84px 56px 40px; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 32px; align-items: center; }
 .js .caps { display: grid; align-items: center; }
-.js .chap { grid-area: 1 / 1; padding: 0; background: none; color: inherit; opacity: 0; visibility: hidden; transform: translateY(16px);
-  transition: opacity .3s, transform .4s, visibility 0s .3s; }
+/* A change of chapter is a fade-through: the old words leave first (upwards when scrolling down), then the
+   new ones arrive from the other side. Never both on screen at once. */
+.js .chap { grid-area: 1 / 1; padding: 0; background: none; color: inherit; opacity: 0; visibility: hidden; transform: translateY(18px);
+  transition: opacity .16s ease-in, transform .16s ease-in, visibility 0s .16s; }
+.js .caps.up .chap { transform: translateY(-18px); }
+.js .caps .chap.out { transform: translateY(-12px); }
+.js .caps.up .chap.out { transform: translateY(12px); }
 .js .chap > * { max-width: none; margin-left: 0; margin-right: 0; }
 .js .chap .lead { max-width: 31em; }
-.js .chap.on { opacity: 1; visibility: visible; transform: none; transition: opacity .45s .1s, transform .55s .1s; }
+.js .caps .chap.on { opacity: 1; visibility: visible; transform: none; transition: opacity .32s ease-out .15s, transform .42s cubic-bezier(.2,.7,.2,1) .15s; }
 .js .more { display: flex; position: absolute; left: 50%; bottom: 20px; width: 40px; height: 40px; margin-left: -20px; border-radius: 20px; align-items: center; justify-content: center;
   font-size: 18px; background: rgba(255,255,255,.12); opacity: 0; transition: opacity .4s; pointer-events: none; z-index: 8; }
 .stage[data-ch="top"] .more { opacity: .9; }
@@ -202,11 +207,14 @@ body[data-theme="sun"] .topbar .get { background: var(--ink); color: #fff; }
   .js .more { display: none; }
   .js .device { flex: 1; min-height: 0; display: block; overflow: hidden;
     -webkit-mask-image: linear-gradient(transparent, #000 14px, #000 calc(100% - 30px), transparent); mask-image: linear-gradient(transparent, #000 14px, #000 calc(100% - 30px), transparent); }
-  .js .phone { position: absolute; left: 50%; top: 0; transform-origin: 50% 0; transform: translate(-50%, var(--pan, 0px)) scale(var(--z, 1)); transition: transform .75s cubic-bezier(.2,.75,.2,1); }
+  /* placed by the script (fit()), and it fades through a change of chapter like the words do */
+  .js .phone { position: absolute; left: 50%; top: 0; transform-origin: 50% 0; transform: translate(-50%, 0); transition: transform .6s cubic-bezier(.4,0,.2,1), opacity .3s ease-out; }
+  .js .phone.dip { opacity: 0; transition: opacity .15s ease-in; }
+  .js .phone.still, .js .phone.still .ly { transition: none; }
   .widget { left: auto; right: calc(-14px * var(--k)); bottom: auto; top: 44%; transform-origin: 100% 0; }
   .js .rail { display: none; }
   .js .prog { display: block; position: absolute; left: 0; right: 0; top: 56px; height: 3px; background: rgba(127,127,127,.22); z-index: 8; }
-  .prog i { display: block; height: 100%; background: #FFC107; transform-origin: 0 50%; transform: scaleX(var(--p, 0)); }
+  .prog i { display: block; height: 100%; background: #FFC107; transform-origin: 0 50%; transform: scaleX(0); will-change: transform; }
   .stage[data-theme="sun"] .prog i { background: var(--ink); }
   .ring.a { width: 560px; height: 560px; right: -300px; top: -220px; border-width: 44px; }
   .ring.b { display: none; }
@@ -453,7 +461,7 @@ footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); pa
 
   if (!window.HK) { html.classList.remove('js'); return; }   // the kit did not load: stay a plain page
 
-  const story = $('#story'), stage = $('.stage'), caps = $('.caps'), device = $('.device'), phone = $('.phone'), glass = $('.glass'), tapEl = $('.tap'), rail = $('.rail');
+  const story = $('#story'), stage = $('.stage'), caps = $('.caps'), device = $('.device'), phone = $('.phone'), glass = $('.glass'), tapEl = $('.tap'), rail = $('.rail'), bar = $('.prog i');
   const chapters = $$('.chap', caps);
 
   // What the phone plays in each chapter: a short loop of real screens.
@@ -496,7 +504,7 @@ footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); pa
   // ───── screens ─────
   const layers = {};
   let k = 1, bezel = 10, unit = 1, total = 1, mobile = false, lastW = 0;
-  let cur = -1, state = null, shown = null, swapTimer = 0, nextTimer = 0, typer = 0, raf = 0, t0 = 0;
+  let cur = -1, state = null, shown = null, swapTimer = 0, nextTimer = 0, dipTimer = 0, typer = 0, raf = 0, t0 = 0;
   // Screens are built when a chapter needs them: the first one at once, so the phone is not empty for
   // long on a slow phone; the next chapter's while the reader is on this one; the rest in idle moments.
   // The two mock-exam pictures are only fetched a chapter ahead of where they show.
@@ -547,11 +555,12 @@ footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); pa
   // the phone moves so that the part being talked about is in it
   function fit() {
     const st = state || PLAY.top[0], z = st.z || 1;
-    if (!mobile) { caps.style.height = ''; phone.style.setProperty('--pan', '0px'); phone.style.setProperty('--z', 1); return; }
+    // set straight on the phone: a CSS variable here would make the browser re-style every screen inside it
+    if (!mobile) { caps.style.height = ''; phone.style.transform = ''; return; }
     caps.style.height = chapters[Math.max(cur, 0)].offsetHeight + 'px';
     const hw = device.clientHeight, hp = (874 * k + 2 * bezel) * z;
     const pan = hp + 40 <= hw ? (hw - hp) / 2 : Math.min(18, Math.max(hw - hp - 22, hw / 2 - (bezel + st.fy * k) * z));
-    phone.style.setProperty('--pan', pan.toFixed(1) + 'px'); phone.style.setProperty('--z', z);
+    phone.style.transform = `translate(-50%, ${pan.toFixed(1)}px) scale(${z})`;
   }
 
   // ───── the loop inside a chapter ─────
@@ -608,16 +617,27 @@ footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); pa
     } else swap(st, lively);
     if (seq.length > 1 && !reduce) nextTimer = setTimeout(() => show(ci, (i + 1) % seq.length, false), st.t + (at ? 200 : 0));
   }
-  function stop() { clearTimeout(swapTimer); clearTimeout(nextTimer); clearInterval(typer); cancelAnimationFrame(raf); raf = 0; state = null; cur = -1; }
+  function halt() { clearTimeout(swapTimer); clearTimeout(nextTimer); clearTimeout(dipTimer); clearInterval(typer); cancelAnimationFrame(raf); raf = 0; }
+  function stop() { halt(); phone.classList.remove('dip', 'still'); state = null; cur = -1; }
 
   // ───── scroll picks the chapter ─────
   function go(ci) {
     const prev = cur, ch = chapters[ci], seq = PLAY[id(ch)]; cur = ci;
     ensure(ci); idle(() => ensure(ci + 1));
-    chapters.forEach((c, n) => c.classList.toggle('on', n === ci));
+    caps.classList.toggle('up', ci < prev);
+    chapters.forEach((c, n) => { c.classList.toggle('out', n === prev); c.classList.toggle('on', n === ci); });
     stage.dataset.theme = ch.dataset.theme; stage.dataset.ch = id(ch);
     $$('a', rail).forEach((a, n) => a.classList.toggle('on', n === ci));
-    show(ci, reduce ? Math.max(0, seq.findIndex(s => s.still)) : 0, ci === prev + 1);
+    halt();   // the chapter being left stops playing
+    const start = () => show(ci, reduce ? Math.max(0, seq.findIndex(s => s.still)) : 0, ci === prev + 1);
+    if (!mobile || prev < 0 || reduce) return start();
+    // Narrow screens show a different part of the phone in each chapter, so the phone fades through the change
+    // as well: out, then the new screen and its place are set while nothing shows, then back in.
+    phone.classList.add('dip');
+    dipTimer = setTimeout(() => {
+      phone.classList.add('still'); start(); void phone.offsetWidth;
+      phone.classList.remove('still', 'dip');
+    }, 170);
   }
   function update() {
     const r = story.getBoundingClientRect(), y = Math.min(total, Math.max(0, -r.top)), pos = y / unit;
@@ -625,8 +645,11 @@ footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); pa
     for (let n = 0; n < chapters.length; n++) if (pos < cum[n + 1]) { ci = n; break; }
     if (r.bottom < 0) { if (cur >= 0) stop(); }   // the story is above the screen: nothing to play
     else if (ci !== cur) go(ci);
-    stage.style.setProperty('--p', (y / total).toFixed(4));
-    document.body.dataset.theme = r.bottom < 64 ? 'page' : chapters[ci].dataset.theme;
+    // Only what changed is touched, and on the element itself: this runs on every scroll frame, and a variable
+    // on the stage made the browser re-style all 2,700 elements in it each time.
+    if (mobile) bar.style.transform = `scaleX(${(y / total).toFixed(4)})`;
+    const theme = r.bottom < 64 ? 'page' : chapters[ci].dataset.theme;
+    if (document.body.dataset.theme !== theme) document.body.dataset.theme = theme;
   }
   function jump(ci, smooth = !reduce) { scrollTo({ top: story.offsetTop + (cum[ci] + .04) * unit, behavior: smooth ? 'smooth' : 'auto' }); }
   // an address that names a chapter (#exam) goes there; #download (where harcer.am/get sends computers) is a real anchor
