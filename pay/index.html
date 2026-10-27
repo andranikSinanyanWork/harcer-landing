@@ -391,14 +391,16 @@ const SUBJECTS = [
 const MAX_BUNDLE_SIZE = 3;
 
 // What one payment costs, in AMD, by the app's product ids
-// (tools/subscriptions/plans.config.mjs). PLACEHOLDERS: the store prices in
-// USD at 385 AMD, rounded to 100 — Andranik has not set the AMD prices yet.
-// The server holds its own copy and is the one that counts.
+// (tools/subscriptions/plans.config.mjs). The server holds its own copy and is
+// the one that counts. TEST PRICES since 28 Oct 2026 (1 AMD, for Andranik's
+// real test payments; the server sells only to the owner meanwhile). The
+// placeholders before: subj1 2300 / 5800, subj2 4600 / 10000,
+// subj3 6900 / 13900, all_yearly 19200.
 const PRICES = {
-  subj1_monthly: 2300, subj1_3month: 5800,
-  subj2_monthly: 4600, subj2_3month: 10000,
-  subj3_monthly: 6900, subj3_3month: 13900,
-  all_yearly: 19200,
+  subj1_monthly: 1, subj1_3month: 1,
+  subj2_monthly: 1, subj2_3month: 1,
+  subj3_monthly: 1, subj3_3month: 1,
+  all_yearly: 1,
 };
 const DURATIONS = [
   { id: 'monthly', label: '1 ամիս', months: 1 },
