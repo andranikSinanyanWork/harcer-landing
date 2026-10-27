@@ -1,0 +1,924 @@
+<!doctype html>
+<html lang="hy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#4F6D7B">
+<title>Փաթեթներ · Հարցեր.am</title>
+<!--
+  The web checkout: sign in with the Harcer account, see what a plan opens,
+  choose subjects and a length, pay by bank card (Ameriabank vPOS). One static
+  file, like scripts/admin-deploy/index.html, so it can sit on harcer.am.
+
+  A website, not a phone screen (Andranik, 13 Oct 2026: "make the page web
+  based"): a top bar, a centred sign-in card, then the plans as numbered steps
+  with the order summary beside them — the two layouts he picked from
+  sketches. Card and Idram (IDRAM_ON_PAGE below; the server side is
+  functions/lib/webPay.js). Live at harcer.am/pay/ since 28 Oct 2026, the
+  address Idram has for us: this file is pay/index.html in the GitHub Pages
+  repo andranikSinanyanWork/harcer-landing; publishing = copy it there, push.
+
+  The plans, the three-subject limit and the wording are the app paywall's
+  (app/SubjectPackages.tsx); the sign-in form is the app's (app/login.tsx).
+  Colours are constants/theme.ts `light`. The logo is components/BrandLogo's
+  default lockup, generated from components/brand/logoPaths.ts.
+
+  The app must never link here or mention it: both stores forbid pointing to
+  an outside payment from inside the app in Armenia.
+-->
+<style>
+  :root {
+    --primary: #4F6D7B;
+    --primary-dark: #3E5966;
+    --primary-soft: #EAF0F2;
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --surface-alt: #F1F5F9;
+    --border: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --text: #1A202C;
+    --muted: #64748B;
+    --faint: #94A3B8;
+    --gold: #FEB100;
+    --danger-soft: #FEF2F2;
+    --danger-ink: #991B1B;
+    --success: #10B981;
+    --success-soft: #F0FDF4;
+    --success-ink: #065F46;
+    --info-soft: #EBF8FF;
+    --info-ink: #1E5A8E;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Armenian", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+  }
+  [hidden] { display: none !important; }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  a { color: var(--primary); }
+  h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+  h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 17px; font-weight: 800; }
+  .sub { margin: 6px 0 0; font-size: 14px; color: var(--muted); }
+
+  .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+
+  /* ---- Top bar ---- */
+  .bar { background: var(--primary); color: #fff; padding-top: env(safe-area-inset-top); }
+  .bar-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+  .brand { display: block; color: #fff; line-height: 0; }
+  .logo { height: 38px; width: auto; display: block; }
+  .who { display: flex; align-items: center; gap: 12px; min-width: 0; font-size: 14px; }
+  .who-email { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgba(255, 255, 255, 0.85); }
+  .who button { flex: none; border: 0; border-radius: 999px; padding: 7px 14px; background: rgba(255, 255, 255, 0.15); color: #fff; font-size: 13px; font-weight: 700; }
+  .who button:hover { background: rgba(255, 255, 255, 0.25); }
+
+  main { flex: 1; padding-top: 32px; padding-bottom: 48px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06); }
+  .narrow { max-width: 420px; margin: 24px auto 0; padding: 28px; }
+
+  /* ---- Sign in ---- */
+  #login-form { margin-top: 22px; }
+  .field { display: block; margin-bottom: 14px; }
+  .field > span { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
+  .field input { width: 100%; padding: 13px 14px; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--surface); font-size: 16px; outline: none; }
+  .field input::placeholder { color: var(--faint); }
+  .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 109, 123, 0.16); }
+  .pw { position: relative; }
+  .pw input { padding-right: 50px; }
+  .pw button { position: absolute; top: 0; right: 0; width: 50px; height: 100%; border: 0; background: none; color: var(--faint); display: grid; place-items: center; }
+  .forgot { display: block; margin: -2px 0 16px auto; padding: 4px 0; border: 0; background: none; color: var(--primary); font-size: 14px; font-weight: 500; }
+
+  .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: 0; border-radius: 12px; padding: 14px 16px; font-size: 16px; font-weight: 700; }
+  .btn:disabled { opacity: 0.7; cursor: default; }
+  .btn.primary { background: var(--primary); color: #fff; }
+  .btn.primary:not(:disabled):hover { background: var(--primary-dark); }
+  /* Each in its maker's own colours, as in the app (components/SsoButtons.tsx). */
+  .btn.google { height: 50px; padding: 0 16px; background: #fff; border: 1px solid #747775; color: #1F1F1F; font-size: 15.5px; }
+  .btn.google:hover { background: #F8FAFC; }
+  .btn.apple { height: 50px; padding: 0 16px; margin-top: 12px; background: #000; color: #fff; font-size: 15.5px; }
+
+  .or { display: flex; align-items: center; gap: 12px; margin: 16px 0; color: var(--muted); font-size: 13px; font-weight: 500; }
+  .or i { flex: 1; height: 1px; background: var(--border); }
+  .register { margin: 20px 0 0; text-align: center; color: var(--muted); font-size: 14px; }
+  .register a { font-weight: 600; text-decoration: none; }
+  .register a:hover { text-decoration: underline; }
+  .note { margin: 14px 0 0; text-align: center; color: var(--muted); font-size: 13px; }
+
+  .msg { margin: 0 0 14px; padding: 11px 13px; border-radius: 12px; font-size: 14px; font-weight: 500; }
+  .msg.error { background: var(--danger-soft); color: var(--danger-ink); }
+  .msg.ok { background: var(--success-soft); color: var(--success-ink); }
+  .msg.info { background: var(--info-soft); color: var(--info-ink); }
+
+  /* ---- Plans: steps on the left, the order beside them ---- */
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 32px; align-items: start; }
+  .block { margin-top: 30px; }
+  .step { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 13px; font-weight: 800; display: grid; place-items: center; }
+  .hint { margin: -4px 0 12px; font-size: 13.5px; color: var(--muted); }
+  #cap-hint { margin: 10px 0 0; font-weight: 600; }
+
+  /* What a plan opens: the app's own comparison (COMPARE_ROWS), one tile a row. */
+  .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .fact { padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+  .fact .label { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .fact .value { margin-top: 6px; font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+  .fact .free { margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+
+  .subjects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .subject { --cloth: var(--primary); display: flex; align-items: center; min-height: 64px; padding: 0 14px 0 0; border: 1.5px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; text-align: left; }
+  .subject::before { content: ""; align-self: stretch; flex: none; width: 7px; background: var(--cloth); }
+  .subject .name { flex: 1; min-width: 0; padding: 10px 10px 10px 14px; font-size: 15px; font-weight: 700; }
+  .subject .name small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 500; color: var(--muted); }
+  .subject .check { flex: none; width: 22px; height: 22px; border: 1.5px solid var(--border-strong); border-radius: 50%; display: grid; place-items: center; color: #fff; }
+  .subject .check svg { display: none; }
+  .subject:not(.blocked):hover { border-color: var(--border-strong); }
+  .subject[aria-checked="true"] { border-color: var(--cloth); background: var(--primary-soft); border-color: color-mix(in srgb, var(--cloth) 55%, white); background: color-mix(in srgb, var(--cloth) 7%, white); }
+  .subject[aria-checked="true"] .check { background: var(--cloth); border-color: var(--cloth); }
+  .subject[aria-checked="true"] .check svg { display: block; }
+  .subject.blocked { opacity: 0.45; }
+
+  .periods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .period { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 14px 16px 16px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--surface); text-align: left; }
+  .period:not(:disabled):hover { border-color: var(--border-strong); }
+  .period[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); }
+  .period:disabled { cursor: default; opacity: 0.55; }
+  .period .top { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; }
+  .radio { flex: none; width: 20px; height: 20px; border: 1.5px solid var(--border-strong); border-radius: 50%; display: grid; place-items: center; }
+  .period[aria-checked="true"] .radio { border-color: var(--primary); }
+  .period[aria-checked="true"] .radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+  .period .price { margin-top: 12px; font-size: 22px; font-weight: 900; letter-spacing: -0.3px; white-space: nowrap; }
+  .period .detail { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 7px; margin-top: 4px; min-height: 18px; font-size: 12.5px; color: var(--muted); }
+  .badge { border-radius: 999px; padding: 1px 7px; background: var(--gold); color: #fff; font-size: 11px; font-weight: 900; }
+
+  /* The order: level with the first heading on its left */
+  .summary { margin-top: 30px; }
+  .summary .card { position: sticky; top: 24px; }
+  .summary dl { margin: 0; }
+  .summary dl > div { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; font-size: 14px; }
+  .summary dt { flex: none; color: var(--muted); }
+  .summary dd { margin: 0; text-align: right; font-weight: 600; }
+  .total { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 14px; color: var(--muted); }
+  .total strong { font-size: 26px; font-weight: 900; letter-spacing: -0.4px; color: var(--text); white-space: nowrap; }
+  .methods { display: grid; gap: 8px; margin-top: 14px; }
+  .method { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface); text-align: left; font-size: 14px; font-weight: 600; }
+  .method small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
+  .method[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); }
+  .method[aria-checked="true"] .radio { border-color: var(--primary); }
+  .method[aria-checked="true"] .radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+  .cta { margin-top: 18px; height: 52px; padding: 0 16px; }
+  .cta:disabled { background: #E0E0E0; color: #8A8A8A; opacity: 1; }
+  #pay-msg { margin: 14px 0 0; }
+  .fine { margin: 14px 0 0; font-size: 12.5px; color: var(--muted); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .summary { margin-top: 30px; }
+    .summary .card { position: static; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding-left: 16px; padding-right: 16px; }
+    main { padding-top: 24px; }
+    h1 { font-size: 24px; }
+    .logo { height: 32px; }
+    .bar-in { height: 56px; }
+    .who-email { display: none; }
+    .narrow { margin-top: 8px; padding: 22px 18px; }
+    .facts { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+    .fact { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; padding: 12px 14px; }
+    .fact .value { grid-column: 2; grid-row: 1 / span 2; margin: 0; font-size: 17px; text-align: right; }
+    .fact .free { margin: 0; }
+    .subjects, .periods { grid-template-columns: minmax(0, 1fr); }
+    .period { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 12px; padding: 12px 14px; }
+    .period .price { grid-column: 2; grid-row: 1 / span 2; margin: 0; font-size: 19px; }
+    .period .detail { padding-left: 30px; margin-top: 2px; }
+  }
+
+  /* ---- After the payment ---- */
+  .result { text-align: center; }
+  .result .mark { width: 64px; height: 64px; margin: 4px auto 16px; border-radius: 50%; display: grid; place-items: center; }
+  .result .mark.ok { background: var(--success-soft); color: var(--success); }
+  .result .mark.fail { background: var(--danger-soft); color: var(--danger-ink); }
+  .result h1 { font-size: 22px; }
+  .result p { margin: 10px 0 0; font-size: 15px; color: var(--muted); }
+  .result .btn { margin-top: 22px; }
+
+  .loading { display: grid; place-items: center; min-height: 260px; }
+  .spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  .btn .spinner { width: 20px; height: 20px; border-width: 2.5px; border-color: rgba(255, 255, 255, 0.35); border-top-color: #fff; }
+  .btn.google .spinner { border-color: #dadce0; border-top-color: #1F1F1F; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
+
+  .legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 20px; padding-top: 18px; padding-bottom: calc(22px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); font-size: 13px; }
+  .legal a { color: var(--muted); text-decoration: none; }
+  .legal a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="brand" href="https://harcer.am/"><svg class="logo" viewBox="37 -1154.2 5723 1403.2" role="img" aria-label="Հարցեր.am"><path transform="translate(0 0)" d="M609-653L530-555Q507-578 478.500-592Q450-606 418-606Q378-606 354-593.500Q330-581 314.500-550.500Q299-520 284-466L172-69L37-104L146-498Q168-575 201.500-625Q235-675 288-699.500Q341-724 418-724Q471-724 518.500-707Q566-690 609-653M340-25L37-104L73-218L372-140Q445-121 486.500-95Q528-69 545.500-34Q563 1 563 48L563 120L422 120L422 68Q422 30 401 7.500Q380-15 340-25" fill="currentColor"/><path transform="translate(608 0)" d="M267 9Q178 9 129.500-38Q81-85 81-174L81-500L220-500L220-205Q220-154 243.500-128Q267-102 305-102Q358-102 386-144.500Q414-187 414-272L414-500L554-500L554-205Q554-171 565-148Q576-125 595.500-113.500Q615-102 640-102Q674-102 698-121Q722-140 735-178Q748-216 748-272L748-500L887-500L887 0L779 0L762-67L754-67Q741-45 719.500-27.500Q698-10 669-0.500Q640 9 602 9Q545 9 503.500-11Q462-31 439-71L432-71Q411-37 365.500-14Q320 9 267 9" fill="currentColor"/><path transform="translate(1556 0)" d="M224 239L85 239L85-500L194-500L211-433L219-433Q233-456 254.500-473.500Q276-491 305.500-500.500Q335-510 372-510Q431-510 473-489Q515-468 537-426.500Q559-385 559-325L559 0L420 0L420-296Q420-347 397.500-373Q375-399 334-399Q299-399 274-379.500Q249-360 236.500-322Q224-284 224-228" fill="currentColor"/><path transform="translate(2172 0)" d="M272 249Q228 249 188.500 241.500Q149 234 107 219L107 111Q143 126 184 135Q225 144 275 144Q323 144 353 132.500Q383 121 396.500 99.500Q410 78 410 48L410 27Q410 7 411.500-16Q413-39 417-68L408-68Q386-30 349.500-10.500Q313 9 263 9Q199 9 153-22.500Q107-54 82.500-112Q58-170 58-249Q58-331 83-389Q108-447 155-478.500Q202-510 267-510Q317-510 354-491Q391-472 416-434L423-434L440-500L549-500L549 12Q549 91 521 143.500Q493 196 432 222.500Q371 249 272 249M302-102Q329-102 349.500-111.500Q370-121 383.500-139.500Q397-158 403.500-185Q410-212 410-248L410-256Q410-303 399-334.500Q388-366 364-382.500Q340-399 301-399Q269-399 246.500-381.500Q224-364 212-330.500Q200-297 200-248Q200-175 225.500-138.500Q251-102 302-102" fill="currentColor"/><path transform="translate(2782 0)" d="M416-304L555-304L555 0L446 0L429-68L421-68Q408-45 386-27Q364-9 334.500 0.500Q305 10 268 10Q209 10 167-11.500Q125-33 103-74.500Q81-116 81-176L81-760L220-760L220-204Q220-154 243-127.500Q266-101 306-101Q342-101 366.500-120.500Q391-140 403.500-178Q416-216 416-272L416-304M148-395L148-500L571-500L571-395" fill="currentColor"/><path transform="translate(3398 0)" d="M224 239L85 239L85-500L194-500L211-433L219-433Q233-456 254.500-473.500Q276-491 305.500-500.500Q335-510 372-510Q431-510 473-489Q515-468 537-426.500Q559-385 559-325L559 0L420 0L420-296Q420-347 397.500-373Q375-399 334-399Q299-399 274-379.500Q249-360 236.500-322Q224-284 224-228" fill="currentColor"/><path transform="translate(4014 0)" d="M57-70Q57-116 82-134.500Q107-153 143-153Q178-153 203-134.500Q228-116 228-70Q228-26 203-6.500Q178 13 143 13Q107 13 82-6.500Q57-26 57-70" fill="#FFB216"/><path transform="translate(4274 0)" d="M302-557Q412-557 470.500-509.500Q529-462 529-364L529 0L425 0L396-74L392-74Q369-45 344.500-26Q320-7 288.500 1.500Q257 10 211 10Q163 10 124.500-8.500Q86-27 64-65.500Q42-104 42-163Q42-250 103-291.500Q164-333 286-337L381-340L381-364Q381-407 358.500-427Q336-447 296-447Q256-447 218-435.500Q180-424 142-407L93-508Q137-531 190.500-544Q244-557 302-557M381-253L323-251Q251-249 223-225Q195-201 195-162Q195-128 215-113.500Q235-99 267-99Q315-99 348-127.500Q381-156 381-208" fill="currentColor" fill-opacity="0.55"/><path transform="translate(4853 0)" d="M719-556Q812-556 859.500-508.500Q907-461 907-356L907 0L758 0L758-319Q758-378 738-407.500Q718-437 676-437Q617-437 592-395Q567-353 567-274L567 0L418 0L418-319Q418-358 409-384Q400-410 382-423.500Q364-437 336-437Q295-437 271-416Q247-395 237-355Q227-315 227-257L227 0L78 0L78-546L192-546L212-476L220-476Q237-504 262-521.500Q287-539 317.500-547.500Q348-556 379-556Q439-556 481-536.500Q523-517 545-476L558-476Q583-518 627.500-537Q672-556 719-556" fill="currentColor" fill-opacity="0.55"/><g transform="translate(3169.94 -1407.91) scale(1.95166)"><path transform="translate(461.9 129.9)" d="M0 0 C0.5 0 0.5 0 3 0.1 C4.1 0.2 5.2 0.2 6.3 0.3 C7.5 0.3 8.7 0.4 9.9 0.4 C14 0.6 18.1 0.8 22.1 1.1 C22.9 1.1 23.6 1.1 24.3 1.2 C36.1 1.8 48 2.5 59.8 3.1 C63.6 3.4 67.4 3.6 71.2 3.8 C80.2 4.3 89.1 4.8 98.1 5.3 C107.4 5.9 116.6 6.4 125.8 6.9 C133.8 7.4 141.8 7.9 149.8 8.3 C154.5 8.6 159.2 8.9 164 9.1 C168.4 9.4 172.9 9.6 177.3 9.9 C178.9 10 180.6 10.1 182.2 10.2 C184.4 10.3 186.6 10.4 188.9 10.6 C190.1 10.6 191.3 10.7 192.6 10.8 C202.5 11.6 202.5 11.6 205.9 14.2 C208.4 17.4 209.7 20.2 211.1 24 C211.4 24.6 211.6 25.3 211.9 26 C212.6 28 213.4 30 214.1 32.1 C214.6 33.2 215 34.4 215.5 35.6 C216.8 39.2 218.2 42.8 219.5 46.4 C220 47.8 220.5 49.1 221 50.5 C222.1 53.4 223.1 56.3 224.2 59.2 C227.1 67 230 74.8 232.9 82.6 C233.2 83.4 233.5 84.2 233.8 85 C240.1 102.2 246.6 119.3 253 136.4 C253.9 138.6 254.7 140.8 255.5 143 C260.6 156.5 265.7 169.9 270.8 183.4 C271.5 185.1 272.2 186.9 272.9 188.6 C274 191.7 275.2 194.8 276.4 197.8 C276.9 199.1 277.4 200.4 277.9 201.7 C278.3 202.8 278.7 203.9 279.1 205 C280.6 209.5 281.6 213.4 280.2 218 C278.1 220.1 278.1 220.1 274.7 220.3 C269.5 220.2 264.6 219 259.5 217.8 C258.5 217.6 257.5 217.4 256.5 217.1 C253.3 216.4 250.1 215.6 246.9 214.9 C244.8 214.4 242.7 213.9 240.6 213.4 C234.4 212 228.3 210.5 222.1 209.1 C221.1 208.8 220.2 208.6 219.2 208.3 C216.4 207.7 213.6 207 210.8 206.3 C210 206.1 209.2 205.9 208.3 205.7 C207.6 205.5 206.8 205.3 206 205.1 C205.4 205 204.7 204.8 204 204.6 C201.9 204 200.1 203.2 198.1 202.1 C196.9 199.6 196.8 197.7 196.5 195 C193.3 165.2 186.4 138.6 167.1 115.1 C166.4 114.2 165.8 113.4 165 112.5 C149.5 94.1 127.3 82.7 104.1 77.1 C103.3 76.8 102.5 76.6 101.7 76.4 C86.5 72.7 71.5 72.7 56 73.3 C55.6 73.3 55.6 73.3 53.6 73.3 C52 73.4 50.5 73.4 49 73.5 C45.1 73.6 42.7 73.1 39.8 70.7 C37.3 68.2 35.1 65.8 32.9 63.1 C29.6 58.8 26.1 54.7 22.6 50.6 C15.3 41.9 8.1 33.1 1.1 24.1 C1.9 52.6 6.4 77.9 15.1 105 C16.4 109.2 17.6 113.1 17.6 117.5 C17.6 118.3 17.6 119.1 17.6 119.9 C17.1 122.1 17.1 122.1 15.3 123.8 C11 126.3 6.9 126.3 2.1 126.5 C1.4 126.5 0.6 126.5 -0.2 126.6 C-1.9 126.6 -3.6 126.7 -5.2 126.7 C-7.7 126.8 -10.3 126.9 -12.8 127 C-14.4 127.1 -16 127.1 -17.6 127.2 C-18.4 127.2 -19.1 127.2 -19.9 127.3 C-24.4 127.4 -27.5 127.2 -30.9 124.1 C-32.6 118.3 -31.3 114.2 -29.3 108.8 C-29 108.1 -28.7 107.3 -28.4 106.5 C-27.5 104 -26.6 101.6 -25.7 99.1 C-20.1 84.1 -14.7 69.3 -13.7 53.2 C-13.7 52.2 -13.6 51.2 -13.5 50.2 C-13.1 43.9 -12.7 37.5 -12.4 31.1 C-12.3 30.3 -12.3 29.6 -12.3 28.8 C-12 24.9 -11.8 21.1 -11.7 17.3 C-11.6 15.9 -11.5 14.5 -11.4 13 C-11.4 11.8 -11.3 10.5 -11.3 9.2 C-10.9 6.3 -10.6 4.5 -8.9 2.1 C-5.8 0.1 -3.6 -0.2 0 0 Z " fill="currentColor"/><path transform="translate(527.4 211.6)" d="M0 0 C0.7 0 1.3 0 2 0 C12.8 0.1 23.1 0.8 33.6 3.4 C34 3.5 34 3.5 35.7 3.9 C63.5 10.6 88.1 26 103.4 50.5 C114.9 69.8 122.9 94.7 121.6 117.4 C118.8 126.2 109.6 131.6 102.1 136.2 C99.3 137.5 96.7 138 93.6 138.4 C93.3 137.1 93 135.9 92.7 134.6 C87.3 111.6 79.7 92.9 63.6 75.4 C63 74.6 62.3 73.9 61.6 73.1 C45.1 55.5 18.9 43.6 -5.2 42.2 C-6.2 42.2 -7.1 42.2 -8.1 42.2 C-8.6 42.1 -8.6 42.1 -11.3 42.1 C-13.5 42 -15.7 42 -17.9 41.9 C-18.9 41.9 -20 41.9 -21 41.9 C-22 41.8 -22.9 41.8 -23.9 41.8 C-26.4 41.4 -26.4 41.4 -28.2 40.1 C-29.7 37.8 -29.7 36.5 -29.5 33.8 C-29.5 32.9 -29.4 32 -29.4 31.1 C-29.3 30.6 -29.3 30.6 -29.2 28.2 C-29.1 27.3 -29.1 26.4 -29.1 25.5 C-28.1 8.5 -28.1 8.5 -22.4 3.4 C-15.1 -0.3 -8.1 -0.1 0 0 Z " fill="currentColor"/><path transform="translate(573.5 290.7)" d="M0 0 C0.4 0.4 0.4 0.4 2.5 2.3 C3.3 3 4.1 3.7 4.9 4.5 C20.1 19 30.7 40.1 31.5 61.3 C31.5 62.4 31.6 63.5 31.6 64.6 C32.6 102.5 19.1 137.4 -3.5 167.3 C-3.9 167.8 -4.3 168.4 -4.7 168.9 C-8.9 174.4 -13.2 179.9 -17.5 185.3 C-19.3 187.7 -21.2 190 -23 192.4 C-24 193.7 -25.1 195 -26.1 196.3 C-41.2 215.5 -57.9 237.4 -56.9 263.1 C-55.5 274.7 -50.8 283.3 -43.1 292 C-40.9 295.1 -40.6 297.5 -40.5 301.3 C-41.8 304.6 -43.1 306 -46 308 C-53.4 310.7 -60.6 311.1 -68 308.5 C-72.8 306.2 -76.6 302.8 -80.5 299.3 C-81.3 298.6 -82.1 297.9 -82.9 297.2 C-95.9 285 -104.1 267 -104.8 249.1 C-105.3 219.7 -92 198.4 -76.5 174.3 C-41.4 119.5 -41.4 119.5 -41 86.8 C-41 85.9 -41 84.9 -41 83.9 C-41 75.6 -42.9 68.3 -47.4 61.3 C-54.8 54.1 -62.4 52.8 -72.4 52.9 C-91.5 54.2 -108.5 67.2 -121.7 80 C-124 81.6 -125.8 82 -128.5 82.3 C-138.9 77 -147.4 66.5 -155.6 58.3 C-156.5 57.4 -157.5 56.4 -158.4 55.5 C-159.3 54.6 -160.2 53.7 -161.2 52.8 C-161.6 52.3 -161.6 52.3 -163.6 50.3 C-165.8 48 -166.4 46.8 -166.9 43.7 C-165.8 34.9 -156.4 27.8 -150.4 21.9 C-149.5 21 -148.6 20 -147.6 19.1 C-108.5 -19.3 -45.8 -39.7 0 0 Z " fill="#FFB216"/></g></svg></a>
+    <div class="who" id="who" hidden>
+      <span class="who-email" id="account-email"></span>
+      <button type="button" id="signout">Դուրս գալ</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="view-loading" class="loading"><div class="spinner" role="status" aria-label="Բեռնվում է"></div></section>
+
+  <!-- Sign in: the app's own form (app/login.tsx), on a card -->
+  <section id="view-login" hidden>
+    <div class="card narrow">
+      <h1>Մուտք</h1>
+      <p class="sub">Մուտք գործեք Harcer.am-ի ձեր հաշիվ՝ փաթեթ գնելու համար</p>
+
+      <form id="login-form" novalidate>
+        <label class="field">
+          <span>Էլ․ փոստ</span>
+          <input id="email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Մուտքագրեք ձեր էլ․ փոստը">
+        </label>
+        <label class="field">
+          <span>Գաղտնաբառ</span>
+          <div class="pw">
+            <input id="password" type="password" autocomplete="current-password" autocapitalize="none" placeholder="Ձեր գաղտնաբառը">
+            <button type="button" id="pw-toggle" aria-label="Ցույց տալ գաղտնաբառը" aria-pressed="false">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </label>
+        <button type="button" class="forgot" id="forgot">Մոռացե՞լ եք գաղտնաբառը</button>
+        <p class="msg" id="login-msg" role="alert" hidden></p>
+        <button type="submit" class="btn primary" id="login-btn">Մուտք</button>
+      </form>
+
+      <div id="sso">
+        <div class="or"><i></i><span>կամ</span><i></i></div>
+        <button type="button" class="btn google" id="google-btn">
+          <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          <span>Շարունակել Google-ով</span>
+        </button>
+        <button type="button" class="btn apple" id="apple-btn" hidden>
+          <svg width="18" height="20" viewBox="0 0 17 20" fill="currentColor" aria-hidden="true"><path d="M13.9 10.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.9-.8-3.1-.8C4.3 5.3 2.8 6.2 2 7.6.3 10.5 1.6 14.8 3.2 17.2c.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.1-1.2 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7 0 0-2.7-1-2.8-4zM11.5 3.5c.7-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.1 1.8-1 2.9 1.1.1 2.1-.5 2.8-1.3z"/></svg>
+          <span>Շարունակել Apple-ով</span>
+        </button>
+      </div>
+      <p class="note" id="inapp-note" hidden>Google-ով մուտք գործելու համար բացեք այս էջը Chrome-ում կամ Safari-ում։</p>
+
+      <p class="register">Դեռ չունե՞ք հաշիվ։ <a href="https://harcer.am/get">Գրանցվեք հավելվածում</a></p>
+    </div>
+  </section>
+
+  <!-- What a plan opens, the two choices, and the order -->
+  <section id="view-plans" hidden>
+    <h1 id="plans-title"></h1>
+    <p class="sub" id="plans-sub"></p>
+
+    <div class="layout" id="picker">
+      <div>
+        <section class="block">
+          <h2>Ինչ է բացում փաթեթը</h2>
+          <div class="facts">
+            <div class="fact"><div class="label">Հարցեր՝ ամեն բաժնից</div><div class="value">Բոլորը</div><div class="free">Անվճար՝ առաջին 2-ը</div></div>
+            <div class="fact"><div class="label">AI ուսուցիչ</div><div class="value">15 / օր</div><div class="free">Անվճար՝ 3 / օր</div></div>
+            <div class="fact"><div class="label">Փորձնական քննություն</div><div class="value">Անսահմանափակ</div><div class="free">Անվճար՝ չկա</div></div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="step">1</span>Առարկաներ</h2>
+          <p class="hint" id="subjects-hint"></p>
+          <div class="subjects" id="subjects" role="group" aria-label="Առարկաներ"></div>
+          <p class="hint" id="cap-hint" hidden></p>
+        </section>
+
+        <section class="block">
+          <h2><span class="step">2</span>Ժամկետ</h2>
+          <div class="periods" id="plans" role="radiogroup" aria-label="Ժամկետ"></div>
+        </section>
+      </div>
+
+      <aside class="summary">
+        <div class="card">
+          <h2>Քո փաթեթը</h2>
+          <dl id="order"></dl>
+          <div class="total"><span>Ընդամենը</span><strong id="total"></strong></div>
+          <div class="methods" id="methods" role="radiogroup" aria-label="Վճարման եղանակ" hidden>
+            <button type="button" class="method" role="radio" data-method="card" aria-checked="true"><span class="radio"></span><span>Բանկային քարտ<small>Visa · Mastercard · ArCa</small></span></button>
+            <button type="button" class="method" role="radio" data-method="idram" aria-checked="false"><span class="radio"></span><span>Idram<small>Idram դրամապանակով</small></span></button>
+          </div>
+          <button type="button" class="btn primary cta" id="pay-btn"></button>
+          <p class="msg" id="pay-msg" role="status" hidden></p>
+          <p class="fine" id="fine"></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Back from the bank -->
+  <section id="view-result" hidden>
+    <div class="card narrow result">
+      <div class="mark" id="result-mark"></div>
+      <h1 id="result-title"></h1>
+      <p id="result-text"></p>
+      <button type="button" class="btn primary" id="result-btn" hidden></button>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap legal">
+  <a href="https://harcer.am/terms-of-service.html">Օգտագործման պայմաններ</a>
+  <a href="https://harcer.am/privacy-policy.html">Գաղտնիություն</a>
+  <a href="mailto:support@harcer.am">support@harcer.am</a>
+</footer>
+
+<script type="module">
+// ---------------------------------------------------------------- settings
+
+const FB = 'https://www.gstatic.com/firebasejs/11.10.0/';
+
+// The app's own Firebase web config (firebaseConfig.js).
+const firebaseConfig = {
+  apiKey: 'AIzaSyAD1e0IDu4QM1zqSK6e-2zjwrMb-d1r338',
+  authDomain: 'degreebounds-b6e08.firebaseapp.com',
+  projectId: 'degreebounds-b6e08',
+  storageBucket: 'degreebounds-b6e08.firebasestorage.app',
+  messagingSenderId: '939777193939',
+  appId: '1:939777193939:web:6390970392469412732126',
+};
+
+// On since 28 Oct 2026, when the page went up at harcer.am/pay for the
+// owner's end-to-end tests. The server decides who may pay: only the owner
+// until IDRAM_OPEN is "true" and the card host is the bank's live one;
+// everyone else gets 'test-mode'.
+const PAYMENTS_LIVE = true;
+// Callables live in us-east1 (functions/lib/subjectPackages.js REGION).
+const FUNCTIONS_REGION = 'us-east1';
+
+// Idram as a second way to pay (idramResult deployed 27 Oct 2026). When off,
+// `?idram=1` still shows it on this Mac.
+const IDRAM_ON_PAGE = true;
+
+// Apple sign-in on the web needs a Services ID and key in Firebase's Apple
+// provider; the project has only the iPhone app's set-up (checked 12 Oct 2026).
+const APPLE_ON_WEB = false;
+
+// Ids as in constants/subjects.ts; colours are the books' cloth
+// (constants/bookCovers.ts). Books and questions are what the live content
+// manifest held on 13 Oct 2026 (content_manifest/{subject}: books, and the
+// sum of every section's item_count), the questions rounded down to a hundred.
+const SUBJECTS = [
+  { id: 'english', label: 'Անգլերեն', cloth: '#3C4E7A', books: 3, questions: 2800 },
+  { id: 'armenian', label: 'Հայոց լեզու', cloth: '#6E3540', books: 4, questions: 5900 },
+  { id: 'math', label: 'Մաթեմատիկա', cloth: '#4E6B79', books: 2, questions: 4100 },
+  { id: 'biology', label: 'Կենսաբանություն', cloth: '#2F6B5E', books: 4, questions: 5700 },
+  { id: 'history', label: 'Հայոց պատմություն', cloth: '#7A5A2E', books: 3, questions: 4800 },
+];
+// Must match MAX_BUNDLE_SIZE in functions/lib/plans.js.
+const MAX_BUNDLE_SIZE = 3;
+
+// What one payment costs, in AMD, by the app's product ids
+// (tools/subscriptions/plans.config.mjs). PLACEHOLDERS: the store prices in
+// USD at 385 AMD, rounded to 100 — Andranik has not set the AMD prices yet.
+// The server holds its own copy and is the one that counts.
+const PRICES = {
+  subj1_monthly: 2300, subj1_3month: 5800,
+  subj2_monthly: 4600, subj2_3month: 10000,
+  subj3_monthly: 6900, subj3_3month: 13900,
+  all_yearly: 19200,
+};
+const DURATIONS = [
+  { id: 'monthly', label: '1 ամիս', months: 1 },
+  { id: '3month', label: '3 ամիս', months: 3 },
+  { id: 'yearly', label: '1 տարի', months: 12 },
+];
+
+// ---------------------------------------------------------------- helpers
+
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
+// States without an account, for looking at the page on this Mac only:
+// ?preview=login | plans | owned | all | ok | late | unknown | duplicate | fail
+const preview = LOCAL ? params.get('preview') : null;
+// On this Mac only: pay through the local emulators (functions and database;
+// `?emulator=all` signs in on the auth emulator too). The tab remembers it,
+// because the bank's return address cannot carry it.
+const EMULATOR = (() => {
+  if (!LOCAL) return null;
+  try {
+    if (params.has('live')) sessionStorage.removeItem('pay-emulator');
+    if (params.has('emulator')) sessionStorage.setItem('pay-emulator', params.get('emulator') || '1');
+    return sessionStorage.getItem('pay-emulator');
+  } catch { return params.get('emulator'); }
+})();
+// On this Mac only: `?live=1` pays through the deployed functions and the real
+// database before PAYMENTS_LIVE is on, for the owner's first real payments
+// (the deployed server takes orders from the owner only until it is opened).
+const LIVE_HERE = LOCAL && !EMULATOR && params.has('live');
+
+const number = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+const money = (n) => `${number(n)} ֏`;
+const two = (n) => String(n).padStart(2, '0');
+const day = (ms) => { const d = new Date(ms); return `${two(d.getDate())}.${two(d.getMonth() + 1)}.${d.getFullYear()}`; };
+const label = (id) => SUBJECTS.find((s) => s.id === id)?.label ?? id;
+const CHECK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+/** `months` calendar months from now, as the server counts a plan's end (webPay.js addMonths). */
+function endAfter(months) {
+  const d = new Date();
+  const wanted = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + months);
+  d.setDate(Math.min(wanted, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+  return d.getTime();
+}
+
+function show(view) {
+  for (const v of ['loading', 'login', 'plans', 'result']) $(`view-${v}`).hidden = v !== view;
+}
+function say(el, kind, text) {
+  el.hidden = !text;
+  el.className = `msg ${kind}`;
+  el.textContent = text || '';
+}
+function busy(button, on) {
+  if (on) {
+    button.dataset.label = button.innerHTML;
+    button.innerHTML = '<span class="spinner"></span>';
+  } else if (button.dataset.label != null) {
+    button.innerHTML = button.dataset.label;
+    delete button.dataset.label;
+  }
+  button.disabled = on;
+}
+
+// ---------------------------------------------------------------- what the account has
+
+// The same reading as functions/lib/plans.js (planState) and the access map
+// the server derives from it. Only decides what this page shows; the server
+// checks again before it takes an order.
+const ALL_ACCESS = ['all_yearly', 'all_yearly_v2', '1_week_single_item', '1_month_single_item',
+  '3_month_single_item', '6_month_single_item', 'annual_single_item', 'yearly_single_item', 'first_promo'];
+
+function toMillis(v) {
+  if (v == null) return NaN;
+  if (typeof v === 'object' && typeof v.toMillis === 'function') return v.toMillis();
+  if (typeof v === 'string') return Date.parse(v);
+  if (typeof v === 'number') return v;
+  return NaN;
+}
+function endOf(sub) {
+  if (!sub || typeof sub !== 'object') return NaN;
+  let end = toMillis(sub.expires_date);
+  const grace = toMillis(sub.grace_period_expires_date);
+  if (!isNaN(grace) && (isNaN(end) || grace > end)) end = grace;
+  const refunded = toMillis(sub.refunded_at);
+  if (!isNaN(refunded) && (isNaN(end) || refunded < end)) end = refunded;
+  return end;
+}
+/** { kind: 'none' } | { kind: 'all', until } | { kind: 'bundle', until, subjects } */
+function readAccess(data, now = Date.now()) {
+  const subs = (data && data.subscriptions) || {};
+  let allUntil = 0;
+  for (const key of Object.keys(subs)) {
+    if (!ALL_ACCESS.includes(String(key).split(':')[0])) continue;
+    const end = endOf(subs[key]);
+    if (end > now && end > allUntil) allUntil = end;
+  }
+  if (allUntil) return { kind: 'all', until: allUntil };
+  const map = (data && data.subject_packages && data.subject_packages.access) || {};
+  const subjects = [];
+  let until = 0;
+  for (const s of SUBJECTS) {
+    const end = toMillis(map[s.id] && map[s.id].expires_date);
+    if (end > now) { subjects.push(s.id); if (end > until) until = end; }
+  }
+  return subjects.length ? { kind: 'bundle', until, subjects } : { kind: 'none' };
+}
+
+// ---------------------------------------------------------------- state
+
+let auth = null;
+let app = null;
+let user = null;
+let access = { kind: 'none' };
+const selected = new Set();
+let choice = '3month';
+
+// A link can arrive with the choice made: ?subjects=math,english&plan=yearly
+for (const id of (params.get('subjects') || '').split(',')) {
+  if (SUBJECTS.some((s) => s.id === id) && selected.size < MAX_BUNDLE_SIZE) selected.add(id);
+}
+if (DURATIONS.some((d) => d.id === params.get('plan'))) choice = params.get('plan');
+
+const IDRAM_SHOWN = IDRAM_ON_PAGE || (LOCAL && params.has('idram'));
+let method = 'card';
+
+const yearly = () => choice === 'yearly';
+const productId = () => (yearly() ? 'all_yearly' : selected.size ? `subj${selected.size}_${choice}` : null);
+
+// ---------------------------------------------------------------- top bar
+
+function renderHeader() {
+  $('who').hidden = !user;
+  if (user) {
+    $('account-email').textContent = user.email || '';
+    $('account-email').title = user.email || '';
+  }
+}
+
+// ---------------------------------------------------------------- plans
+
+function renderPlans() {
+  $('picker').hidden = access.kind !== 'none';
+  if (access.kind === 'all') {
+    $('plans-title').textContent = 'Բոլոր առարկաները բաց են';
+    $('plans-sub').textContent = `Քո փաթեթը գործում է մինչև ${day(access.until)}`;
+    return;
+  }
+  if (access.kind === 'bundle') {
+    // Not sold on top of a running plan: the server pools every bundle and
+    // lets them lapse together, so a second one bought here could lose its
+    // subject when the first ends (functions/lib/plans.js resolveSelection).
+    $('plans-title').textContent = 'Քո փաթեթը գործում է';
+    $('plans-sub').textContent = `${access.subjects.map(label).join(', ')} · մինչև ${day(access.until)}։ Նոր փաթեթ այստեղ կարելի է գնել, երբ այս մեկն ավարտվի։`;
+    return;
+  }
+  $('plans-title').textContent = 'Փաթեթներ';
+  $('plans-sub').textContent = `Ընտրիր առարկաներդ և ժամկետը․ վճարում ես մեկ անգամ՝ ${IDRAM_SHOWN ? 'քարտով կամ Idram-ով' : 'բանկային քարտով'}`;
+
+  // 1 — subjects
+  const count = selected.size;
+  const atCap = count >= MAX_BUNDLE_SIZE;
+  $('subjects-hint').textContent = `Մինչև ${MAX_BUNDLE_SIZE} առարկա, կամ բոլորը՝ տարեկան փաթեթով`;
+  $('subjects').innerHTML = '';
+  for (const s of SUBJECTS) {
+    const on = yearly() || selected.has(s.id);
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'subject' + (!yearly() && atCap && !on ? ' blocked' : '');
+    b.style.setProperty('--cloth', s.cloth);
+    b.setAttribute('role', 'checkbox');
+    b.setAttribute('aria-checked', String(on));
+    b.innerHTML = `<span class="name"><span></span><small>${s.books} գիրք · ${number(s.questions)}+ հարց</small></span><span class="check">${CHECK}</span>`;
+    b.querySelector('.name span').textContent = s.label;
+    b.addEventListener('click', () => toggleSubject(s.id));
+    $('subjects').appendChild(b);
+  }
+  const cap = $('cap-hint');
+  cap.hidden = yearly() || !atCap;
+  cap.textContent = `Առավելագույնը ${MAX_BUNDLE_SIZE} առարկա մեկ փաթեթում․ բոլորը՝ տարեկան փաթեթով`;
+
+  // 2 — for how long. A month and three months are priced by the number of
+  // subjects chosen; the year is every subject.
+  $('plans').innerHTML = '';
+  for (const d of DURATIONS) {
+    const year = d.id === 'yearly';
+    const price = year ? PRICES.all_yearly : count ? PRICES[`subj${count}_${d.id}`] : null;
+    const off = !year && count && d.months > 1 ? Math.round((1 - price / (PRICES[`subj${count}_monthly`] * d.months)) * 100) : 0;
+    const perMonth = price != null && d.months > 1 ? `≈ ${money(Math.round(price / d.months / 10) * 10)} / ամիս` : '';
+    const detail = year
+      ? `<span>Բոլոր ${SUBJECTS.length} առարկաները</span><span>${perMonth}</span>`
+      : `<span>${price == null ? 'Նախ ընտրիր առարկա' : perMonth || `${count} առարկա`}</span>`;
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'period';
+    b.disabled = price == null;
+    b.dataset.plan = d.id;
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', String(choice === d.id && price != null));
+    b.innerHTML = `<span class="top"><span class="radio"></span><span>${d.label}</span></span>`
+      + `<span class="price">${price == null ? '—' : money(price)}</span>`
+      + `<span class="detail">${detail}${off > 0 ? `<span class="badge">−${off}%</span>` : ''}</span>`;
+    b.addEventListener('click', () => { choice = d.id; say($('pay-msg'), '', ''); renderPlans(); });
+    $('plans').appendChild(b);
+  }
+
+  renderOrder();
+}
+
+/** The order beside the steps: what is chosen, until when, for how much. */
+function renderOrder() {
+  const id = productId();
+  const duration = DURATIONS.find((d) => d.id === choice);
+  const names = yearly()
+    ? `Բոլոր ${SUBJECTS.length} առարկաները`
+    : SUBJECTS.filter((s) => selected.has(s.id)).map((s) => s.label).join('<br>') || '—';
+  const rows = [
+    ['Առարկաներ', names],
+    ['Ժամկետ', id ? duration.label : '—'],
+    ['Գործում է մինչև', id ? day(endAfter(duration.months)) : '—'],
+  ];
+  $('order').innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  $('total').textContent = id ? money(PRICES[id]) : '—';
+
+  $('methods').hidden = !IDRAM_SHOWN;
+  for (const b of $('methods').children) b.setAttribute('aria-checked', String(b.dataset.method === method));
+
+  const pay = $('pay-btn');
+  if (!pay.dataset.label) {
+    pay.disabled = !id;
+    pay.textContent = !id ? 'Ընտրիր գոնե մեկ առարկա' : method === 'idram' ? 'Վճարել Idram-ով' : 'Վճարել քարտով';
+  }
+  $('fine').textContent = 'Մեկանգամյա վճար է․ ժամկետի վերջում ինքնաբերաբար չի երկարաձգվում։ '
+    + (method === 'idram' ? 'Վճարում ես Idram-ի էջում՝ Idram դրամապանակով։ ' : 'Վճարում ես Ամերիաբանկի էջում՝ Visa, Mastercard կամ ArCa քարտով։ ')
+    + `Փաթեթը կբացվի հավելվածում${user?.email ? `՝ ${user.email} հաշվով` : ''}։`;
+}
+
+for (const b of $('methods').children) {
+  b.addEventListener('click', () => { method = b.dataset.method; say($('pay-msg'), '', ''); renderOrder(); });
+}
+
+function toggleSubject(id) {
+  // The year covers everything; touching a subject means choosing them.
+  if (yearly()) choice = '3month';
+  if (!selected.has(id) && selected.size >= MAX_BUNDLE_SIZE) { renderPlans(); return; }
+  if (selected.has(id)) selected.delete(id);
+  else selected.add(id);
+  say($('pay-msg'), '', '');
+  renderPlans();
+}
+
+$('pay-btn').addEventListener('click', async () => {
+  const id = productId();
+  if (!id) return;
+  const subjects = yearly() ? [] : SUBJECTS.filter((s) => selected.has(s.id)).map((s) => s.id);
+  const msg = $('pay-msg');
+  if (!PAYMENTS_LIVE && !EMULATOR && !LIVE_HERE) {
+    say(msg, 'info', 'Վճարումը դեռ միացված չէ։ Շուտով կբացվի։');
+    return;
+  }
+  say(msg, '', '');
+  const pay = $('pay-btn');
+  busy(pay, true);
+  try {
+    const { getFunctions, httpsCallable, connectFunctionsEmulator } = await import(`${FB}firebase-functions.js`);
+    const functions = getFunctions(app, FUNCTIONS_REGION);
+    if (EMULATOR) connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+    const createWebOrder = httpsCallable(functions, 'createWebOrder');
+    const { data } = await createWebOrder({ product: id, subjects, provider: IDRAM_SHOWN ? method : 'card' });
+    // The bank's own payment page; it sends the buyer back with ?result=…
+    if (data && data.redirect) { location.assign(data.redirect); return; }
+    // Idram takes the order as a form posted from the browser (its document, section 2).
+    if (data && data.form) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = data.form.action;
+      for (const [name, value] of Object.entries(data.form.fields)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      }
+      document.body.appendChild(form);
+      form.submit();
+      return;
+    }
+    throw new Error('no-way-to-pay');
+  } catch (e) {
+    console.warn('[pay] order failed', e?.code, e?.message);
+    busy(pay, false);
+    renderPlans();
+    // The server's reasons (functions/lib/webPay.js createWebOrder).
+    const reason = {
+      'has-plan': 'Այս հաշիվն արդեն ունի գործող փաթեթ։',
+      'test-mode': 'Վճարումը դեռ փորձարկվում է և շուտով կբացվի։',
+      'too-many-orders': 'Շատ փորձեր եղան։ Փորձիր մի փոքր ուշ։',
+      'idram-not-connected': 'Idram-ով վճարումը դեռ միացված չէ։ Ընտրիր բանկային քարտը։',
+    }[e?.message] || 'Չհաջողվեց սկսել վճարումը։ Ստուգիր ինտերնետը և փորձիր կրկին։';
+    // On this Mac the error itself too: a server that is not there and a
+    // network that is down read the same above.
+    say(msg, 'error', LOCAL ? `${reason} [${LIVE_HERE ? 'live' : EMULATOR ? 'local' : '-'} · ${e?.code || ''} ${e?.message || ''}]` : reason);
+  }
+});
+
+// ---------------------------------------------------------------- result
+
+const RESULT_OK = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const RESULT_FAIL = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+function renderResult(state) {
+  const mark = $('result-mark');
+  const button = $('result-btn');
+  button.hidden = true;
+  if (state === 'fail') {
+    mark.className = 'mark fail';
+    mark.innerHTML = RESULT_FAIL;
+    $('result-title').textContent = 'Վճարումը չկատարվեց';
+    $('result-text').textContent = 'Եթե գումարը գանձվել է, գրիր support@harcer.am՝ կբացենք փաթեթը կամ կվերադարձնենք գումարը։';
+    button.hidden = false;
+    button.textContent = 'Փորձել կրկին';
+    button.onclick = () => { history.replaceState(null, '', location.pathname); start(); };
+    return;
+  }
+  mark.className = 'mark ok';
+  mark.innerHTML = state === 'checking' ? '<div class="spinner"></div>' : RESULT_OK;
+  if (state === 'checking') {
+    $('result-title').textContent = 'Վճարումը ստուգվում է…';
+    $('result-text').textContent = '';
+  } else if (state === 'active') {
+    $('result-title').textContent = 'Փաթեթն ակտիվ է';
+    const what = access.kind === 'all' ? 'Բոլոր առարկաները' : access.subjects.map(label).join(', ');
+    $('result-text').textContent = `${what} · մինչև ${day(access.until)}։ Բացիր հավելվածը նույն հաշվով${user?.email ? ` (${user.email})` : ''}։ Եթե այն արդեն բաց է, փակիր և նորից բացիր։`;
+  } else if (state === 'duplicate') {
+    // Paid while the account already had a plan: the bank payment is cancelled.
+    mark.className = 'mark fail';
+    mark.innerHTML = RESULT_FAIL;
+    $('result-title').textContent = 'Այս հաշիվն արդեն ունի փաթեթ';
+    $('result-text').textContent = 'Այս վճարումը չեղարկվում է, և գումարը կվերադառնա քարտիդ։ Եթե մի քանի օրում չվերադառնա, գրիր support@harcer.am։';
+  } else if (state === 'unknown') {
+    // The bank could not be asked: nobody knows yet whether it was paid.
+    mark.innerHTML = '<div class="spinner"></div>';
+    $('result-title').textContent = 'Վճարումը դեռ հաստատված չէ';
+    $('result-text').textContent = 'Եթե գումարը գանձվել է, փաթեթը կբացվի մի քանի րոպեում՝ ինքնաբերաբար։ Եթե չբացվի, գրիր support@harcer.am։';
+  } else {
+    // Anyone can open ?result=ok, so this never says the money arrived.
+    mark.innerHTML = '<div class="spinner"></div>';
+    $('result-title').textContent = 'Փաթեթը դեռ չի երևում';
+    $('result-text').textContent = 'Եթե գումարը գանձվել է, փաթեթը կբացվի մի քանի րոպեում՝ ինքնաբերաբար։ Եթե չբացվի, գրիր support@harcer.am։';
+  }
+}
+
+/** The bank sent the buyer back: wait for the server to have opened the plan. */
+async function confirmPayment() {
+  show('result');
+  renderResult('checking');
+  for (let i = 0; i < 8; i++) {
+    await loadAccess();
+    if (access.kind !== 'none') { renderResult('active'); return; }
+    await new Promise((r) => setTimeout(r, 2500));
+  }
+  renderResult('late');
+}
+
+// ---------------------------------------------------------------- sign in
+
+// The app's own messages (app/login.tsx).
+function loginError(code) {
+  switch (code) {
+    case 'auth/invalid-email': return 'Էլ․ փոստի հասցեն սխալ է գրված';
+    case 'auth/user-disabled': return 'Այս հաշիվն արգելափակված է';
+    case 'auth/invalid-credential':
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+      return 'Էլ․ փոստը կամ գաղտնաբառը սխալ է։ Եթե գաղտնաբառը մոռացել եք, սեղմեք «Մոռացե՞լ եք գաղտնաբառը»։';
+    case 'auth/too-many-requests': return 'Շատ փորձեր եղան։ Փորձեք մի փոքր ուշ։';
+    case 'auth/network-request-failed': return 'Ինտերնետ կապ չկա';
+    case 'auth/popup-blocked': return 'Դիտարկիչը փակեց մուտքի պատուհանը։ Թույլատրեք այն և փորձեք կրկին։';
+    case 'auth/account-exists-with-different-credential': return 'Այս էլ․ փոստով հաշիվ արդեն կա։ Մուտք գործեք գաղտնաբառով։';
+    default: return 'Չհաջողվեց մուտք գործել։ Փորձեք կրկին։';
+  }
+}
+
+let store = null;
+/** customers/{uid}, read through the small REST build of Firestore. */
+async function customers() {
+  if (!store) {
+    const { getFirestore, doc, getDoc, connectFirestoreEmulator } = await import(`${FB}firebase-firestore-lite.js`);
+    const firestore = getFirestore(app);
+    if (EMULATOR) connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
+    store = { get: (uid) => getDoc(doc(firestore, 'customers', uid)) };
+  }
+  return store;
+}
+
+async function loadAccess() {
+  if (!user || preview) return;
+  try {
+    const snap = await (await customers()).get(user.uid);
+    access = readAccess(snap.exists() ? snap.data() : null);
+  } catch (e) {
+    // Unknown is shown as "no plan"; the server refuses a second one.
+    console.warn('[pay] could not read the plan', e?.code, e?.message);
+    access = { kind: 'none' };
+  }
+}
+
+async function start() {
+  renderHeader();
+  if (!user) { show('login'); return; }
+  const result = params.get('result');
+  if (result === 'fail' && location.search) { show('result'); renderResult('fail'); return; }
+  if ((result === 'unknown' || result === 'duplicate') && location.search) { show('result'); renderResult(result); return; }
+  if (result === 'ok' && location.search) { await confirmPayment(); return; }
+  show('loading');
+  await loadAccess();
+  show('plans');
+  renderPlans();
+}
+
+async function boot() {
+  if (preview) {
+    // No Firebase: a made-up account, for looking at a state.
+    const soon = Date.now() + 61 * 24 * 60 * 60 * 1000;
+    user = preview === 'login' ? null : { uid: 'preview', email: 'ani.petrosyan@gmail.com' };
+    if (preview === 'all') access = { kind: 'all', until: soon };
+    if (preview === 'owned') access = { kind: 'bundle', until: soon, subjects: ['english', 'math'] };
+    if (preview === 'ok') access = { kind: 'bundle', until: soon, subjects: ['english', 'math'] };
+    renderHeader();
+    if (['ok', 'late', 'unknown', 'duplicate', 'fail'].includes(preview)) {
+      show('result');
+      renderResult(preview === 'ok' ? 'active' : preview);
+    } else if (user) { show('plans'); renderPlans(); } else show('login');
+    return;
+  }
+
+  const [{ initializeApp }, authSdk] = await Promise.all([
+    import(`${FB}firebase-app.js`),
+    import(`${FB}firebase-auth.js`),
+  ]);
+  const { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider,
+    OAuthProvider, sendPasswordResetEmail, signOut, connectAuthEmulator } = authSdk;
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  auth.languageCode = 'hy';
+  if (EMULATOR === 'all') connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+
+  // Guests of the app are anonymous accounts; nothing can be bought for one.
+  onAuthStateChanged(auth, (u) => {
+    user = u && !u.isAnonymous ? u : null;
+    access = { kind: 'none' };
+    start();
+  });
+
+  const msg = $('login-msg');
+  const fail = (e) => {
+    const code = e?.code;
+    console.warn('[pay] sign-in failed', code, e?.message);
+    // Closing Google's or Apple's window is not an error.
+    if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return;
+    say(msg, 'error', loginError(code));
+  };
+
+  $('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = $('email').value.trim();
+    const password = $('password').value;
+    if (!email || !password) { say(msg, 'error', 'Լրացրեք էլ․ փոստը և գաղտնաբառը'); return; }
+    say(msg, '', '');
+    busy($('login-btn'), true);
+    try { await signInWithEmailAndPassword(auth, email, password); } catch (err) { fail(err); }
+    busy($('login-btn'), false);
+  });
+
+  $('forgot').addEventListener('click', async () => {
+    const email = $('email').value.trim();
+    if (!email) { say(msg, 'error', 'Նախ գրեք ձեր էլ․ փոստը'); $('email').focus(); return; }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      say(msg, 'ok', `Եթե ${email} հասցեով հաշիվ կա, գաղտնաբառը փոխելու նամակն ուղարկված է։`);
+    } catch (err) { fail(err); }
+  });
+
+  const popup = (button, provider) => async () => {
+    say(msg, '', '');
+    busy(button, true);
+    try { await signInWithPopup(auth, provider); } catch (err) { fail(err); }
+    busy(button, false);
+  };
+  $('google-btn').addEventListener('click', popup($('google-btn'), new GoogleAuthProvider()));
+  if (APPLE_ON_WEB) {
+    $('apple-btn').hidden = false;
+    $('apple-btn').addEventListener('click', popup($('apple-btn'), new OAuthProvider('apple.com')));
+  }
+
+  $('signout').addEventListener('click', () => signOut(auth));
+}
+
+$('pw-toggle').addEventListener('click', () => {
+  const input = $('password');
+  const showing = input.type === 'text';
+  input.type = showing ? 'password' : 'text';
+  $('pw-toggle').setAttribute('aria-pressed', String(!showing));
+});
+
+// Instagram's and Facebook's built-in browsers: Google refuses to sign in
+// inside them, so the button would only lead to Google's error page.
+if (/Instagram|FBAN|FBAV|FB_IAB/i.test(navigator.userAgent)) {
+  $('sso').hidden = true;
+  $('inapp-note').hidden = false;
+}
+
+boot().catch((e) => {
+  console.error('[pay] could not start', e);
+  show('login');
+  say($('login-msg'), 'error', 'Էջը չբացվեց։ Ստուգեք ինտերնետը և թարմացրեք էջը։');
+});
+</script>
+</body>
+</html>
