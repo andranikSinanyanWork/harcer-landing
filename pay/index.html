@@ -239,6 +239,8 @@
   .pay:not(:disabled)::after { content: ""; position: absolute; top: -20px; bottom: -20px; left: -100px; width: 100px; transform: rotate(8deg); background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)); animation: sweep 2.8s ease-in-out 1.6s infinite; pointer-events: none; }
   @keyframes sweep { 0% { left: -100px; } 43%, 100% { left: calc(100% + 100px); } }
   @media (prefers-reduced-motion: reduce) { .pay::after, .cover.enter, .chip.enter { animation: none !important; } }
+  /* What the payment does to the plan held (the app's changeNote) */
+  .change { margin: 16px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--primary-soft); color: var(--primary-dark); font-size: 13px; font-weight: 600; line-height: 1.45; }
   /* How to pay: a tile per wallet, its logo in its own colours */
   .methods { display: grid; grid-template-columns: repeat(var(--count, 2), minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
   .method { position: relative; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 12px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--surface); transition: border-color 0.15s, background-color 0.15s; }
@@ -272,6 +274,7 @@
     .plan .price { font-size: 17px; }
     .methods { margin: 0 0 10px; }
     .method { height: 46px; }
+    .change { margin: 0 0 10px; font-size: 12px; text-align: center; }
     .fine { justify-content: center; margin-top: 8px; font-size: 11.5px; text-align: center; }
     .fine svg { display: none; }
     .fine .phone { display: inline; }
@@ -414,6 +417,7 @@
             </ul>
             <div class="total"><span>Ընդամենը</span><span><strong id="o-total"></strong><small id="o-per"></small></span></div>
           </div>
+          <p class="change" id="change-note" hidden></p>
           <div class="methods" id="methods" role="radiogroup" aria-label="Վճարման եղանակ"></div>
           <button type="button" class="pay" id="pay-btn"></button>
           <p class="msg" id="pay-msg" role="status" hidden></p>
@@ -513,7 +517,7 @@ const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 // States without an account, for looking at the page on this Mac only:
-// ?preview=login | plans | owned | all | ok | late | unknown | duplicate | fail
+// ?preview=login | plans | owned | all | webplan | webyear | ok | late | unknown | duplicate | fail
 const preview = LOCAL ? params.get('preview') : null;
 // On this Mac only: pay through the local emulators (functions and database;
 // `?emulator=all` signs in on the auth emulator too). The tab remembers it,
@@ -539,16 +543,6 @@ const label = (id) => SUBJECTS.find((s) => s.id === id)?.label ?? id;
 const CHECK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 // Idram's logo, from idram.am/assets/icons/logo.svg (28 Oct 2026), in one colour for its button.
 const IDRAM_LOGO = '<svg class="idram" viewBox="0 0 140 42" fill="currentColor" aria-hidden="true"><path transform="translate(47.091 8.133)" d="M1.8,22.9h2.6V6.4H1.8V22.9z M3.1,0.2c1,0,1.8,0.8,1.8,1.8S4.1,3.8,3.1,3.8S1.3,3,1.3,2      S2.1,0.2,3.1,0.2L3.1,0.2z"/><path transform="translate(47.091 8.133)" d="M22.7,0.2v8.2c-1.6-1.5-3.8-2.4-6-2.4C12,6,8,9.8,8,14.6s3.9,8.7,8.7,8.7c2.2,0,4.4-0.9,6-2.4v2h2.6V0.2      H22.7z M16.7,20.7c-3.3,0-6-2.7-6-6s2.6-5.9,5.9-6h0.1c3.3,0,6,2.7,6,6S20,20.7,16.7,20.7z"/><path transform="translate(47.091 8.133)" d="M38.1,6c-2.2,0-4.4,0.9-6,2.4v-2h-2.6v16.4h2.6v-8.2c0-3.3,2.7-6,6-6V6z"/><path transform="translate(47.091 8.133)" d="M54.1,6.4v1.9c-1.6-1.5-3.8-2.4-6-2.4c-4.5,0.2-8.1,3.8-8.3,8.3c-0.2,4.8,3.5,8.8,8.3,9      c2.2,0,4.4-0.9,6-2.4v2h2.7V6.4H54.1z M48.1,20.7c-3.3,0-6-2.7-6-6c0.1-3.3,2.7-6,6-6s6,2.7,6,6S51.4,20.7,48.1,20.7z"/><path transform="translate(47.091 8.133)" d="M63.5,6.4h-2.7v16.4h2.6v-8.2c0-3.3,2.7-6,6-6s6,2.7,6,6v8.2h2.7v-8.2c0-3.3,2.7-6,6-6      s6,2.7,6,6v8.2h2.6v-8.2c0-4.8-3.9-8.6-8.6-8.6c-3,0-5.7,1.5-7.3,4c-1.6-2.5-4.3-4-7.3-4c-2.2,0-4.4,0.8-6,2.4L63.5,6.4      L63.5,6.4z"/><path class="mark" transform="translate(0.0 0.496)" d="M8.3,1.5C4,3.8,1.3,8.1,0.9,12.9l0,0v3.9c0.2,0.6,0.8,1.1,1.5,1.1l0,0c0.8,0,1.5-0.7,1.5-1.5      l0,0v-2c0-4.3,2.2-8.2,6-10.3l0,0c3.7-2.2,8.3-2.2,11.9,0l0,0l1.8,1l0,0l0,0c0.7,0.4,1.6,0.2,2-0.5l0,0l0,0      c0.4-0.7,0.2-1.6-0.5-2l0,0l-1.8-1c-2.3-1.4-4.9-2.1-7.5-2.1l0,0C13.2-0.6,10.6,0.1,8.3,1.5 M27.9,6.1c-0.4,0.7-0.1,1.6,0.6,2      l0,0l1.7,1c3.7,2.1,6,6,6,10.3l0,0c0.1,4.3-2.2,8.2-6,10.3l0,0l-8.6,5c-3.7,2.2-8.3,2.2-12,0l0,0c-3.7-2.1-6-6-5.9-10.3l0,0v-2      c0-0.8-0.7-1.5-1.5-1.5l0,0c-0.7,0-1.3,0.5-1.4,1.1l0,0v3.8c0.4,4.8,3.1,9.1,7.4,11.4l0,0c4.6,2.7,10.3,2.7,14.9,0l0,0l8.7-5      c4.7-2.6,7.6-7.5,7.5-12.9l0,0C39.4,14,36.5,9,31.8,6.4l0,0l-1.7-1L30,5.3l0,0c-0.3,0-0.5,0-0.8,0l0,0      C28.7,5.3,28.2,5.6,27.9,6.1 M11.3,6.7c-2.8,1.6-4.5,4.5-4.5,7.7l0,0v10c-0.1,3.2,1.7,6.2,4.5,7.7l0,0c2.7,1.6,6.2,1.6,8.9,0      l0,0l1.8-1c0.7-0.4,0.9-1.3,0.5-2l0,0c-0.4-0.7-1.3-1-2-0.6l0,0l0,0l0,0l-1.7,1c-1.9,1.1-4.1,1.1-6,0l0,0c-1.9-1-3-3-3-5.2l0,0      v-10c0-2.1,1.1-4.1,3-5.2l0,0c1.8-1.1,4.1-1.1,6,0l0,0l8.6,5c1.9,1,3,3,3,5.2l0,0c0,2.1-1.1,4.1-3,5.2l0,0l-1.8,1      c-0.7,0.4-0.9,1.4-0.4,2l0,0c0.4,0.6,1.2,0.9,1.9,0.5l0,0l1.7-1c2.8-1.6,4.5-4.5,4.5-7.7l0,0c0.1-3.2-1.7-6.2-4.5-7.7l0,0      l-8.6-5c-1.4-0.8-2.9-1.2-4.5-1.2l0,0C14.2,5.5,12.7,5.9,11.3,6.7 M13.1,13c-0.3,0.4-0.4,0.9-0.4,1.4l0,0v2      c0.1,0.8,0.8,1.4,1.6,1.3l0,0c0.7-0.1,1.3-0.6,1.3-1.3l0,0V15c0-0.1,0.1-0.2,0.2-0.3l0,0c0.1,0,0.2,0,0.4,0l0,0l3.8,2.2l3.8,2.2      c0.1,0,0.2,0.2,0.2,0.3l0,0c0,0.1-0.1,0.3-0.2,0.3l0,0L20,21.9l-3.8,2.2c-0.1,0.1-0.3,0.1-0.4,0l0,0c-0.1,0-0.2-0.2-0.2-0.3l0,0      v-1.4c-0.1-0.8-0.8-1.4-1.6-1.3l0,0c-0.7,0.1-1.3,0.6-1.3,1.3l0,0v2c0,1.1,0.6,2,1.5,2.5l0,0c0.9,0.5,2,0.5,3,0l0,0l8.6-5      c0.9-0.5,1.5-1.5,1.5-2.5l0,0c0-1.1-0.6-2-1.5-2.5l0,0l-8.6-5c-0.5-0.3-1-0.4-1.5-0.4l0,0C14.7,11.5,13.7,12,13.1,13"/></svg>';
-
-/** `months` calendar months from now, as the server counts a plan's end (webPay.js addMonths). */
-function endAfter(months) {
-  const d = new Date();
-  const wanted = d.getDate();
-  d.setDate(1);
-  d.setMonth(d.getMonth() + months);
-  d.setDate(Math.min(wanted, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
-  return d.getTime();
-}
 
 // Days to the next exam, as the app counts them for a student who gave no
 // date (services/examSchedule.ts): the 20th of January or of July.
@@ -609,16 +603,33 @@ function endOf(sub) {
   if (!isNaN(refunded) && (isNaN(end) || refunded < end)) end = refunded;
   return end;
 }
-/** { kind: 'none' } | { kind: 'all', until } | { kind: 'bundle', until, subjects } */
+const BUNDLE_RE = /^subj(\d+)_(monthly|3month)(?:_v2)?$/;
+/** What one product grants (functions/lib/plans.js classify). */
+function classify(product) {
+  const m = BUNDLE_RE.exec(product);
+  if (m) return Number(m[1]) > 0 ? { kind: 'bundle', size: Number(m[1]), period: m[2] } : null;
+  return ALL_ACCESS.includes(product) ? { kind: 'all' } : null;
+}
+
+/**
+ * What the account holds: { kind: 'none' | 'all' | 'bundle', until, subjects,
+ * live }. `live` is every plan running or waiting to start, with its store
+ * (functions/lib/webPay.js livePlans), for planChangeFor.
+ */
 function readAccess(data, now = Date.now()) {
   const subs = (data && data.subscriptions) || {};
-  let allUntil = 0;
-  for (const key of Object.keys(subs)) {
-    if (!ALL_ACCESS.includes(String(key).split(':')[0])) continue;
-    const end = endOf(subs[key]);
-    if (end > now && end > allUntil) allUntil = end;
+  const live = [];
+  for (const [key, sub] of Object.entries(subs)) {
+    const product = String(key).split(':')[0];
+    const plan = classify(product);
+    if (!plan) continue;
+    const end = endOf(sub);
+    if (!(end > now)) continue;
+    const start = toMillis(sub && sub.purchase_date);
+    live.push({ product, plan, end, start: isNaN(start) ? now : Math.min(start, end), store: (sub && sub.store) || 'unknown' });
   }
-  if (allUntil) return { kind: 'all', until: allUntil };
+  const all = live.filter((x) => x.plan.kind === 'all');
+  if (all.length) return { kind: 'all', until: Math.max(...all.map((x) => x.end)), subjects: SUBJECTS.map((x) => x.id), live };
   const map = (data && data.subject_packages && data.subject_packages.access) || {};
   const subjects = [];
   let until = 0;
@@ -626,8 +637,84 @@ function readAccess(data, now = Date.now()) {
     const end = toMillis(map[s.id] && map[s.id].expires_date);
     if (end > now) { subjects.push(s.id); if (end > until) until = end; }
   }
-  return subjects.length ? { kind: 'bundle', until, subjects } : { kind: 'none' };
+  if (!live.length && !subjects.length) return { kind: 'none', until: 0, subjects: [], live };
+  return { kind: 'bundle', until: until || Math.max(...live.map((x) => x.end)), subjects, live };
 }
+
+// ---------------------------------------------------------------- plan changes
+
+const DAY = 864e5;
+const monthsOf = (product) => (product === 'all_yearly' ? 12 : /_3month$/.test(product) ? 3 : 1);
+/** `months` calendar months after `from`, as the server counts them (webPay.js addMonths). */
+function addMonths(from, months) {
+  const d = new Date(from);
+  const dayOfMonth = d.getUTCDate();
+  d.setUTCDate(1);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  d.setUTCDate(Math.min(dayOfMonth, new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate()));
+  return d.getTime();
+}
+
+/**
+ * What paying for `product` does to the plans held — the server's
+ * webPlanChange (functions/lib/webPay.js), which is the app's planChange
+ * (services/subjectPackages.ts) for one-time payments: an upgrade starts now
+ * and gets the unused days back at the end; the same subjects again extend
+ * the plan from its end. Only for what the page says; the server decides.
+ */
+function planChangeFor(product, now = Date.now()) {
+  const target = classify(product);
+  const live = access.live || [];
+  const web = live.filter((x) => x.store === 'web');
+  const others = live.filter((x) => x.store !== 'web');
+  if (others.some((x) => x.plan.kind === 'all')) return { type: 'has-all' };
+  if (others.length) return { type: 'other-store', store: others[0].store };
+  if (!web.length) return { type: 'new', start: now };
+  const end = Math.max(...web.map((x) => x.end));
+  if (web.some((x) => x.plan.kind === 'all')) return target.kind === 'all' ? { type: 'extend', start: end } : { type: 'has-all' };
+  const held = Math.max(...web.map((x) => x.plan.size));
+  if (target.kind === 'all' || target.size > held) return { type: 'upgrade', start: now, replaces: web };
+  if (target.size < held) return { type: 'downgrade' };
+  return { type: 'extend', start: end };
+}
+
+/** When the plan bought under `change` starts and ends, and the days it gets back (webPay.js planDates). */
+function planDatesFor(change, product, now = Date.now()) {
+  const start = change.type === 'extend' ? change.start : now;
+  let credit = 0;
+  if (change.type === 'upgrade') {
+    const perDay = PRICES[product] / ((addMonths(now, monthsOf(product)) - now) / DAY);
+    let left = 0;
+    for (const x of change.replaces) {
+      const length = x.end - x.start;
+      if (length > 0) left += (PRICES[x.product] || 0) * (x.end - Math.max(now, x.start)) / length;
+    }
+    credit = perDay > 0 ? Math.floor(left / perDay) : 0;
+  }
+  return { start, end: addMonths(start, monthsOf(product)) + credit * DAY, creditDays: credit };
+}
+
+/**
+ * What the screen is for, as the app's SubjectPackages modes:
+ *   buy          nothing held
+ *   web-bundle   a subject plan paid here: add subjects, take the year, or extend
+ *   web-all      the year paid here: everything is open; it can be extended
+ *   has-all      an all-subject plan from a store or a code
+ *   other-store  a subject plan billed by a store: changed there
+ */
+function screenMode() {
+  if (access.kind === 'none') return 'buy';
+  const live = access.live || [];
+  const others = live.filter((x) => x.store !== 'web');
+  if (others.some((x) => x.plan.kind === 'all') || (access.kind === 'all' && !live.length)) return 'has-all';
+  if (others.length || !live.length) return 'other-store';
+  return access.kind === 'all' ? 'web-all' : 'web-bundle';
+}
+/** Subjects already in a plan paid here: locked, as the app locks them. */
+const ownedSubjects = () => (screenMode() === 'web-bundle' ? access.subjects : []);
+const STORE_NAMES = { app_store: 'App Store', play_store: 'Google Play' };
+/** The definite article, as the app's «Անգլերենը», «Մաթեմատիկան». */
+const definite = (word) => (/[աեէըիոօւ]$/.test(word) ? `${word}ն` : `${word}ը`);
 
 // ---------------------------------------------------------------- state
 
@@ -642,7 +729,25 @@ let choice = YEAR_FIRST ? 'yearly' : '3month';
 for (const id of (params.get('subjects') || '').split(',')) {
   if (SUBJECTS.some((s) => s.id === id) && selected.size < MAX_BUNDLE_SIZE) selected.add(id);
 }
-if (DURATIONS.some((d) => d.id === params.get('plan'))) choice = params.get('plan');
+// A link can name the length; else it follows the plan held, as in the app.
+let choiceTouched = false;
+if (DURATIONS.some((d) => d.id === params.get('plan'))) { choice = params.get('plan'); choiceTouched = true; }
+
+/**
+ * Once the account is read: its subjects ticked and locked, and the length it
+ * holds picked — so the same plan again (an extension) is the starting point,
+ * as the app starts from the plan held.
+ */
+function startFromHeld() {
+  const owned = ownedSubjects();
+  if (!owned.length) return;
+  const keep = [...owned, ...[...selected].filter((x) => !owned.includes(x))].slice(0, MAX_BUNDLE_SIZE);
+  selected.clear();
+  for (const x of keep) selected.add(x);
+  const held = (access.live || []).filter((x) => x.store === 'web' && x.plan.kind === 'bundle')
+    .sort((a, b) => b.plan.size - a.plan.size)[0];
+  if (held && !choiceTouched) choice = held.plan.period;
+}
 
 // Telcell's wordmark, from telcell.am's header (28 Oct 2026).
 const TELCELL_LOGO = '<svg class="telcell" viewBox="0 0 162 30" fill="currentColor" aria-hidden="true"><path d="M16.3593 1.05288V28.9605H9.18531V8.17342H0.733398V1.05288H16.3593ZM18.6001 8.17954H25.7741V1.05899H18.6001V8.17954ZM47.4804 28.9605V21.8461H35.2543V18.5701H44.6096V11.4495H35.2543V8.17342H47.4804V1.05288H28.0802V28.9605H47.4804ZM69.3948 28.9605V21.8461H58.0543V1.05288H50.8802V28.9605H69.3948ZM83.4516 8.14897C86.2273 8.14897 88.1411 9.85424 88.8544 11.8406L96.4862 11.8468C95.6774 5.61247 90.2274 0.600586 83.3446 0.600586C75.2077 0.600586 69.5434 6.62707 69.5434 15.0006C69.5434 23.3741 75.3979 29.4006 83.3446 29.4006C90.061 29.4006 95.446 25.006 96.5748 18.1789L88.8247 18.1727C88.1352 20.3608 86.0074 21.8522 83.4456 21.8522C79.6476 21.8522 77.0681 19.0285 77.0681 15.0006C77.0741 10.9727 79.5585 8.14897 83.4516 8.14897ZM98.6374 1.05288V28.9605H118.038V21.8461H105.811V18.5701H115.167V11.4495H105.811V8.17342H118.038V1.05288H98.6374ZM139.941 28.9605V21.8461H128.605V1.05288H121.431V28.9605H139.941ZM149.854 1.05288H142.681V28.9605H161.189V21.8461H149.854V1.05288Z"/></svg>';
@@ -736,54 +841,71 @@ function planRow(id, title, price, per, off = 0) {
 }
 
 function renderPlans() {
-  const owned = access.kind !== 'none';
-  $('checkout').classList.toggle('owned', owned);
-  $('eyebrow').hidden = owned;
+  const mode = screenMode();
+  const owned = ownedSubjects();
+  // Nothing to buy here: an all-subject plan from a store or a code, or a
+  // store plan (the app says to change it in that store; so does this page).
+  const closed = mode === 'has-all' || mode === 'other-store';
+  $('checkout').classList.toggle('owned', closed);
+  $('eyebrow').hidden = mode !== 'buy';
   $('eyebrow').textContent = `Մինչև քննությունը՝ ${EXAM_DAYS} օր`;
   $('plans').innerHTML = '';
-  $('more').hidden = owned;
-  if (owned) {
+  $('more').hidden = closed || mode === 'web-all';
+  if (closed || mode === 'web-all') {
     $('compare').hidden = true;
     $('chips').hidden = true;
     $('cap-hint').hidden = true;
-    // Not sold on top of a running plan: the server pools every bundle and
-    // lets them lapse together, so a second one bought here could lose its
-    // subject when the first ends (functions/lib/plans.js resolveSelection).
-    const all = access.kind === 'all';
-    $('plans-title').textContent = all ? 'Բոլոր առարկաները բաց են' : 'Քո փաթեթը գործում է';
-    $('plans-sub').textContent = all
-      ? `Քո փաթեթը գործում է մինչև ${day(access.until)}`
-      : `Մինչև ${day(access.until)}։ Նոր փաթեթ այստեղ կարելի է գնել, երբ այս մեկն ավարտվի։`;
-    renderCovers(SUBJECTS.filter((s) => all || access.subjects.includes(s.id)), () => ({ on: true, locked: true }));
+  }
+  if (closed) {
+    const store = (access.live || []).find((x) => x.store !== 'web')?.store;
+    $('plans-title').textContent = access.kind === 'all' ? 'Բոլոր առարկաները բաց են' : 'Քո փաթեթը գործում է';
+    $('plans-sub').textContent = mode === 'other-store' && STORE_NAMES[store]
+      ? `Քո փաթեթը վճարվում է ${STORE_NAMES[store]}-ում․ փոխիր այն այնտեղից`
+      : `Քո փաթեթը գործում է մինչև ${day(access.until)}`;
+    renderCovers(SUBJECTS.filter((x) => access.subjects.includes(x.id)), () => ({ on: true, locked: true }));
+    fitLabels();
+    return;
+  }
+  if (mode === 'web-all') {
+    // The year paid here: everything is open; the same year again extends it.
+    choice = 'yearly';
+    $('plans-title').textContent = 'Բոլոր առարկաները բաց են';
+    $('plans-sub').textContent = `Քո փաթեթը գործում է մինչև ${day(access.until)}․ կարող ես երկարացնել այն`;
+    renderCovers(SUBJECTS, () => ({ on: true, locked: true }));
+    $('plans').appendChild(planRow('yearly', `Բոլոր առարկաները · ${lengthOf('yearly').label}`, PRICES.all_yearly, `≈ ${monthly(PRICES.all_yearly, 12)} / ամիս`));
+    renderOrder();
     fitLabels();
     return;
   }
 
-  $('plans-title').textContent = 'Ընտրիր առարկաներդ';
-  $('plans-sub').textContent = `Մինչև ${MAX_BUNDLE_SIZE} առարկա, կամ բոլորը՝ տարեկան փաթեթով`;
+  // The app's titles: a new plan, or one to add to (SubjectPackages.tsx).
+  $('plans-title').textContent = owned.length ? 'Ավելացրու առարկա' : 'Ընտրիր առարկաներդ';
+  $('plans-sub').textContent = owned.length
+    ? `Քո փաթեթում՝ ${owned.length} առարկա․ ավելացրու կամ վերցրու բոլորը տարով`
+    : `Մինչև ${MAX_BUNDLE_SIZE} առարկա, կամ բոլորը՝ տարեկան փաթեթով`;
 
   const count = selected.size;
   const year = yearly();
   const nothing = !year && count === 0;
   const atCap = count >= MAX_BUNDLE_SIZE;
 
-  // Up top and large, what the plan is for: the chosen subjects, or all of
-  // them when the year is picked or nothing is chosen yet. The rest below, as
-  // chips: a tap adds one.
-  renderCovers(SUBJECTS.filter((s) => year || nothing || selected.has(s.id)),
-    (s) => ({ on: year || selected.has(s.id), blocked: !year && atCap && !selected.has(s.id) }));
-  const rest = year || nothing ? [] : SUBJECTS.filter((s) => !selected.has(s.id));
+  // Up top and large, what the plan is for: the chosen subjects (the ones
+  // held locked in), or all of them when the year is picked or nothing is
+  // chosen yet. The rest below, as chips: a tap adds one.
+  renderCovers(SUBJECTS.filter((x) => year || nothing || selected.has(x.id)),
+    (x) => ({ on: year || selected.has(x.id), locked: owned.includes(x.id), blocked: !year && atCap && !selected.has(x.id) }));
+  const rest = year || nothing ? [] : SUBJECTS.filter((x) => !selected.has(x.id));
   $('chips').hidden = !rest.length;
-  refill($('chips'), rest, (s) => {
+  refill($('chips'), rest, (x) => {
     const c = document.createElement('button');
     c.type = 'button';
     c.className = 'chip' + (atCap ? ' full' : '');
-    c.style.setProperty('--cloth', s.cloth);
-    c.setAttribute('aria-label', `Ավելացնել ${s.label}`);
+    c.style.setProperty('--cloth', x.cloth);
+    c.setAttribute('aria-label', `Ավելացնել ${x.label}`);
     if (atCap) c.setAttribute('aria-disabled', 'true');
     c.innerHTML = `<i></i><span></span>${PLUS}`;
-    c.querySelector('span').textContent = s.label;
-    c.addEventListener('click', () => toggleSubject(s.id));
+    c.querySelector('span').textContent = x.label;
+    c.addEventListener('click', () => toggleSubject(x.id));
     return c;
   });
   const cap = $('cap-hint');
@@ -860,8 +982,21 @@ function renderOrder() {
     t.textContent = s.label;
     chosen.appendChild(t);
   }
+  const change = id ? planChangeFor(id) : { type: 'new' };
+  const dates = id ? planDatesFor(change, id) : null;
   $('o-length').textContent = id ? d.label : '—';
-  $('o-until').textContent = id ? day(endAfter(d.months)) : '—';
+  $('o-until').textContent = id ? day(dates.end) : '—';
+  // What happens to the plan held, said before paying (the app's planNote).
+  const note = $('change-note');
+  note.hidden = !id || !['upgrade', 'extend'].includes(change.type);
+  if (id && change.type === 'upgrade') {
+    const kept = ownedSubjects().filter((x) => selected.has(x) || yearly()).map(label);
+    const joins = kept.length ? `${kept.map(definite).join(', ')} ${kept.length > 1 ? 'կմիանան' : 'կմիանա'} նոր փաթեթին․ ` : '';
+    note.textContent = `Վճարում ես այսօր։ ${joins}Ամբողջը կգործի մինչև ${day(dates.end)}`
+      + (dates.creditDays ? `՝ ներառյալ նախորդ փաթեթի չօգտագործված ${dates.creditDays} օրը։` : '։');
+  } else if (id && change.type === 'extend') {
+    note.textContent = `Նոր ժամկետը կսկսվի ${day(dates.start)}-ին՝ ընթացիկ փաթեթի ավարտից հետո, և կգործի մինչև ${day(dates.end)}։`;
+  }
   $('o-account').textContent = user?.email || '—';
   $('o-account').title = user?.email || '';
   $('o-total').textContent = price != null ? money(price) : '—';
@@ -895,7 +1030,8 @@ function renderOrder() {
   if (pay.dataset.label == null) {
     // The amount only: the chosen plan's row (and on a computer the order) says
     // for how long, and a longer label is cut off beside the logo.
-    const what = !id ? 'Ընտրիր գոնե մեկ առարկա' : m.ready ? `Վճարել · ${money(price)}` : 'Շուտով';
+    const verb = change.type === 'extend' ? 'Երկարացնել' : 'Վճարել';
+    const what = !id ? 'Ընտրիր գոնե մեկ առարկա' : m.ready ? `${verb} · ${money(price)}` : 'Շուտով';
     pay.disabled = !id || !m.ready;
     pay.className = `pay ${m.id}${m.ready ? '' : ' soon'}`;
     pay.innerHTML = id && m.logo ? `${m.logo}<span class="sep"></span><span></span>` : '<span></span>';
@@ -919,6 +1055,7 @@ $('more').addEventListener('click', () => {
 });
 
 function toggleSubject(id) {
+  if (ownedSubjects().includes(id)) return;
   // The year covers everything; touching a subject means choosing them.
   if (yearly()) choice = '3month';
   if (!selected.has(id) && selected.size >= MAX_BUNDLE_SIZE) return;
@@ -939,6 +1076,8 @@ $('pay-btn').addEventListener('click', async () => {
   }
   say(msg, '', '');
   const pay = $('pay-btn');
+  // What the account holds now, for the result page to see the change.
+  try { sessionStorage.setItem('pay-before', planSignature(access)); } catch {}
   busy(pay, true);
   try {
     const { getFunctions, httpsCallable, connectFunctionsEmulator } = await import(`${FB}firebase-functions.js`);
@@ -971,7 +1110,10 @@ $('pay-btn').addEventListener('click', async () => {
     renderPlans();
     // The server's reasons (functions/lib/webPay.js createWebOrder).
     const reason = {
-      'has-plan': 'Այս հաշիվն արդեն ունի գործող փաթեթ։',
+      'has-all': 'Բոլոր առարկաներն արդեն բաց են։',
+      'plan-in-store': 'Քո փաթեթը վճարվում է App Store-ում կամ Google Play-ում․ փոխիր այն այնտեղից։',
+      'keep-your-subjects': 'Փաթեթի առարկաները մնում են․ կարող ես միայն ավելացնել։',
+      'too-far-ahead': 'Փաթեթը կարելի է երկարացնել առավելագույնը 2 տարի առաջ։',
       'test-mode': 'Վճարումը դեռ փորձարկվում է և շուտով կբացվի։',
       'too-many-orders': 'Շատ փորձեր եղան։ Փորձիր մի փոքր ուշ։',
       'idram-not-connected': 'Idram-ով վճարումը դեռ միացված չէ։',
@@ -1029,13 +1171,25 @@ function renderResult(state) {
   }
 }
 
-/** The bank sent the buyer back: wait for the server to have opened the plan. */
+const planSignature = (a) => `${a.kind}|${a.until}|${(a.subjects || []).join(',')}`;
+
+/**
+ * The bank sent the buyer back: wait for the server to have opened the plan —
+ * or, for an account that had one, changed it (pay-before, saved on the
+ * pay tap: an upgrade or an extension lands on a plan already there).
+ */
 async function confirmPayment() {
   show('result');
   renderResult('checking');
+  let before = null;
+  try { before = sessionStorage.getItem('pay-before'); } catch {}
   for (let i = 0; i < 8; i++) {
     await loadAccess();
-    if (access.kind !== 'none') { renderResult('active'); return; }
+    if (access.kind !== 'none' && (!before || planSignature(access) !== before)) {
+      try { sessionStorage.removeItem('pay-before'); } catch {}
+      renderResult('active');
+      return;
+    }
     await new Promise((r) => setTimeout(r, 2500));
   }
   renderResult('late');
@@ -1093,6 +1247,7 @@ async function start() {
   if (result === 'ok' && location.search) { await confirmPayment(); return; }
   show('loading');
   await loadAccess();
+  startFromHeld();
   show('plans');
   renderPlans();
 }
@@ -1100,11 +1255,18 @@ async function start() {
 async function boot() {
   if (preview) {
     // No Firebase: a made-up account, for looking at a state.
-    const soon = Date.now() + 61 * 24 * 60 * 60 * 1000;
     user = preview === 'login' ? null : { uid: 'preview', email: 'ani.petrosyan@gmail.com' };
-    if (preview === 'all') access = { kind: 'all', until: soon };
-    if (preview === 'owned') access = { kind: 'bundle', until: soon, subjects: ['english', 'math'] };
-    if (preview === 'ok') access = { kind: 'bundle', until: soon, subjects: ['english', 'math'] };
+    const at = (days) => new Date(Date.now() + days * DAY).toISOString();
+    const docs = {
+      // a store's all-subject plan; a store's subject plan; ones paid here
+      all: { subscriptions: { all_yearly_v2: { store: 'app_store', expires_date: at(61) } } },
+      owned: { subscriptions: { subj2_monthly: { store: 'play_store', expires_date: at(20) } }, subject_packages: { access: { english: { expires_date: at(20) }, math: { expires_date: at(20) } } } },
+      webplan: { subscriptions: { 'subj1_3month:web-1': { store: 'web', purchase_date: at(-30), expires_date: at(62) } }, subject_packages: { access: { english: { expires_date: at(62) } } } },
+      webyear: { subscriptions: { 'all_yearly:web-2': { store: 'web', purchase_date: at(-100), expires_date: at(265) } } },
+      ok: { subscriptions: { 'subj2_monthly:web-3': { store: 'web', expires_date: at(31) } }, subject_packages: { access: { english: { expires_date: at(31) }, math: { expires_date: at(31) } } } },
+    };
+    if (docs[preview]) access = readAccess(docs[preview]);
+    startFromHeld();
     renderHeader();
     if (['ok', 'late', 'unknown', 'duplicate', 'fail'].includes(preview)) {
       show('result');
