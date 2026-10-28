@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="hy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#4F6D7B">
+<title>Նվեր-կոդ · Հարցեր.am</title>
+<meta property="og:title" content="Նվեր՝ Harcer.am-ի փաթեթ">
+<meta property="og:description" content="Բացիր հղումը, մուտք գործիր քո հաշվով և ակտիվացրու նվերդ։">
+<!--
+  The link a parent sends with a gift code: harcer.am/code/#CODE. The code is
+  in the # part, which the browser never sends to a server, so it is in no
+  log; this page hands it on to the checkout page as /pay/#code=CODE, where
+  the child signs in and activates it (web/pay/index.html). Published as
+  code/index.html in the GitHub Pages repo andranikSinanyanWork/harcer-landing.
+-->
+<script>
+  var code = location.hash.slice(1);
+  try { code = decodeURIComponent(code); } catch (e) {}
+  location.replace('/pay/#code=' + encodeURIComponent(code));
+</script>
+<style>
+  body { margin: 0; padding: 32px 16px; background: #fff; color: #1A202C; font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Armenian", Arial, sans-serif; text-align: center; }
+  a { color: #4F6D7B; font-weight: 700; }
+</style>
+</head>
+<body>
+<a href="/pay/#code=">Ակտիվացնել նվեր-կոդը</a>
+</body>
+</html>

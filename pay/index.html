@@ -30,6 +30,14 @@
 
   The app must never link here or mention it: both stores forbid pointing to
   an outside payment from inside the app in Armenia.
+
+  Gift codes (28 Oct 2026, for parents): «Երեխայիս համար» (?gift=1) buys a
+  code instead of a plan — how many subjects and for how long, the child picks
+  which — and shows it with a button that sends it. The child opens the link
+  (harcer.am/code/#CODE, which lands here as #code=CODE), signs in with the
+  account they use in the app, picks the subjects and activates it; the plan
+  follows the same rules as a purchase. Activating happens here and never in
+  the app (functions/lib/webPay.js giftCodes says why).
 -->
 <style>
   :root {
@@ -100,7 +108,7 @@
   .narrow { max-width: 420px; margin: 8px auto 0; padding: 28px; }
 
   /* ---- Sign in: the app's form (app/login.tsx) ---- */
-  #login-form { margin-top: 22px; }
+  #login-form, #code-form { margin-top: 22px; }
   .field { display: block; margin-bottom: 14px; }
   .field > span { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
   .field input { width: 100%; padding: 13px 14px; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--surface); font-size: 16px; outline: none; }
@@ -139,6 +147,34 @@
   .checkout.owned { grid-template-columns: minmax(0, 560px); }
   .checkout.owned .order { display: none; }
   .eyebrow { margin: 0 0 6px; font-size: 13px; font-weight: 800; letter-spacing: 0.4px; color: var(--accent); }
+
+  /* For whom: the account signed in, or a gift code for someone else */
+  .seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin: 0 0 22px; padding: 4px; border-radius: 14px; background: var(--surface-alt); }
+  .seg button { height: 38px; padding: 0 18px; border: 0; border-radius: 10px; background: none; color: var(--muted); font-size: 14px; font-weight: 700; white-space: nowrap; transition: background-color 0.15s, color 0.15s; }
+  .seg button[aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(15, 23, 42, 0.06); }
+  .seg button:not([aria-selected="true"]):hover { color: var(--text); }
+
+  /* A gift: how many subjects; the child picks which */
+  .counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+  .count { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 66px; border: 1.5px solid var(--surface-alt); border-radius: 14px; background: var(--surface); transition: border-color 0.15s, background-color 0.15s, opacity 0.15s; }
+  .count b { font-size: 21px; font-weight: 900; line-height: 1; }
+  .count span { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+  .count:not([aria-checked="true"]):hover { border-color: var(--border); background: var(--bg); }
+  .count[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); }
+  .count.dim { opacity: 0.5; }
+  .count.enter { animation: rise 0.25s ease-out both; }
+
+  /* The gift codes this account bought */
+  .gifts { margin-top: 32px; }
+  .gifts h2 { margin: 0 0 10px; font-size: 16px; font-weight: 800; }
+  .gift-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 14px; }
+  .gift-row + .gift-row { margin-top: 8px; }
+  .gift-row .body { flex: 1; min-width: 0; }
+  .gift-row code { display: block; font: 700 15px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.5px; }
+  .gift-row small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+  .gift-row small.used { color: var(--success-ink); }
+  .gift-row button { flex: none; height: 36px; padding: 0 14px; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface); font-size: 13px; font-weight: 700; }
+  .gift-row button:hover { background: var(--bg); }
 
   /* The subjects of the plan: a light card with a book spine in the subject's cloth */
   .covers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
@@ -292,6 +328,9 @@
     .bar-in { height: 54px; }
     .who-email { display: none; }
     .narrow { margin-top: 4px; padding: 22px 18px; }
+    .seg { display: grid; width: 100%; margin-bottom: 18px; }
+    .seg button { padding: 0 8px; }
+    .result .code-big { font-size: 20px; letter-spacing: 1px; }
     .cover { padding-right: 10px; }
     .cover .name { padding: 0 6px 0 9px; }
     .cover .name > span { font-size: 14.5px; }
@@ -307,6 +346,16 @@
   .result h1 { font-size: 22px; }
   .result p { margin: 10px 0 0; font-size: 15px; color: var(--muted); }
   .result .btn { margin-top: 22px; }
+
+  /* A gift code to send, and one to type in */
+  .result .code-big { margin: 18px 0 0; padding: 14px 10px; border: 1.5px dashed var(--border-strong); border-radius: 14px; background: var(--bg); font: 800 23px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1.5px; color: var(--text); -webkit-user-select: all; user-select: all; overflow-wrap: anywhere; }
+  .result .btn.secondary { margin-top: 10px; background: var(--surface); border: 1px solid var(--border-strong); color: var(--text); }
+  .result .btn.secondary:hover { background: var(--bg); }
+  .result .msg { margin: 14px 0 0; text-align: left; overflow-wrap: anywhere; white-space: pre-line; }
+  .how { margin: 20px 0 0; padding: 14px 16px 14px 34px; border-radius: 14px; background: var(--surface-alt); text-align: left; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+  .how li + li { margin-top: 4px; }
+  .linkish { display: block; margin: 14px auto 0; padding: 6px; border: 0; background: none; color: var(--primary); font-size: 14px; font-weight: 700; }
+  .field input.code-input { font: 700 19px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1px; text-transform: uppercase; }
 
   .loading { display: grid; place-items: center; min-height: 260px; }
   .spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -338,7 +387,7 @@
   <section id="view-login" hidden>
     <div class="card narrow">
       <h1>Մուտք</h1>
-      <p class="sub">Մուտք գործեք Harcer.am-ի ձեր հաշիվ՝ փաթեթ գնելու համար</p>
+      <p class="sub" id="login-sub">Մուտք գործեք Harcer.am-ի ձեր հաշիվ՝ փաթեթ գնելու համար</p>
 
       <form id="login-form" novalidate>
         <label class="field">
@@ -372,7 +421,7 @@
       </div>
       <p class="note" id="inapp-note" hidden>Google-ով մուտք գործելու համար բացեք այս էջը Chrome-ում կամ Safari-ում։</p>
 
-      <p class="register">Դեռ չունե՞ք հաշիվ։ <a href="https://harcer.am/get">Գրանցվեք հավելվածում</a></p>
+      <p class="register" id="register">Դեռ չունե՞ք հաշիվ։ <a href="https://harcer.am/get">Գրանցվեք հավելվածում</a></p>
     </div>
   </section>
 
@@ -380,10 +429,15 @@
   <section id="view-plans" hidden>
     <div class="checkout" id="checkout">
       <div class="pick">
+        <div class="seg" id="seg" role="tablist" aria-label="Ում համար">
+          <button type="button" role="tab" id="seg-self" aria-selected="true">Ինձ համար</button>
+          <button type="button" role="tab" id="seg-gift" aria-selected="false">Երեխայիս համար</button>
+        </div>
         <p class="eyebrow" id="eyebrow" hidden></p>
         <h1 id="plans-title"></h1>
         <p class="sub" id="plans-sub"></p>
         <div class="covers" id="covers" role="group" aria-label="Առարկաներ"></div>
+        <div class="counts" id="counts" role="radiogroup" aria-label="Առարկաների քանակը" hidden></div>
         <div class="chips" id="chips" hidden></div>
         <p class="cap" id="cap-hint" hidden></p>
         <div class="plans" id="plans" role="radiogroup" aria-label="Ժամկետ"></div>
@@ -398,24 +452,28 @@
           <div><span>AI ուսուցիչ</span><span>3/օր</span><span>15/օր</span></div>
           <div><span>Փորձնական քննություն</span><span>—</span><span>∞</span></div>
         </div>
+        <section class="gifts" id="gifts" hidden>
+          <h2>Քո նվեր-կոդերը</h2>
+          <div id="gift-list"></div>
+        </section>
       </div>
 
       <aside class="order" id="order" aria-label="Քո փաթեթը">
         <div class="order-card">
           <div class="details">
-            <h2>Քո փաթեթը</h2>
+            <h2 id="o-title">Քո փաթեթը</h2>
             <div class="chosen" id="o-subjects"></div>
             <dl class="rows">
               <div><dt>Ժամկետ</dt><dd id="o-length"></dd></div>
-              <div><dt>Գործում է մինչև</dt><dd id="o-until"></dd></div>
-              <div><dt>Հաշիվ</dt><dd id="o-account"></dd></div>
+              <div><dt id="o-until-label">Գործում է մինչև</dt><dd id="o-until"></dd></div>
+              <div><dt id="o-account-label">Հաշիվ</dt><dd id="o-account"></dd></div>
             </dl>
             <ul class="includes">
               <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Բոլոր</b> հարցերը՝ ամեն բաժնից</span></li>
               <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>AI ուսուցիչ՝ <b>15</b> հարց օրը</span></li>
               <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Փորձնական քննություններ՝ <b>անսահմանափակ</b></span></li>
             </ul>
-            <div class="total"><span>Ընդամենը</span><span><strong id="o-total"></strong><small id="o-per"></small></span></div>
+            <div class="total" id="o-total-row"><span>Ընդամենը</span><span><strong id="o-total"></strong><small id="o-per"></small></span></div>
           </div>
           <p class="change" id="change-note" hidden></p>
           <div class="methods" id="methods" role="radiogroup" aria-label="Վճարման եղանակ"></div>
@@ -434,6 +492,42 @@
       <h1 id="result-title"></h1>
       <p id="result-text"></p>
       <button type="button" class="btn primary" id="result-btn" hidden></button>
+    </div>
+  </section>
+
+  <!-- A gift code bought: to send to the child -->
+  <section id="view-gift" hidden>
+    <div class="card narrow result">
+      <div class="mark ok"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h1>Նվեր-կոդը պատրաստ է</h1>
+      <p class="code-big" id="gift-code"></p>
+      <p id="gift-what"></p>
+      <button type="button" class="btn primary" id="gift-share">Ուղարկել երեխայիս</button>
+      <button type="button" class="btn secondary" id="gift-copy">Պատճենել կոդը</button>
+      <p class="msg" id="gift-msg" role="status" hidden></p>
+      <ol class="how">
+        <li>Երեխադ բացում է ուղարկածդ հղումը։</li>
+        <li>Մուտք է գործում այն հաշվով, որով մտնում է հավելված։</li>
+        <li id="gift-how-pick">Ընտրում է առարկաները և ակտիվացնում կոդը։</li>
+        <li>Ժամկետը սկսվում է ակտիվացնելու օրը։</li>
+      </ol>
+      <button type="button" class="linkish" id="gift-back">Իմ նվեր-կոդերը</button>
+    </div>
+  </section>
+
+  <!-- Activating a gift: the code, typed or from the link -->
+  <section id="view-code" hidden>
+    <div class="card narrow">
+      <h1>Նվեր-կոդ</h1>
+      <p class="sub">Մուտքագրիր ստացածդ կոդը՝ փաթեթդ ակտիվացնելու համար</p>
+      <form id="code-form" novalidate>
+        <label class="field">
+          <span>Կոդ</span>
+          <input id="code-input" class="code-input" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="20" placeholder="XXXX-XXXX-XXXX">
+        </label>
+        <p class="msg" id="code-msg" role="alert" hidden></p>
+        <button type="submit" class="btn primary" id="code-btn">Շարունակել</button>
+      </form>
     </div>
   </section>
 </main>
@@ -511,6 +605,27 @@ const DURATIONS = [
   { id: 'yearly', label: '1\u00a0տարի', months: 12 },
 ];
 
+// The link a parent sends: harcer.am/code/ passes the code on to this page as
+// #code=… (in the address's # part, which no server sees or logs).
+const CODE_LINK = 'https://harcer.am/code/#';
+// How long a code can wait to be activated; must match functions/lib/webPay.js.
+const GIFT_LIFE_MONTHS = 12;
+// What the server says a code can no longer do, or why it cannot go on now
+// (functions/lib/webPay.js giftCodes).
+const GIFT_ERRORS = {
+  'no-such-code': 'Այդպիսի կոդ չկա։ Ստուգիր և փորձիր կրկին։',
+  'code-used': 'Այս կոդն արդեն ակտիվացված է։',
+  'code-expired': 'Այս կոդի ակտիվացման ժամկետն անցել է։',
+  'code-cancelled': 'Այս կոդը չեղարկված է։',
+  'has-all': 'Բոլոր առարկաներն արդեն բաց են քո հաշվում։ Ակտիվացրու կոդը, երբ փաթեթդ ավարտվի։',
+  'plan-in-store': 'Քո փաթեթը վճարվում է App Store-ում կամ Google Play-ում։ Ակտիվացրու կոդը, երբ այն ավարտվի։',
+  'smaller-than-plan': 'Քո փաթեթում ավելի շատ առարկա կա, քան այս կոդում։ Ակտիվացրու այն, երբ փաթեթդ ավարտվի։',
+  'keep-your-subjects': 'Քո փաթեթի առարկաները մնում են․ ընտրիր նաև դրանք։',
+  'subjects-do-not-match-plan': 'Ընտրիր այնքան առարկա, որքան կա նվերում։',
+  'too-far-ahead': 'Փաթեթը կարելի է երկարացնել առավելագույնը 2 տարի առաջ։',
+  'too-many-tries': 'Շատ փորձեր եղան։ Փորձիր մեկ ժամից։',
+};
+
 // ---------------------------------------------------------------- helpers
 
 const $ = (id) => document.getElementById(id);
@@ -561,8 +676,9 @@ const EXAM_DAYS = daysToExam();
 const YEAR_FIRST = EXAM_DAYS > 120;
 
 function show(view) {
-  for (const v of ['loading', 'login', 'plans', 'result']) $(`view-${v}`).hidden = v !== view;
+  for (const v of ['loading', 'login', 'plans', 'result', 'gift', 'code']) $(`view-${v}`).hidden = v !== view;
 }
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function say(el, kind, text) {
   el.hidden = !text;
   el.className = `msg ${kind}`;
@@ -710,8 +826,8 @@ function screenMode() {
   if (others.length || !live.length) return 'other-store';
   return access.kind === 'all' ? 'web-all' : 'web-bundle';
 }
-/** Subjects already in a plan paid here: locked, as the app locks them. */
-const ownedSubjects = () => (screenMode() === 'web-bundle' ? access.subjects : []);
+/** Subjects already in a plan paid here: locked, as the app locks them (a gift bought touches none). */
+const ownedSubjects = () => (pageMode !== 'gift' && screenMode() === 'web-bundle' ? access.subjects : []);
 const STORE_NAMES = { app_store: 'App Store', play_store: 'Google Play' };
 /** The definite article, as the app's «Անգլերենը», «Մաթեմատիկան». */
 const definite = (word) => (/[աեէըիոօւ]$/.test(word) ? `${word}ն` : `${word}ը`);
@@ -733,6 +849,25 @@ for (const id of (params.get('subjects') || '').split(',')) {
 let choiceTouched = false;
 if (DURATIONS.some((d) => d.id === params.get('plan'))) { choice = params.get('plan'); choiceTouched = true; }
 
+// What the page is for: 'self' buys a plan for the account signed in; 'gift'
+// buys a code for someone else (?gift=1); 'redeem' activates one (#code=…).
+const codeInLink = /^#code(?:=(.*))?$/.exec(location.hash);
+let pageMode = codeInLink || params.has('code') ? 'redeem' : params.has('gift') ? 'gift' : 'self';
+let redeemCode = codeInLink ? decodeURIComponent(codeInLink[1] || '') : (params.get('code') || '');
+// A gift: how many subjects it holds (the year is choice 'yearly').
+let giftCount = 1;
+// The code being activated, as giftCodes 'look' gave it: { code, product, status, activate_by }.
+let giftInfo = null;
+// The codes this account bought (giftCodes 'mine'), once read.
+let myGifts = null;
+/** How many subjects can be ticked: up to a plan's limit, or exactly what the gift holds. */
+const capOf = () => (pageMode === 'redeem' && giftInfo ? classify(giftInfo.product)?.size || SUBJECTS.length : MAX_BUNDLE_SIZE);
+/** The code as typed, as the server reads it (webPay.js readGiftCode), or null. */
+function readGiftCode(text) {
+  const code = String(text || '').toUpperCase().replace(/[\s-]/g, '');
+  return /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{12}$/.test(code) ? code.match(/.{4}/g).join('-') : null;
+}
+
 /**
  * Once the account is read: its subjects ticked and locked, and the length it
  * holds picked — so the same plan again (an extension) is the starting point,
@@ -741,12 +876,13 @@ if (DURATIONS.some((d) => d.id === params.get('plan'))) { choice = params.get('p
 function startFromHeld() {
   const owned = ownedSubjects();
   if (!owned.length) return;
-  const keep = [...owned, ...[...selected].filter((x) => !owned.includes(x))].slice(0, MAX_BUNDLE_SIZE);
+  const keep = [...owned, ...[...selected].filter((x) => !owned.includes(x))].slice(0, capOf());
   selected.clear();
   for (const x of keep) selected.add(x);
   const held = (access.live || []).filter((x) => x.store === 'web' && x.plan.kind === 'bundle')
     .sort((a, b) => b.plan.size - a.plan.size)[0];
-  if (held && !choiceTouched) choice = held.plan.period;
+  // A gift's length is its own.
+  if (held && !choiceTouched && pageMode !== 'redeem') choice = held.plan.period;
 }
 
 // Telcell's wordmark, from telcell.am's header (28 Oct 2026).
@@ -761,8 +897,19 @@ const METHODS = [
 let method = 'idram';
 const methodOf = (id) => METHODS.find((m) => m.id === id) || METHODS[0];
 
-const yearly = () => choice === 'yearly';
-const productId = () => (yearly() ? 'all_yearly' : selected.size ? `subj${selected.size}_${choice}` : null);
+const yearly = () => (pageMode === 'redeem' ? giftInfo?.product === 'all_yearly' : choice === 'yearly');
+/** The product the page is about: the plan to buy, the gift to buy, or the gift being activated. */
+function productId() {
+  if (pageMode === 'redeem') return giftInfo?.product || null;
+  if (yearly()) return 'all_yearly';
+  if (pageMode === 'gift') return `subj${giftCount}_${choice}`;
+  return selected.size ? `subj${selected.size}_${choice}` : null;
+}
+/** A gift's subjects and length, in words: «2 առարկա · 3 ամիս». */
+function giftWhat(product) {
+  const p = classify(product);
+  return p.kind === 'all' ? `Բոլոր առարկաները · ${lengthOf('yearly').label}` : `${p.size} առարկա · ${lengthOf(p.period).label}`;
+}
 
 // ---------------------------------------------------------------- top bar
 
@@ -841,6 +988,12 @@ function planRow(id, title, price, per, off = 0) {
 }
 
 function renderPlans() {
+  renderSeg();
+  $('covers').hidden = pageMode === 'gift';
+  $('counts').hidden = pageMode !== 'gift';
+  renderGiftList();
+  if (pageMode === 'gift') { renderGiftPlans(); return; }
+  if (pageMode === 'redeem') { renderRedeem(); return; }
   const mode = screenMode();
   const owned = ownedSubjects();
   // Nothing to buy here: an all-subject plan from a store or a code, or a
@@ -884,16 +1037,24 @@ function renderPlans() {
     ? `Քո փաթեթում՝ ${owned.length} առարկա․ ավելացրու կամ վերցրու բոլորը տարով`
     : `Մինչև ${MAX_BUNDLE_SIZE} առարկա, կամ բոլորը՝ տարեկան փաթեթով`;
 
+  renderPicker(owned, `Առավելագույնը ${MAX_BUNDLE_SIZE} առարկա մեկ փաթեթում․ բոլորը՝ տարեկան փաթեթով`);
+  renderLengths(selected.size);
+  renderOrder();
+  fitLabels();
+}
+
+/**
+ * Up top and large, what the plan is for: the chosen subjects (the ones held
+ * locked in), or all of them when the year is picked or nothing is chosen
+ * yet. The rest below, as chips: a tap adds one, up to capOf().
+ */
+function renderPicker(owned, capText) {
   const count = selected.size;
   const year = yearly();
   const nothing = !year && count === 0;
-  const atCap = count >= MAX_BUNDLE_SIZE;
-
-  // Up top and large, what the plan is for: the chosen subjects (the ones
-  // held locked in), or all of them when the year is picked or nothing is
-  // chosen yet. The rest below, as chips: a tap adds one.
+  const atCap = count >= capOf();
   renderCovers(SUBJECTS.filter((x) => year || nothing || selected.has(x.id)),
-    (x) => ({ on: year || selected.has(x.id), locked: owned.includes(x.id), blocked: !year && atCap && !selected.has(x.id) }));
+    (x) => ({ on: year || selected.has(x.id), locked: (year && pageMode === 'redeem') || owned.includes(x.id), blocked: !year && atCap && !selected.has(x.id) }));
   const rest = year || nothing ? [] : SUBJECTS.filter((x) => !selected.has(x.id));
   $('chips').hidden = !rest.length;
   refill($('chips'), rest, (x) => {
@@ -910,9 +1071,11 @@ function renderPlans() {
   });
   const cap = $('cap-hint');
   cap.hidden = year || !atCap || !rest.length;
-  cap.textContent = `Առավելագույնը ${MAX_BUNDLE_SIZE} առարկա մեկ փաթեթում․ բոլորը՝ տարեկան փաթեթով`;
+  cap.textContent = capText;
+}
 
-  // For how long. The year leads while the exam is far, and sits last when it is close.
+/** For how long: `count` subjects for one or three months, and the year — which leads while the exam is far, and sits last when it is close. */
+function renderLengths(count) {
   const rows = [];
   if (count > 0) {
     const m1 = priceOf(count, 'monthly');
@@ -924,9 +1087,265 @@ function renderPlans() {
   if (YEAR_FIRST) rows.unshift(yearRow);
   else rows.push(yearRow);
   for (const r of rows) $('plans').appendChild(r);
+}
 
+// ---------------------------------------------------------------- gift codes
+
+/** «Ինձ համար» or «Երեխայիս համար»; not shown while a code is being activated. */
+function renderSeg() {
+  $('seg').hidden = pageMode === 'redeem';
+  $('seg-self').setAttribute('aria-selected', String(pageMode === 'self'));
+  $('seg-gift').setAttribute('aria-selected', String(pageMode === 'gift'));
+}
+
+/** Buying a gift: how many subjects and for how long; the child picks the subjects when activating it. */
+function renderGiftPlans() {
+  $('checkout').classList.remove('owned');
+  $('eyebrow').hidden = false;
+  $('eyebrow').textContent = `Մինչև քննությունը՝ ${EXAM_DAYS} օր`;
+  $('plans-title').textContent = 'Նվեր երեխայիդ';
+  $('plans-sub').textContent = 'Ընտրիր առարկաների քանակը և ժամկետը․ առարկաները երեխադ կընտրի՝ կոդն ակտիվացնելիս';
+  $('chips').hidden = true;
+  $('cap-hint').hidden = true;
+  $('more').hidden = false;
+  const year = yearly();
+  refill($('counts'), [1, 2, 3].map((n) => ({ id: String(n), n })), ({ n }) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'count' + (year ? ' dim' : '');
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', String(!year && giftCount === n));
+    b.innerHTML = `<b>${n}</b><span>առարկա</span>`;
+    b.addEventListener('click', () => {
+      giftCount = n;
+      // The year covers everything; a number of subjects means a subject plan.
+      if (yearly()) choice = '3month';
+      say($('pay-msg'), '', '');
+      renderPlans();
+    });
+    return b;
+  });
+  $('plans').innerHTML = '';
+  renderLengths(giftCount);
   renderOrder();
   fitLabels();
+}
+
+/**
+ * Activating a gift: its subjects picked here (those held stay in), its
+ * length fixed. A plan it cannot go on now (a store plan, all subjects open,
+ * a bigger plan) is said, and the code keeps.
+ */
+function renderRedeem() {
+  const product = giftInfo.product;
+  const plan = classify(product);
+  const change = planChangeFor(product);
+  const owned = ownedSubjects();
+  const waits = ['has-all', 'other-store', 'downgrade'].includes(change.type);
+  $('checkout').classList.toggle('owned', waits);
+  $('eyebrow').hidden = true;
+  $('plans').innerHTML = '';
+  $('more').hidden = true;
+  $('compare').hidden = true;
+  $('chips').hidden = true;
+  $('cap-hint').hidden = true;
+  if (waits) {
+    const store = STORE_NAMES[change.store];
+    const why = change.type === 'has-all' ? 'Բոլոր առարկաներն արդեն բաց են քո հաշվում'
+      : change.type === 'other-store' ? (store ? `Քո փաթեթը վճարվում է ${store}-ում` : 'Քո հաշվում արդեն փաթեթ կա')
+      : 'Քո փաթեթում ավելի շատ առարկա կա, քան այս նվերում';
+    $('plans-title').textContent = 'Նվերը սպասում է';
+    $('plans-sub').textContent = `${giftWhat(product)}։ ${why}․ ակտիվացրու կոդը, երբ այն ավարտվի։ Կոդը գործում է մինչև ${day(Date.parse(giftInfo.activate_by))}։`;
+    renderCovers(SUBJECTS.filter((x) => (access.subjects || []).includes(x.id)), () => ({ on: true, locked: true }));
+    fitLabels();
+    return;
+  }
+  $('plans-title').textContent = 'Ակտիվացրու նվերդ';
+  $('plans-sub').textContent = plan.kind === 'all'
+    ? `${giftWhat(product)}․ բոլոր առարկաները կբացվեն քո հաշվում`
+    : `${giftWhat(product)}․ ընտրիր ${plan.size} առարկա${owned.length ? '՝ քո փաթեթի առարկաների հետ' : ''}`;
+  renderPicker(owned, `Այս նվերում՝ ${capOf()} առարկա`);
+  renderOrder();
+  fitLabels();
+}
+
+const GIFT_STATUS = { unused: 'Չի ակտիվացվել', used: 'Ակտիվացված է', expired: 'Ժամկետն անցել է', cancelled: 'Չեղարկված է' };
+
+/** The codes this account bought, under the gift's choices. */
+function renderGiftList() {
+  const list = pageMode === 'gift' ? myGifts || [] : [];
+  $('gifts').hidden = !list.length;
+  const box = $('gift-list');
+  box.innerHTML = '';
+  for (const g of list) {
+    const row = document.createElement('div');
+    row.className = 'gift-row';
+    row.innerHTML = '<span class="body"><code></code><small></small></span>';
+    row.querySelector('code').textContent = g.code;
+    const state = g.status === 'unused' ? `${GIFT_STATUS.unused} · մինչև ${day(Date.parse(g.activate_by))}`
+      : g.status === 'used' ? [GIFT_STATUS.used, g.used_by, g.used_at && day(Date.parse(g.used_at))].filter(Boolean).join(' · ')
+      : GIFT_STATUS[g.status] || g.status;
+    const small = row.querySelector('small');
+    small.textContent = `${giftWhat(g.product)} · ${state}`;
+    if (g.status === 'used') small.className = 'used';
+    if (g.status === 'unused') {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = 'Ուղարկել';
+      b.addEventListener('click', () => showGift(g));
+      row.appendChild(b);
+    }
+    box.appendChild(row);
+  }
+}
+
+/** The codes this account bought, from the server; the list redrawn if it is on screen. */
+async function loadMyGifts() {
+  if (preview || !user) return;
+  try {
+    const { data } = await (await callable('giftCodes'))({ action: 'mine' });
+    myGifts = data.codes || [];
+  } catch (e) {
+    console.warn('[pay] could not read the gift codes', e?.code, e?.message);
+    myGifts = myGifts || [];
+  }
+  if (!$('view-plans').hidden) renderGiftList();
+}
+
+let shownGift = null;
+/** What the parent sends: what the gift is, and the link that activates it. */
+function giftMessage(g) {
+  const all = classify(g.product).kind === 'all';
+  return `Քեզ նվեր՝ Harcer.am-ի փաթեթ (${giftWhat(g.product).toLowerCase()})։ `
+    + `Բացիր հղումը, մուտք գործիր քո հաշվով${all ? '' : ' և ընտրիր առարկաները'}՝\n${CODE_LINK}${g.code}`;
+}
+/** A bought code on its own screen, to send. */
+function showGift(g) {
+  shownGift = g;
+  show('gift');
+  $('gift-code').textContent = g.code;
+  $('gift-what').textContent = `${giftWhat(g.product)} · ակտիվացնել մինչև ${day(Date.parse(g.activate_by))}`;
+  $('gift-how-pick').textContent = classify(g.product).kind === 'all' ? 'Ակտիվացնում է կոդը՝ բոլոր առարկաները կբացվեն։' : 'Ընտրում է առարկաները և ակտիվացնում կոդը։';
+  say($('gift-msg'), '', '');
+  scrollTo(0, 0);
+}
+async function copy(text, done) {
+  try {
+    await navigator.clipboard.writeText(text);
+    say($('gift-msg'), 'ok', done);
+  } catch {
+    // No clipboard here: the text itself, to copy by hand.
+    say($('gift-msg'), 'info', text);
+  }
+}
+$('gift-share').addEventListener('click', async () => {
+  const text = giftMessage(shownGift);
+  // A phone's share sheet (WhatsApp, Viber, Telegram…); elsewhere, the clipboard.
+  if (navigator.share) {
+    try { await navigator.share({ text }); return; } catch (e) { if (e?.name === 'AbortError') return; }
+  }
+  await copy(text, 'Հաղորդագրությունը պատճենվեց․ տեղադրիր այն WhatsApp-ում, Viber-ում կամ Telegram-ում։');
+});
+$('gift-copy').addEventListener('click', () => copy(shownGift.code, 'Կոդը պատճենվեց։'));
+$('gift-back').addEventListener('click', () => {
+  pageMode = 'gift';
+  history.replaceState(null, '', `${location.pathname}?gift=1`);
+  show('plans');
+  renderPlans();
+  loadMyGifts();
+});
+
+$('seg-self').addEventListener('click', async () => {
+  if (pageMode === 'self') return;
+  pageMode = 'self';
+  history.replaceState(null, '', location.pathname);
+  say($('pay-msg'), '', '');
+  await loadAccess();
+  startFromHeld();
+  renderPlans();
+});
+$('seg-gift').addEventListener('click', () => {
+  if (pageMode === 'gift') return;
+  pageMode = 'gift';
+  history.replaceState(null, '', `${location.pathname}?gift=1`);
+  say($('pay-msg'), '', '');
+  renderPlans();
+  if (!myGifts) loadMyGifts();
+});
+
+/** The code-entry screen, with what went wrong with the last one. */
+function showCodeEntry(text = '', error = '') {
+  show('code');
+  $('code-input').value = readGiftCode(text) || text;
+  say($('code-msg'), 'error', error);
+}
+/** Look a code up; an unused one opens for its subjects to be picked. */
+async function openCode(text) {
+  try {
+    const { data } = await (await callable('giftCodes'))({ action: 'look', code: text });
+    if (data.status !== 'unused') { showCodeEntry(data.code, GIFT_ERRORS[`code-${data.status}`]); return; }
+    giftInfo = data;
+    const plan = classify(data.product);
+    choice = plan.kind === 'all' ? 'yearly' : plan.period;
+    history.replaceState(null, '', `${location.pathname}#code=${data.code}`);
+    await loadAccess();
+    selected.clear();
+    startFromHeld();
+    show('plans');
+    renderPlans();
+  } catch (e) {
+    console.warn('[pay] code look-up failed', e?.code, e?.message);
+    showCodeEntry(text, GIFT_ERRORS[e?.message] || 'Չհաջողվեց ստուգել կոդը։ Ստուգիր ինտերնետը և փորձիր կրկին։');
+  }
+}
+$('code-input').addEventListener('input', () => {
+  // Typed in groups of four, as the code is printed.
+  const input = $('code-input');
+  const raw = input.value.toUpperCase().replace(/[^0-9A-Z]/g, '').slice(0, 12);
+  input.value = raw.match(/.{1,4}/g)?.join('-') || '';
+});
+$('code-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const text = $('code-input').value.trim();
+  if (!readGiftCode(text)) { say($('code-msg'), 'error', text ? GIFT_ERRORS['no-such-code'] : 'Մուտքագրիր կոդը'); return; }
+  say($('code-msg'), '', '');
+  busy($('code-btn'), true);
+  await openCode(text);
+  busy($('code-btn'), false);
+});
+
+/** Activate the gift on this account, then wait for its subjects to open. */
+async function activateGift() {
+  const msg = $('pay-msg');
+  const pay = $('pay-btn');
+  const subjects = yearly() ? [] : SUBJECTS.filter((s) => selected.has(s.id)).map((s) => s.id);
+  say(msg, '', '');
+  busy(pay, true);
+  try {
+    await (await callable('giftCodes'))({ action: 'use', code: giftInfo.code, subjects });
+  } catch (e) {
+    console.warn('[pay] activation failed', e?.code, e?.message);
+    busy(pay, false);
+    if (['no-such-code', 'code-used', 'code-expired', 'code-cancelled'].includes(e?.message)) {
+      showCodeEntry(giftInfo.code, GIFT_ERRORS[e.message]);
+      return;
+    }
+    renderPlans();
+    say(msg, 'error', GIFT_ERRORS[e?.message] || 'Չհաջողվեց ակտիվացնել։ Ստուգիր ինտերնետը և փորձիր կրկին։');
+    return;
+  }
+  busy(pay, false);
+  history.replaceState(null, '', location.pathname);
+  pageMode = 'self';
+  show('result');
+  renderResult('checking');
+  // The subjects open a moment later, when the server's trigger has run.
+  for (let i = 0; i < 8; i++) {
+    await loadAccess();
+    if (access.kind === 'all' || subjects.every((s) => access.subjects.includes(s))) break;
+    await sleep(1500);
+  }
+  renderResult('active');
 }
 
 /**
@@ -969,36 +1388,50 @@ addEventListener('resize', () => {
 /** The order: on a computer the card beside the choices, on a phone the pinned button. */
 function renderOrder() {
   const id = productId();
+  const gift = pageMode === 'gift';
+  const redeem = pageMode === 'redeem';
   const d = lengthOf(choice);
   const price = id ? PRICES[id] : null;
+  // Activating: ready once exactly the gift's number of subjects is ticked.
+  const ready = !redeem || yearly() || selected.size === capOf();
 
-  const tags = yearly() ? [{ id: 'all', label: `Բոլոր ${SUBJECTS.length} առարկաները` }] : SUBJECTS.filter((s) => selected.has(s.id));
+  $('o-title').textContent = gift ? 'Նվեր-կոդ' : redeem ? 'Քո նվերը' : 'Քո փաթեթը';
+  const tags = yearly() ? [{ id: 'all', label: `Բոլոր ${SUBJECTS.length} առարկաները` }]
+    : gift ? [{ id: 'count', label: `${giftCount} առարկա՝ երեխայիդ ընտրությամբ` }]
+    : SUBJECTS.filter((s) => selected.has(s.id));
   const chosen = $('o-subjects');
   chosen.innerHTML = '';
-  for (const s of tags.length ? tags : [{ id: 'none', label: 'Ընտրիր առարկա' }]) {
+  for (const s of tags.length ? tags : [{ id: 'none', label: redeem ? `Ընտրիր ${capOf()} առարկա` : 'Ընտրիր առարկա' }]) {
     const t = document.createElement('span');
     if (s.cloth) t.style.setProperty('--cloth', s.cloth);
     if (s.id === 'none') t.className = 'none';
     t.textContent = s.label;
     chosen.appendChild(t);
   }
-  const change = id ? planChangeFor(id) : { type: 'new' };
-  const dates = id ? planDatesFor(change, id) : null;
+  // A gift bought does nothing to the buyer's plan; it starts when activated.
+  const change = id && !gift ? planChangeFor(id) : { type: gift ? 'gift' : 'new' };
+  const dates = id && !gift ? planDatesFor(change, id) : null;
   $('o-length').textContent = id ? d.label : '—';
-  $('o-until').textContent = id ? day(dates.end) : '—';
+  $('o-until-label').textContent = gift ? 'Ակտիվացնել մինչև' : 'Գործում է մինչև';
+  $('o-until').textContent = gift ? day(addMonths(Date.now(), GIFT_LIFE_MONTHS)) : id && ready ? day(dates.end) : '—';
   // What happens to the plan held, said before paying (the app's planNote).
   const note = $('change-note');
-  note.hidden = !id || !['upgrade', 'extend'].includes(change.type);
-  if (id && change.type === 'upgrade') {
+  note.hidden = !id || !['upgrade', 'extend', 'gift'].includes(change.type);
+  if (gift) {
+    note.textContent = 'Կոդը կստանաս անմիջապես․ ժամկետը կսկսվի, երբ երեխադ ակտիվացնի այն։';
+  } else if (id && change.type === 'upgrade') {
     const kept = ownedSubjects().filter((x) => selected.has(x) || yearly()).map(label);
     const joins = kept.length ? `${kept.map(definite).join(', ')} ${kept.length > 1 ? 'կմիանան' : 'կմիանա'} նոր փաթեթին․ ` : '';
-    note.textContent = `Վճարում ես այսօր։ ${joins}Ամբողջը կգործի մինչև ${day(dates.end)}`
+    note.textContent = `${redeem ? 'Ակտիվացնում ես այսօր' : 'Վճարում ես այսօր'}։ ${joins}Ամբողջը կգործի մինչև ${day(dates.end)}`
       + (dates.creditDays ? `՝ ներառյալ նախորդ փաթեթի չօգտագործված ${dates.creditDays} օրը։` : '։');
   } else if (id && change.type === 'extend') {
     note.textContent = `Նոր ժամկետը կսկսվի ${day(dates.start)}-ին՝ ընթացիկ փաթեթի ավարտից հետո, և կգործի մինչև ${day(dates.end)}։`;
   }
+  $('o-account-label').textContent = gift ? 'Գնորդ' : 'Հաշիվ';
   $('o-account').textContent = user?.email || '—';
   $('o-account').title = user?.email || '';
+  // A gift being activated is paid for already.
+  $('o-total-row').hidden = redeem;
   $('o-total').textContent = price != null ? money(price) : '—';
   $('o-per').textContent = price != null && d.months > 1 ? `≈ ${monthly(price, d.months)} / ամիս` : '';
 
@@ -1006,6 +1439,7 @@ function renderOrder() {
   // takes the chosen one's.
   const m = methodOf(method);
   const tiles = $('methods');
+  tiles.hidden = redeem;
   tiles.innerHTML = '';
   tiles.style.setProperty('--count', METHODS.length);
   for (const x of METHODS) {
@@ -1027,7 +1461,15 @@ function renderOrder() {
   }
 
   const pay = $('pay-btn');
-  if (pay.dataset.label == null) {
+  if (pay.dataset.label == null && redeem) {
+    // Nothing to pay: the button in the page's own colour.
+    const what = ready ? 'Ակտիվացնել' : `Ընտրիր ${capOf()} առարկա`;
+    pay.disabled = !ready;
+    pay.className = 'pay card';
+    pay.innerHTML = '<span></span>';
+    pay.lastElementChild.textContent = what;
+    pay.setAttribute('aria-label', what);
+  } else if (pay.dataset.label == null) {
     // The amount only: the chosen plan's row (and on a computer the order) says
     // for how long, and a longer label is cut off beside the logo.
     const verb = change.type === 'extend' ? 'Երկարացնել' : 'Վճարել';
@@ -1041,6 +1483,11 @@ function renderOrder() {
 
   const fine = $('fine');
   fine.innerHTML = '<span class="desk"></span><span class="phone"></span>';
+  if (redeem) {
+    fine.firstElementChild.textContent = 'Կոդն ակտիվացվում է մեկ անգամ՝ այս հաշվի վրա։ Ստուգիր, որ դա այն հաշիվն է, որով մտնում ես հավելված։';
+    fine.lastElementChild.textContent = 'Ակտիվացվում է մեկ անգամ' + (user?.email ? ` · ${user.email}` : '');
+    return;
+  }
   fine.firstElementChild.textContent = 'Մեկանգամյա վճար՝ առանց ինքնաշխատ երկարաձգման։ '
     + (m.ready ? m.where : `${m.name}-ով վճարումը շուտով կմիանա։`);
   fine.lastElementChild.textContent = 'Մեկանգամյա վճար՝ առանց ինքնաշխատ երկարաձգման'
@@ -1058,16 +1505,29 @@ function toggleSubject(id) {
   if (ownedSubjects().includes(id)) return;
   // The year covers everything; touching a subject means choosing them.
   if (yearly()) choice = '3month';
-  if (!selected.has(id) && selected.size >= MAX_BUNDLE_SIZE) return;
+  if (!selected.has(id) && selected.size >= capOf()) return;
   if (selected.has(id)) selected.delete(id);
   else selected.add(id);
   say($('pay-msg'), '', '');
   renderPlans();
 }
 
+let functions = null;
+/** One of our callables, through the local emulators when the page is told to. */
+async function callable(name) {
+  const { getFunctions, httpsCallable, connectFunctionsEmulator } = await import(`${FB}firebase-functions.js`);
+  if (!functions) {
+    functions = getFunctions(app, FUNCTIONS_REGION);
+    if (EMULATOR) connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+  }
+  return httpsCallable(functions, name);
+}
+
 $('pay-btn').addEventListener('click', async () => {
+  if (pageMode === 'redeem') { await activateGift(); return; }
   const id = productId();
   if (!id) return;
+  const gift = pageMode === 'gift';
   const subjects = yearly() ? [] : SUBJECTS.filter((s) => selected.has(s.id)).map((s) => s.id);
   const msg = $('pay-msg');
   if (!PAYMENTS_LIVE && !EMULATOR && !LIVE_HERE) {
@@ -1076,15 +1536,18 @@ $('pay-btn').addEventListener('click', async () => {
   }
   say(msg, '', '');
   const pay = $('pay-btn');
-  // What the account holds now, for the result page to see the change.
-  try { sessionStorage.setItem('pay-before', planSignature(access)); } catch {}
+  // What the account holds now, for the result page to see the change; a gift
+  // changes nothing there, its code is what the result page waits for.
+  try {
+    if (gift) sessionStorage.removeItem('pay-before');
+    else sessionStorage.setItem('pay-before', planSignature(access));
+    sessionStorage.removeItem('pay-gift');
+  } catch {}
   busy(pay, true);
   try {
-    const { getFunctions, httpsCallable, connectFunctionsEmulator } = await import(`${FB}firebase-functions.js`);
-    const functions = getFunctions(app, FUNCTIONS_REGION);
-    if (EMULATOR) connectFunctionsEmulator(functions, '127.0.0.1', 5001);
-    const createWebOrder = httpsCallable(functions, 'createWebOrder');
-    const { data } = await createWebOrder({ product: id, subjects, provider: method });
+    const createWebOrder = await callable('createWebOrder');
+    const { data } = await createWebOrder(gift ? { gift: true, product: id, provider: method } : { product: id, subjects, provider: method });
+    if (gift && data?.no) { try { sessionStorage.setItem('pay-gift', String(data.no)); } catch {} }
     // The bank's own payment page; it sends the buyer back with ?result=…
     if (data && data.redirect) { location.assign(data.redirect); return; }
     // Idram takes the order as a form posted from the browser (its document, section 2).
@@ -1140,7 +1603,30 @@ function renderResult(state) {
     $('result-text').textContent = 'Եթե գումարը գանձվել է, գրիր support@harcer.am՝ կբացենք փաթեթը կամ կվերադարձնենք գումարը։';
     button.hidden = false;
     button.textContent = 'Փորձել կրկին';
-    button.onclick = () => { history.replaceState(null, '', location.pathname); start(); };
+    button.onclick = () => {
+      // Back to what was being bought: a gift, or a plan.
+      let gift = false;
+      try { gift = !!sessionStorage.getItem('pay-gift'); sessionStorage.removeItem('pay-gift'); } catch {}
+      pageMode = gift ? 'gift' : 'self';
+      history.replaceState(null, '', location.pathname + (gift ? '?gift=1' : ''));
+      start();
+    };
+    return;
+  }
+  if (state === 'gift-late') {
+    // Paid, or not: the code is not there yet. It turns up in the list once Idram confirms.
+    mark.className = 'mark ok';
+    mark.innerHTML = '<div class="spinner"></div>';
+    $('result-title').textContent = 'Կոդը դեռ պատրաստ չէ';
+    $('result-text').textContent = 'Եթե գումարը գանձվել է, կոդը կհայտնվի «Երեխայիս համար» բաժնում մի քանի րոպեում։ Եթե չհայտնվի, գրիր support@harcer.am։';
+    button.hidden = false;
+    button.textContent = 'Իմ նվեր-կոդերը';
+    button.onclick = () => {
+      try { sessionStorage.removeItem('pay-gift'); } catch {}
+      pageMode = 'gift';
+      history.replaceState(null, '', `${location.pathname}?gift=1`);
+      start();
+    };
     return;
   }
   mark.className = 'mark ok';
@@ -1181,6 +1667,9 @@ const planSignature = (a) => `${a.kind}|${a.until}|${(a.subjects || []).join(','
 async function confirmPayment() {
   show('result');
   renderResult('checking');
+  let giftNo = null;
+  try { giftNo = sessionStorage.getItem('pay-gift'); } catch {}
+  if (giftNo) { await confirmGift(Number(giftNo)); return; }
   let before = null;
   try { before = sessionStorage.getItem('pay-before'); } catch {}
   for (let i = 0; i < 8; i++) {
@@ -1193,6 +1682,23 @@ async function confirmPayment() {
     await new Promise((r) => setTimeout(r, 2500));
   }
   renderResult('late');
+}
+
+/** Back from paying for a gift: wait for its code (made when Idram confirms), then show it to send. */
+async function confirmGift(no) {
+  for (let i = 0; i < 8; i++) {
+    await loadMyGifts();
+    const g = (myGifts || []).find((x) => x.order === no);
+    if (g) {
+      try { sessionStorage.removeItem('pay-gift'); } catch {}
+      pageMode = 'gift';
+      history.replaceState(null, '', `${location.pathname}?gift=1`);
+      showGift(g);
+      return;
+    }
+    await sleep(2500);
+  }
+  renderResult('gift-late');
 }
 
 // ---------------------------------------------------------------- sign in
@@ -1238,25 +1744,55 @@ async function loadAccess() {
   }
 }
 
+/** Sign-in says what it is for: a plan, a gift to buy (a parent may have no account yet), or a gift to activate. */
+function renderLoginText() {
+  $('login-sub').textContent = pageMode === 'gift'
+    ? 'Մուտք գործեք՝ նվեր-կոդ գնելու համար։ Հաշիվ չունե՞ք․ շարունակեք Google-ով, և այն կստեղծվի։'
+    : pageMode === 'redeem'
+      ? 'Մուտք գործիր այն հաշվով, որով մտնում ես հավելված․ նվերը կբացվի այնտեղ'
+      : 'Մուտք գործեք Harcer.am-ի ձեր հաշիվ՝ փաթեթ գնելու համար';
+  $('register').hidden = pageMode === 'gift';
+}
+
 async function start() {
   renderHeader();
+  renderLoginText();
   if (!user) { show('login'); return; }
-  const result = params.get('result');
+  // As the address is now: a retry replaces ?result=… with the page's own address.
+  const result = new URLSearchParams(location.search).get('result');
   if (result === 'fail' && location.search) { show('result'); renderResult('fail'); return; }
   if ((result === 'unknown' || result === 'duplicate') && location.search) { show('result'); renderResult(result); return; }
   if (result === 'ok' && location.search) { await confirmPayment(); return; }
   show('loading');
+  if (pageMode === 'redeem') {
+    if (readGiftCode(redeemCode)) await openCode(redeemCode);
+    else showCodeEntry(redeemCode, redeemCode ? GIFT_ERRORS['no-such-code'] : '');
+    return;
+  }
   await loadAccess();
   startFromHeld();
   show('plans');
   renderPlans();
+  if (pageMode === 'gift') loadMyGifts();
 }
 
 async function boot() {
   if (preview) {
     // No Firebase: a made-up account, for looking at a state.
-    user = preview === 'login' ? null : { uid: 'preview', email: 'ani.petrosyan@gmail.com' };
+    user = preview.startsWith('login') ? null : { uid: 'preview', email: 'ani.petrosyan@gmail.com' };
     const at = (days) => new Date(Date.now() + days * DAY).toISOString();
+    // Gift codes: ?preview=gift | giftcode | giftlate | code | redeem | redeem-up | redeem-store | redeem-year | login-gift | login-redeem
+    const sampleGifts = [
+      { code: '7K4M-Q9TZ-ABCD', order: 1, product: 'subj2_3month', status: 'unused', activate_by: at(365) },
+      { code: 'H8RW-2NXP-5TEV', order: 2, product: 'subj1_monthly', status: 'used', activate_by: at(300), used_by: 'ar***@gmail.com', used_at: at(-3) },
+    ];
+    if (['gift', 'login-gift'].includes(preview)) { pageMode = 'gift'; myGifts = sampleGifts; }
+    if (preview.startsWith('redeem') || preview === 'login-redeem') {
+      pageMode = 'redeem';
+      giftInfo = { code: '7K4M-Q9TZ-ABCD', product: preview === 'redeem-year' ? 'all_yearly' : 'subj2_3month', status: 'unused', activate_by: at(365) };
+      const plan = classify(giftInfo.product);
+      choice = plan.kind === 'all' ? 'yearly' : plan.period;
+    }
     const docs = {
       // a store's all-subject plan; a store's subject plan; ones paid here
       all: { subscriptions: { all_yearly_v2: { store: 'app_store', expires_date: at(61) } } },
@@ -1265,9 +1801,14 @@ async function boot() {
       webyear: { subscriptions: { 'all_yearly:web-2': { store: 'web', purchase_date: at(-100), expires_date: at(265) } } },
       ok: { subscriptions: { 'subj2_monthly:web-3': { store: 'web', expires_date: at(31) } }, subject_packages: { access: { english: { expires_date: at(31) }, math: { expires_date: at(31) } } } },
     };
-    if (docs[preview]) access = readAccess(docs[preview]);
+    const held = { 'redeem-up': docs.webplan, 'redeem-store': docs.owned }[preview] || docs[preview];
+    if (held) access = readAccess(held);
     startFromHeld();
     renderHeader();
+    renderLoginText();
+    if (preview === 'giftcode') { showGift(sampleGifts[0]); return; }
+    if (preview === 'code') { showCodeEntry(); return; }
+    if (preview === 'giftlate') { show('result'); renderResult('gift-late'); return; }
     if (['ok', 'late', 'unknown', 'duplicate', 'fail'].includes(preview)) {
       show('result');
       renderResult(preview === 'ok' ? 'active' : preview);
