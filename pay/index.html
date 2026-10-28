@@ -11,13 +11,17 @@
   choose subjects and a length, pay by bank card (Ameriabank vPOS). One static
   file, like scripts/admin-deploy/index.html, so it can sit on harcer.am.
 
-  A website, not a phone screen (Andranik, 13 Oct 2026: "make the page web
-  based"): a top bar, a centred sign-in card, then the plans as numbered steps
-  with the order summary beside them — the two layouts he picked from
-  sketches. Card and Idram (IDRAM_ON_PAGE below; the server side is
-  functions/lib/webPay.js). Live at harcer.am/pay/ since 28 Oct 2026, the
-  address Idram has for us: this file is pay/index.html in the GitHub Pages
-  repo andranikSinanyanWork/harcer-landing; publishing = copy it there, push.
+  Redesigned 28 Oct 2026 ("make web mobile look like we have on the mobile
+  but with armenian prices"; the computer layout left to me): the packages
+  are the app's own screen, piece for piece — the subject cards, the chips,
+  the plan rows, «Իմանալ ավելին». On a phone the pay button is pinned to the
+  bottom like the app's; on a computer the order sits beside the choices,
+  naming the account the plan goes to (a parent may be the one paying).
+  Idram only for now (CARD_ON_PAGE below; the server side is
+  functions/lib/webPay.js), with Idram's button in Idram's colours. Live at
+  harcer.am/pay/, the address Idram has for us: this file is pay/index.html
+  in the GitHub Pages repo andranikSinanyanWork/harcer-landing; publishing =
+  copy it there, push.
 
   The plans, the three-subject limit and the wording are the app paywall's
   (app/SubjectPackages.tsx); the sign-in form is the app's (app/login.tsx).
@@ -40,7 +44,13 @@
     --text: #1A202C;
     --muted: #64748B;
     --faint: #94A3B8;
+    --accent: #FFB347;
     --gold: #FEB100;
+    --cream: #F3EAD3;
+    --idram: #F5821E;
+    --idram-dark: #E57414;
+    --telcell: #FF5C39;
+    --telcell-dark: #EF4A27;
     --danger-soft: #FEF2F2;
     --danger-ink: #991B1B;
     --success: #10B981;
@@ -58,7 +68,7 @@
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    background: var(--bg);
+    background: var(--surface);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Armenian", "Helvetica Neue", Arial, sans-serif;
     font-size: 16px;
@@ -68,28 +78,28 @@
   [hidden] { display: none !important; }
   button, input { font: inherit; color: inherit; }
   button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid rgba(79, 109, 123, 0.35); outline-offset: 2px; }
   a { color: var(--primary); }
-  h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-  h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 17px; font-weight: 800; }
-  .sub { margin: 6px 0 0; font-size: 14px; color: var(--muted); }
+  h1 { margin: 0; font-size: 30px; line-height: 1.15; font-weight: 800; letter-spacing: -0.6px; }
+  .sub { margin: 6px 0 0; font-size: 14.5px; font-weight: 500; color: var(--muted); }
 
-  .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+  .wrap { width: 100%; max-width: 1040px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
 
-  /* ---- Top bar ---- */
+  /* ---- Top bar: the app's slate header ---- */
   .bar { background: var(--primary); color: #fff; padding-top: env(safe-area-inset-top); }
-  .bar-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+  .bar-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 60px; }
   .brand { display: block; color: #fff; line-height: 0; }
-  .logo { height: 38px; width: auto; display: block; }
+  .logo { height: 34px; width: auto; display: block; }
   .who { display: flex; align-items: center; gap: 12px; min-width: 0; font-size: 14px; }
   .who-email { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgba(255, 255, 255, 0.85); }
   .who button { flex: none; border: 0; border-radius: 999px; padding: 7px 14px; background: rgba(255, 255, 255, 0.15); color: #fff; font-size: 13px; font-weight: 700; }
   .who button:hover { background: rgba(255, 255, 255, 0.25); }
 
-  main { flex: 1; padding-top: 32px; padding-bottom: 48px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06); }
-  .narrow { max-width: 420px; margin: 24px auto 0; padding: 28px; }
+  main { flex: 1; padding-top: 40px; padding-bottom: 56px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px rgba(15, 23, 42, 0.07); }
+  .narrow { max-width: 420px; margin: 8px auto 0; padding: 28px; }
 
-  /* ---- Sign in ---- */
+  /* ---- Sign in: the app's form (app/login.tsx) ---- */
   #login-form { margin-top: 22px; }
   .field { display: block; margin-bottom: 14px; }
   .field > span { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
@@ -101,7 +111,7 @@
   .pw button { position: absolute; top: 0; right: 0; width: 50px; height: 100%; border: 0; background: none; color: var(--faint); display: grid; place-items: center; }
   .forgot { display: block; margin: -2px 0 16px auto; padding: 4px 0; border: 0; background: none; color: var(--primary); font-size: 14px; font-weight: 500; }
 
-  .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: 0; border-radius: 12px; padding: 14px 16px; font-size: 16px; font-weight: 700; }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: 0; border-radius: 14px; padding: 14px 16px; font-size: 16px; font-weight: 700; }
   .btn:disabled { opacity: 0.7; cursor: default; }
   .btn.primary { background: var(--primary); color: #fff; }
   .btn.primary:not(:disabled):hover { background: var(--primary-dark); }
@@ -122,87 +132,168 @@
   .msg.ok { background: var(--success-soft); color: var(--success-ink); }
   .msg.info { background: var(--info-soft); color: var(--info-ink); }
 
-  /* ---- Plans: steps on the left, the order beside them ---- */
-  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 32px; align-items: start; }
-  .block { margin-top: 30px; }
-  .step { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 13px; font-weight: 800; display: grid; place-items: center; }
-  .hint { margin: -4px 0 12px; font-size: 13.5px; color: var(--muted); }
-  #cap-hint { margin: 10px 0 0; font-weight: 600; }
+  /* ---- Packages. The left column is the app's screen (app/SubjectPackages.tsx),
+     piece for piece; on a computer the order sits beside it, on a phone its
+     button is pinned to the bottom like the app's. ---- */
+  .checkout { display: grid; grid-template-columns: minmax(0, 560px) 368px; justify-content: space-between; gap: 56px; align-items: start; }
+  .checkout.owned { grid-template-columns: minmax(0, 560px); }
+  .checkout.owned .order { display: none; }
+  .eyebrow { margin: 0 0 6px; font-size: 13px; font-weight: 800; letter-spacing: 0.4px; color: var(--accent); }
 
-  /* What a plan opens: the app's own comparison (COMPARE_ROWS), one tile a row. */
-  .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-  .fact { padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
-  .fact .label { font-size: 13px; font-weight: 600; color: var(--muted); }
-  .fact .value { margin-top: 6px; font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
-  .fact .free { margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+  /* The subjects of the plan: a light card with a book spine in the subject's cloth */
+  .covers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+  .covers.single { grid-template-columns: minmax(0, 1fr); }
+  .cover { --cloth: var(--primary); display: flex; align-items: center; height: 60px; padding: 0 12px 0 0; border: 1.5px solid var(--surface-alt); border-radius: 12px; background: var(--surface); overflow: hidden; text-align: left; transition: border-color 0.15s, background-color 0.15s; }
+  .cover::before { content: ""; flex: none; align-self: stretch; width: 7px; background: linear-gradient(var(--cloth) calc(50% - 1px), color-mix(in srgb, var(--cream) 45%, var(--cloth)) calc(50% - 1px) calc(50% + 1px), var(--cloth) calc(50% + 1px)); }
+  .cover .name { flex: 1; min-width: 0; padding: 0 8px 0 12px; }
+  .cover .name > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; font-weight: 700; }
+  .cover.two-lines .name > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal; text-overflow: clip; font-size: 13.5px; line-height: 1.15; }
+  .cover.two-lines .name small { display: none; }
+  .cover .name small { display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 600; color: var(--faint); }
+  .tick { flex: none; width: 20px; height: 20px; border: 1.5px solid var(--border-strong); border-radius: 50%; display: grid; place-items: center; color: var(--cream); }
+  .tick svg { display: none; }
+  .cover:not(:disabled):not([aria-checked="true"]):hover { border-color: var(--border); background: var(--bg); }
+  .cover[aria-checked="true"] { border-color: color-mix(in srgb, var(--cloth) 55%, transparent); background: color-mix(in srgb, var(--cloth) 8%, white); }
+  .cover[aria-checked="true"] .tick { background: var(--cloth); border-color: var(--cloth); }
+  .cover[aria-checked="true"] .tick svg { display: block; }
+  .cover:disabled { cursor: default; }
+  .cover.blocked { opacity: 0.4; }
+  .cover.enter, .chip.enter { animation: rise 0.25s ease-out both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(4px); } }
 
-  .subjects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .subject { --cloth: var(--primary); display: flex; align-items: center; min-height: 64px; padding: 0 14px 0 0; border: 1.5px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; text-align: left; }
-  .subject::before { content: ""; align-self: stretch; flex: none; width: 7px; background: var(--cloth); }
-  .subject .name { flex: 1; min-width: 0; padding: 10px 10px 10px 14px; font-size: 15px; font-weight: 700; }
-  .subject .name small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 500; color: var(--muted); }
-  .subject .check { flex: none; width: 22px; height: 22px; border: 1.5px solid var(--border-strong); border-radius: 50%; display: grid; place-items: center; color: #fff; }
-  .subject .check svg { display: none; }
-  .subject:not(.blocked):hover { border-color: var(--border-strong); }
-  .subject[aria-checked="true"] { border-color: var(--cloth); background: var(--primary-soft); border-color: color-mix(in srgb, var(--cloth) 55%, white); background: color-mix(in srgb, var(--cloth) 7%, white); }
-  .subject[aria-checked="true"] .check { background: var(--cloth); border-color: var(--cloth); }
-  .subject[aria-checked="true"] .check svg { display: block; }
-  .subject.blocked { opacity: 0.45; }
+  /* The rest, smaller: a tap adds one */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip { --cloth: var(--primary); display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 9px 0 11px; border: 1px solid transparent; border-radius: 17px; background: var(--surface-alt); color: var(--muted); font-size: 13px; font-weight: 700; }
+  .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--cloth); }
+  .chip:not(.full):hover { background: #E8EDF3; color: var(--text); }
+  .chip.full { opacity: 0.4; cursor: default; }
+  .cap { margin: 10px 0 0; text-align: center; font-size: 13px; font-weight: 600; color: var(--muted); }
 
-  .periods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-  .period { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 14px 16px 16px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--surface); text-align: left; }
-  .period:not(:disabled):hover { border-color: var(--border-strong); }
-  .period[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); }
-  .period:disabled { cursor: default; opacity: 0.55; }
-  .period .top { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; }
+  /* For how long */
+  .plans { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 18px; }
+  .plan { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 62px; padding: 10px 16px; border: 1.5px solid var(--surface-alt); border-radius: 14px; background: var(--surface); text-align: left; transition: border-color 0.15s, background-color 0.15s; }
+  .plan:not([aria-checked="true"]):hover { border-color: var(--border); background: var(--bg); }
+  .plan[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); }
   .radio { flex: none; width: 20px; height: 20px; border: 1.5px solid var(--border-strong); border-radius: 50%; display: grid; place-items: center; }
-  .period[aria-checked="true"] .radio { border-color: var(--primary); }
-  .period[aria-checked="true"] .radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
-  .period .price { margin-top: 12px; font-size: 22px; font-weight: 900; letter-spacing: -0.3px; white-space: nowrap; }
-  .period .detail { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 7px; margin-top: 4px; min-height: 18px; font-size: 12.5px; color: var(--muted); }
+  .plan[aria-checked="true"] .radio { border-color: var(--primary); }
+  .plan[aria-checked="true"] .radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+  .plan .body { flex: 1; min-width: 0; }
+  .plan .title { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-size: 15.5px; font-weight: 700; }
+  .plan .title > span:first-child { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .plan.two-lines .title > span:first-child { white-space: normal; }
+  .plan .per { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 600; color: var(--faint); }
+  .plan .price { flex: none; font-size: 18px; font-weight: 900; letter-spacing: -0.2px; white-space: nowrap; }
   .badge { border-radius: 999px; padding: 1px 7px; background: var(--gold); color: #fff; font-size: 11px; font-weight: 900; }
 
-  /* The order: level with the first heading on its left */
-  .summary { margin-top: 30px; }
-  .summary .card { position: sticky; top: 24px; }
-  .summary dl { margin: 0; }
-  .summary dl > div { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; font-size: 14px; }
-  .summary dt { flex: none; color: var(--muted); }
-  .summary dd { margin: 0; text-align: right; font-weight: 600; }
-  .total { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 14px; color: var(--muted); }
-  .total strong { font-size: 26px; font-weight: 900; letter-spacing: -0.4px; color: var(--text); white-space: nowrap; }
-  .methods { display: grid; gap: 8px; margin-top: 14px; }
-  .method { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface); text-align: left; font-size: 14px; font-weight: 600; }
-  .method small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
+  /* What a plan opens, against free: the app's «Իմանալ ավելին» table (phones) */
+  .more { display: flex; align-items: center; gap: 4px; margin: 16px auto 0; padding: 4px 6px; border: 0; background: none; color: var(--primary); font-size: 13.5px; font-weight: 800; }
+  .more svg { transition: transform 0.2s; }
+  .more[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .compare { margin-top: 10px; border: 1px solid var(--surface-alt); border-radius: 16px; overflow: hidden; }
+  .compare > div { display: grid; grid-template-columns: minmax(0, 1fr) 64px 84px; align-items: stretch; }
+  .compare > div + div { border-top: 1px solid var(--surface-alt); }
+  .compare span { display: grid; align-items: center; padding: 9px 0; font-size: 12.5px; font-weight: 600; color: var(--faint); text-align: center; }
+  .compare span:first-child { justify-items: start; padding-left: 14px; color: var(--muted); text-align: left; }
+  .compare span:last-child { background: var(--primary-soft); color: var(--primary-dark); font-weight: 800; }
+  .compare .head span { padding: 7px 0; font-size: 11px; font-weight: 700; }
+  .compare .head span:last-child { background: var(--primary); color: #fff; letter-spacing: 0.3px; }
+
+  /* The order (computers): sticky beside the choices */
+  .order { position: sticky; top: 24px; }
+  .order-card { padding: 24px; border: 1px solid var(--border); border-radius: 20px; background: var(--surface); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px rgba(15, 23, 42, 0.07); }
+  .order h2 { margin: 0 0 14px; font-size: 17px; font-weight: 800; }
+  .chosen { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chosen span { --cloth: var(--primary); display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px; border-radius: 15px; background: color-mix(in srgb, var(--cloth) 9%, white); font-size: 13px; font-weight: 700; }
+  .chosen span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--cloth); }
+  .chosen .none { background: var(--surface-alt); color: var(--muted); }
+  .chosen .none::before { display: none; }
+  .rows { margin: 14px 0 0; }
+  .rows > div { display: flex; justify-content: space-between; gap: 16px; padding: 7px 0; font-size: 14px; }
+  .rows dt { flex: none; color: var(--muted); }
+  .rows dd { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; font-weight: 600; }
+  .includes { list-style: none; margin: 14px 0 0; padding: 14px 0 0; border-top: 1px solid var(--border); display: grid; gap: 9px; }
+  .includes li { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+  .includes li svg { flex: none; color: var(--success); }
+  .includes b { font-weight: 800; }
+  .total { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 14px; color: var(--muted); }
+  .total strong { display: block; font-size: 28px; line-height: 1.1; font-weight: 900; letter-spacing: -0.5px; color: var(--text); text-align: right; white-space: nowrap; }
+  .total small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 600; color: var(--faint); text-align: right; }
+
+  /* Pay. Idram's button in Idram's own colours (idram.am: orange #F5821E, the
+     white logo), as wallet buttons are; our corners. */
+  .pay { position: relative; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; height: 56px; margin-top: 18px; padding: 0 18px; border: 0; border-radius: 16px; background: var(--idram); color: #fff; font-size: 16.5px; font-weight: 800; box-shadow: 0 10px 24px rgba(245, 130, 30, 0.3); overflow: hidden; transition: background-color 0.15s, transform 0.1s; }
+  .pay:not(:disabled):hover { background: var(--idram-dark); }
+  .pay:not(:disabled):active { transform: translateY(1px); }
+  .pay .idram { height: 25px; width: auto; flex: none; }
+  .pay .telcell { height: 15px; width: auto; flex: none; }
+  .pay.telcell { background: var(--telcell); box-shadow: 0 10px 24px rgba(255, 92, 57, 0.3); }
+  .pay.telcell:not(:disabled):hover { background: var(--telcell-dark); }
+  /* A wallet that is not connected yet: its colours, faded, not pressable */
+  .pay.soon:disabled { background: var(--telcell); color: #fff; opacity: 0.45; box-shadow: none; }
+  .pay .sep { flex: none; width: 1px; height: 22px; background: rgba(255, 255, 255, 0.5); }
+  .pay > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pay.card { background: var(--primary); box-shadow: 0 10px 24px rgba(79, 109, 123, 0.3); }
+  .pay.card:not(:disabled):hover { background: var(--primary-dark); }
+  .pay:disabled { background: var(--surface-alt); color: var(--faint); box-shadow: none; cursor: default; }
+  /* The app's shimmer, once in a while, while the button can be pressed */
+  .pay:not(:disabled)::after { content: ""; position: absolute; top: -20px; bottom: -20px; left: -100px; width: 100px; transform: rotate(8deg); background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)); animation: sweep 2.8s ease-in-out 1.6s infinite; pointer-events: none; }
+  @keyframes sweep { 0% { left: -100px; } 43%, 100% { left: calc(100% + 100px); } }
+  @media (prefers-reduced-motion: reduce) { .pay::after, .cover.enter, .chip.enter { animation: none !important; } }
+  /* How to pay: a tile per wallet, its logo in its own colours */
+  .methods { display: grid; grid-template-columns: repeat(var(--count, 2), minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+  .method { position: relative; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 12px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--surface); transition: border-color 0.15s, background-color 0.15s; }
+  .method:not([aria-checked="true"]):hover { border-color: var(--border-strong); }
   .method[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); }
   .method[aria-checked="true"] .radio { border-color: var(--primary); }
   .method[aria-checked="true"] .radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
-  .cta { margin-top: 18px; height: 52px; padding: 0 16px; }
-  .cta:disabled { background: #E0E0E0; color: #8A8A8A; opacity: 1; }
-  #pay-msg { margin: 14px 0 0; }
-  .fine { margin: 14px 0 0; font-size: 12.5px; color: var(--muted); }
+  .brand-logo { display: flex; align-items: center; min-width: 0; line-height: 0; }
+  .brand-logo b { font-size: 13.5px; font-weight: 800; line-height: 1.2; }
+  .method .idram { height: 22px; width: auto; color: var(--text); }
+  .method .idram .mark { color: var(--idram); }
+  .method .telcell { height: 13px; width: auto; color: var(--telcell); }
+  .method em { position: absolute; top: -8px; right: 8px; padding: 1px 7px; border-radius: 999px; background: var(--surface-alt); color: var(--muted); font-size: 10.5px; font-style: normal; font-weight: 800; }
+  #pay-msg { margin: 12px 0 0; }
+  .fine { display: flex; gap: 7px; margin: 12px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+  .fine svg { flex: none; margin-top: 2px; color: var(--faint); }
+  .fine .phone { display: none; }
+  .fine #fine { min-width: 0; overflow-wrap: anywhere; }
 
-  @media (max-width: 900px) {
-    .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
-    .summary { margin-top: 30px; }
-    .summary .card { position: static; }
+  @media (max-width: 860px) {
+    .checkout, .checkout.owned { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .checkout { padding-bottom: 8px; }
+    /* The app's pinned footer: the button and its terms stay on screen */
+    .order { position: sticky; top: auto; bottom: 0; z-index: 2; margin: 18px -24px 0; padding: 10px 24px calc(10px + env(safe-area-inset-bottom)); background: var(--surface); }
+    .order::before { content: ""; position: absolute; left: 0; right: 0; top: -28px; height: 28px; background: linear-gradient(rgba(255, 255, 255, 0), var(--surface)); pointer-events: none; }
+    .order-card { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+    .order .details { display: none; }
+    .pay { margin-top: 0; height: 54px; border-radius: 18px; }
+    .plan { gap: 10px; padding: 10px 14px; }
+    .plan .title { font-size: 14.5px; }
+    .plan .price { font-size: 17px; }
+    .methods { margin: 0 0 10px; }
+    .method { height: 46px; }
+    .fine { justify-content: center; margin-top: 8px; font-size: 11.5px; text-align: center; }
+    .fine svg { display: none; }
+    .fine .phone { display: inline; }
+    .fine .desk { display: none; }
+  }
+  @media (min-width: 861px) {
+    .more, .compare { display: none !important; }
   }
   @media (max-width: 640px) {
     .wrap { padding-left: 16px; padding-right: 16px; }
-    main { padding-top: 24px; }
-    h1 { font-size: 24px; }
-    .logo { height: 32px; }
-    .bar-in { height: 56px; }
+    main { padding-top: 20px; padding-bottom: 24px; }
+    h1 { font-size: 26px; }
+    .sub { font-size: 13.5px; }
+    .logo { height: 30px; }
+    .bar-in { height: 54px; }
     .who-email { display: none; }
-    .narrow { margin-top: 8px; padding: 22px 18px; }
-    .facts { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-    .fact { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; padding: 12px 14px; }
-    .fact .value { grid-column: 2; grid-row: 1 / span 2; margin: 0; font-size: 17px; text-align: right; }
-    .fact .free { margin: 0; }
-    .subjects, .periods { grid-template-columns: minmax(0, 1fr); }
-    .period { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 12px; padding: 12px 14px; }
-    .period .price { grid-column: 2; grid-row: 1 / span 2; margin: 0; font-size: 19px; }
-    .period .detail { padding-left: 30px; margin-top: 2px; }
+    .narrow { margin-top: 4px; padding: 22px 18px; }
+    .cover { padding-right: 10px; }
+    .cover .name { padding: 0 6px 0 9px; }
+    .cover .name > span { font-size: 14.5px; }
+    .cover .name .books { display: none; }
+    .order { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
   }
 
   /* ---- After the payment ---- */
@@ -216,7 +307,7 @@
 
   .loading { display: grid; place-items: center; min-height: 260px; }
   .spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  .btn .spinner { width: 20px; height: 20px; border-width: 2.5px; border-color: rgba(255, 255, 255, 0.35); border-top-color: #fff; }
+  .btn .spinner, .pay .spinner { width: 22px; height: 22px; border-width: 2.5px; border-color: rgba(255, 255, 255, 0.35); border-top-color: #fff; }
   .btn.google .spinner { border-color: #dadce0; border-top-color: #1F1F1F; }
   @keyframes spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
@@ -282,47 +373,51 @@
     </div>
   </section>
 
-  <!-- What a plan opens, the two choices, and the order -->
+  <!-- The packages: the app's screen on the left, the order beside it -->
   <section id="view-plans" hidden>
-    <h1 id="plans-title"></h1>
-    <p class="sub" id="plans-sub"></p>
-
-    <div class="layout" id="picker">
-      <div>
-        <section class="block">
-          <h2>Ինչ է բացում փաթեթը</h2>
-          <div class="facts">
-            <div class="fact"><div class="label">Հարցեր՝ ամեն բաժնից</div><div class="value">Բոլորը</div><div class="free">Անվճար՝ առաջին 2-ը</div></div>
-            <div class="fact"><div class="label">AI ուսուցիչ</div><div class="value">15 / օր</div><div class="free">Անվճար՝ 3 / օր</div></div>
-            <div class="fact"><div class="label">Փորձնական քննություն</div><div class="value">Անսահմանափակ</div><div class="free">Անվճար՝ չկա</div></div>
-          </div>
-        </section>
-
-        <section class="block">
-          <h2><span class="step">1</span>Առարկաներ</h2>
-          <p class="hint" id="subjects-hint"></p>
-          <div class="subjects" id="subjects" role="group" aria-label="Առարկաներ"></div>
-          <p class="hint" id="cap-hint" hidden></p>
-        </section>
-
-        <section class="block">
-          <h2><span class="step">2</span>Ժամկետ</h2>
-          <div class="periods" id="plans" role="radiogroup" aria-label="Ժամկետ"></div>
-        </section>
+    <div class="checkout" id="checkout">
+      <div class="pick">
+        <p class="eyebrow" id="eyebrow" hidden></p>
+        <h1 id="plans-title"></h1>
+        <p class="sub" id="plans-sub"></p>
+        <div class="covers" id="covers" role="group" aria-label="Առարկաներ"></div>
+        <div class="chips" id="chips" hidden></div>
+        <p class="cap" id="cap-hint" hidden></p>
+        <div class="plans" id="plans" role="radiogroup" aria-label="Ժամկետ"></div>
+        <!-- What a plan opens against free: the app's COMPARE_ROWS -->
+        <button type="button" class="more" id="more" aria-expanded="false" aria-controls="compare">
+          <span>Իմանալ ավելին</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="compare" id="compare" hidden>
+          <div class="head"><span></span><span>Անվճար</span><span>Փաթեթով</span></div>
+          <div><span>Հարցեր՝ ամեն բաժնից</span><span>2</span><span>Բոլորը</span></div>
+          <div><span>AI ուսուցիչ</span><span>3/օր</span><span>15/օր</span></div>
+          <div><span>Փորձնական քննություն</span><span>—</span><span>∞</span></div>
+        </div>
       </div>
 
-      <aside class="summary">
-        <div class="card">
-          <h2>Քո փաթեթը</h2>
-          <dl id="order"></dl>
-          <div class="total"><span>Ընդամենը</span><strong id="total"></strong></div>
-          <div class="methods" id="methods" role="radiogroup" aria-label="Վճարման եղանակ" hidden>
-            <button type="button" class="method" role="radio" data-method="card" aria-checked="true"><span class="radio"></span><span>Բանկային քարտ<small>Visa · Mastercard · ArCa</small></span></button>
-            <button type="button" class="method" role="radio" data-method="idram" aria-checked="false"><span class="radio"></span><span>Idram<small>Idram դրամապանակով</small></span></button>
+      <aside class="order" id="order" aria-label="Քո փաթեթը">
+        <div class="order-card">
+          <div class="details">
+            <h2>Քո փաթեթը</h2>
+            <div class="chosen" id="o-subjects"></div>
+            <dl class="rows">
+              <div><dt>Ժամկետ</dt><dd id="o-length"></dd></div>
+              <div><dt>Գործում է մինչև</dt><dd id="o-until"></dd></div>
+              <div><dt>Հաշիվ</dt><dd id="o-account"></dd></div>
+            </dl>
+            <ul class="includes">
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Բոլոր</b> հարցերը՝ ամեն բաժնից</span></li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>AI ուսուցիչ՝ <b>15</b> հարց օրը</span></li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Փորձնական քննություններ՝ <b>անսահմանափակ</b></span></li>
+            </ul>
+            <div class="total"><span>Ընդամենը</span><span><strong id="o-total"></strong><small id="o-per"></small></span></div>
           </div>
-          <button type="button" class="btn primary cta" id="pay-btn"></button>
+          <div class="methods" id="methods" role="radiogroup" aria-label="Վճարման եղանակ"></div>
+          <button type="button" class="pay" id="pay-btn"></button>
           <p class="msg" id="pay-msg" role="status" hidden></p>
-          <p class="fine" id="fine"></p>
+          <p class="fine"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span id="fine"></span></p>
         </div>
       </aside>
     </div>
@@ -368,9 +463,14 @@ const PAYMENTS_LIVE = true;
 // Callables live in us-east1 (functions/lib/subjectPackages.js REGION).
 const FUNCTIONS_REGION = 'us-east1';
 
-// Idram as a second way to pay (idramResult deployed 27 Oct 2026). When off,
-// `?idram=1` still shows it on this Mac.
-const IDRAM_ON_PAGE = true;
+// Paying by card (Ameriabank vPOS) next to Idram. Off since 28 Oct 2026 at
+// Andranik's word ("hide the ameria"); the server still has it, and `?card=1`
+// shows it on this Mac.
+const CARD_ON_PAGE = false;
+// Telcell Wallet as a second wallet beside Idram (Andranik, 28 Oct 2026: "also
+// add tell-cell button"). Shown, but not payable until the server has it: that
+// needs Telcell's merchant agreement, keys and API, none of which exist yet.
+const TELCELL_READY = false;
 
 // Apple sign-in on the web needs a Services ID and key in Firebase's Apple
 // provider; the project has only the iPhone app's set-up (checked 12 Oct 2026).
@@ -391,21 +491,20 @@ const SUBJECTS = [
 const MAX_BUNDLE_SIZE = 3;
 
 // What one payment costs, in AMD, by the app's product ids
-// (tools/subscriptions/plans.config.mjs). The server holds its own copy and is
-// the one that counts. TEST PRICES since 28 Oct 2026 (1 AMD, for Andranik's
-// real test payments; the server sells only to the owner meanwhile). The
-// placeholders before: subj1 2300 / 5800, subj2 4600 / 10000,
-// subj3 6900 / 13900, all_yearly 19200.
+// (tools/subscriptions/plans.config.mjs): the app's store prices in USD at
+// 385 AMD, rounded to 100, until Andranik sets AMD prices of his own. The
+// server holds its own copy and is the one that counts; it charges the
+// owner's own test payments 1 AMD whatever this says (OWNER_TEST_PRICE_AMD).
 const PRICES = {
-  subj1_monthly: 1, subj1_3month: 1,
-  subj2_monthly: 1, subj2_3month: 1,
-  subj3_monthly: 1, subj3_3month: 1,
-  all_yearly: 1,
+  subj1_monthly: 2300, subj1_3month: 5800,
+  subj2_monthly: 4600, subj2_3month: 10000,
+  subj3_monthly: 6900, subj3_3month: 13900,
+  all_yearly: 19200,
 };
 const DURATIONS = [
-  { id: 'monthly', label: '1 ամիս', months: 1 },
-  { id: '3month', label: '3 ամիս', months: 3 },
-  { id: 'yearly', label: '1 տարի', months: 12 },
+  { id: 'monthly', label: '1\u00a0ամիս', months: 1 },
+  { id: '3month', label: '3\u00a0ամիս', months: 3 },
+  { id: 'yearly', label: '1\u00a0տարի', months: 12 },
 ];
 
 // ---------------------------------------------------------------- helpers
@@ -437,7 +536,9 @@ const money = (n) => `${number(n)} ֏`;
 const two = (n) => String(n).padStart(2, '0');
 const day = (ms) => { const d = new Date(ms); return `${two(d.getDate())}.${two(d.getMonth() + 1)}.${d.getFullYear()}`; };
 const label = (id) => SUBJECTS.find((s) => s.id === id)?.label ?? id;
-const CHECK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const CHECK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+// Idram's logo, from idram.am/assets/icons/logo.svg (28 Oct 2026), in one colour for its button.
+const IDRAM_LOGO = '<svg class="idram" viewBox="0 0 140 42" fill="currentColor" aria-hidden="true"><path transform="translate(47.091 8.133)" d="M1.8,22.9h2.6V6.4H1.8V22.9z M3.1,0.2c1,0,1.8,0.8,1.8,1.8S4.1,3.8,3.1,3.8S1.3,3,1.3,2      S2.1,0.2,3.1,0.2L3.1,0.2z"/><path transform="translate(47.091 8.133)" d="M22.7,0.2v8.2c-1.6-1.5-3.8-2.4-6-2.4C12,6,8,9.8,8,14.6s3.9,8.7,8.7,8.7c2.2,0,4.4-0.9,6-2.4v2h2.6V0.2      H22.7z M16.7,20.7c-3.3,0-6-2.7-6-6s2.6-5.9,5.9-6h0.1c3.3,0,6,2.7,6,6S20,20.7,16.7,20.7z"/><path transform="translate(47.091 8.133)" d="M38.1,6c-2.2,0-4.4,0.9-6,2.4v-2h-2.6v16.4h2.6v-8.2c0-3.3,2.7-6,6-6V6z"/><path transform="translate(47.091 8.133)" d="M54.1,6.4v1.9c-1.6-1.5-3.8-2.4-6-2.4c-4.5,0.2-8.1,3.8-8.3,8.3c-0.2,4.8,3.5,8.8,8.3,9      c2.2,0,4.4-0.9,6-2.4v2h2.7V6.4H54.1z M48.1,20.7c-3.3,0-6-2.7-6-6c0.1-3.3,2.7-6,6-6s6,2.7,6,6S51.4,20.7,48.1,20.7z"/><path transform="translate(47.091 8.133)" d="M63.5,6.4h-2.7v16.4h2.6v-8.2c0-3.3,2.7-6,6-6s6,2.7,6,6v8.2h2.7v-8.2c0-3.3,2.7-6,6-6      s6,2.7,6,6v8.2h2.6v-8.2c0-4.8-3.9-8.6-8.6-8.6c-3,0-5.7,1.5-7.3,4c-1.6-2.5-4.3-4-7.3-4c-2.2,0-4.4,0.8-6,2.4L63.5,6.4      L63.5,6.4z"/><path class="mark" transform="translate(0.0 0.496)" d="M8.3,1.5C4,3.8,1.3,8.1,0.9,12.9l0,0v3.9c0.2,0.6,0.8,1.1,1.5,1.1l0,0c0.8,0,1.5-0.7,1.5-1.5      l0,0v-2c0-4.3,2.2-8.2,6-10.3l0,0c3.7-2.2,8.3-2.2,11.9,0l0,0l1.8,1l0,0l0,0c0.7,0.4,1.6,0.2,2-0.5l0,0l0,0      c0.4-0.7,0.2-1.6-0.5-2l0,0l-1.8-1c-2.3-1.4-4.9-2.1-7.5-2.1l0,0C13.2-0.6,10.6,0.1,8.3,1.5 M27.9,6.1c-0.4,0.7-0.1,1.6,0.6,2      l0,0l1.7,1c3.7,2.1,6,6,6,10.3l0,0c0.1,4.3-2.2,8.2-6,10.3l0,0l-8.6,5c-3.7,2.2-8.3,2.2-12,0l0,0c-3.7-2.1-6-6-5.9-10.3l0,0v-2      c0-0.8-0.7-1.5-1.5-1.5l0,0c-0.7,0-1.3,0.5-1.4,1.1l0,0v3.8c0.4,4.8,3.1,9.1,7.4,11.4l0,0c4.6,2.7,10.3,2.7,14.9,0l0,0l8.7-5      c4.7-2.6,7.6-7.5,7.5-12.9l0,0C39.4,14,36.5,9,31.8,6.4l0,0l-1.7-1L30,5.3l0,0c-0.3,0-0.5,0-0.8,0l0,0      C28.7,5.3,28.2,5.6,27.9,6.1 M11.3,6.7c-2.8,1.6-4.5,4.5-4.5,7.7l0,0v10c-0.1,3.2,1.7,6.2,4.5,7.7l0,0c2.7,1.6,6.2,1.6,8.9,0      l0,0l1.8-1c0.7-0.4,0.9-1.3,0.5-2l0,0c-0.4-0.7-1.3-1-2-0.6l0,0l0,0l0,0l-1.7,1c-1.9,1.1-4.1,1.1-6,0l0,0c-1.9-1-3-3-3-5.2l0,0      v-10c0-2.1,1.1-4.1,3-5.2l0,0c1.8-1.1,4.1-1.1,6,0l0,0l8.6,5c1.9,1,3,3,3,5.2l0,0c0,2.1-1.1,4.1-3,5.2l0,0l-1.8,1      c-0.7,0.4-0.9,1.4-0.4,2l0,0c0.4,0.6,1.2,0.9,1.9,0.5l0,0l1.7-1c2.8-1.6,4.5-4.5,4.5-7.7l0,0c0.1-3.2-1.7-6.2-4.5-7.7l0,0      l-8.6-5c-1.4-0.8-2.9-1.2-4.5-1.2l0,0C14.2,5.5,12.7,5.9,11.3,6.7 M13.1,13c-0.3,0.4-0.4,0.9-0.4,1.4l0,0v2      c0.1,0.8,0.8,1.4,1.6,1.3l0,0c0.7-0.1,1.3-0.6,1.3-1.3l0,0V15c0-0.1,0.1-0.2,0.2-0.3l0,0c0.1,0,0.2,0,0.4,0l0,0l3.8,2.2l3.8,2.2      c0.1,0,0.2,0.2,0.2,0.3l0,0c0,0.1-0.1,0.3-0.2,0.3l0,0L20,21.9l-3.8,2.2c-0.1,0.1-0.3,0.1-0.4,0l0,0c-0.1,0-0.2-0.2-0.2-0.3l0,0      v-1.4c-0.1-0.8-0.8-1.4-1.6-1.3l0,0c-0.7,0.1-1.3,0.6-1.3,1.3l0,0v2c0,1.1,0.6,2,1.5,2.5l0,0c0.9,0.5,2,0.5,3,0l0,0l8.6-5      c0.9-0.5,1.5-1.5,1.5-2.5l0,0c0-1.1-0.6-2-1.5-2.5l0,0l-8.6-5c-0.5-0.3-1-0.4-1.5-0.4l0,0C14.7,11.5,13.7,12,13.1,13"/></svg>';
 
 /** `months` calendar months from now, as the server counts a plan's end (webPay.js addMonths). */
 function endAfter(months) {
@@ -448,6 +549,22 @@ function endAfter(months) {
   d.setDate(Math.min(wanted, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
   return d.getTime();
 }
+
+// Days to the next exam, as the app counts them for a student who gave no
+// date (services/examSchedule.ts): the 20th of January or of July.
+function daysToExam(now = new Date()) {
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  for (let year = now.getFullYear(); ; year++) {
+    for (const month of [0, 6]) {
+      const exam = new Date(year, month, 20);
+      if (exam > now) return Math.round((exam - midnight) / 864e5);
+    }
+  }
+}
+const EXAM_DAYS = daysToExam();
+// More days than this to the exam and the year leads (SubjectPackages.tsx
+// YEAR_LEADS_ABOVE_DAYS); closer, the 3-month plans do.
+const YEAR_FIRST = EXAM_DAYS > 120;
 
 function show(view) {
   for (const v of ['loading', 'login', 'plans', 'result']) $(`view-${v}`).hidden = v !== view;
@@ -519,7 +636,7 @@ let app = null;
 let user = null;
 let access = { kind: 'none' };
 const selected = new Set();
-let choice = '3month';
+let choice = YEAR_FIRST ? 'yearly' : '3month';
 
 // A link can arrive with the choice made: ?subjects=math,english&plan=yearly
 for (const id of (params.get('subjects') || '').split(',')) {
@@ -527,8 +644,17 @@ for (const id of (params.get('subjects') || '').split(',')) {
 }
 if (DURATIONS.some((d) => d.id === params.get('plan'))) choice = params.get('plan');
 
-const IDRAM_SHOWN = IDRAM_ON_PAGE || (LOCAL && params.has('idram'));
-let method = 'card';
+// Telcell's wordmark, from telcell.am's header (28 Oct 2026).
+const TELCELL_LOGO = '<svg class="telcell" viewBox="0 0 162 30" fill="currentColor" aria-hidden="true"><path d="M16.3593 1.05288V28.9605H9.18531V8.17342H0.733398V1.05288H16.3593ZM18.6001 8.17954H25.7741V1.05899H18.6001V8.17954ZM47.4804 28.9605V21.8461H35.2543V18.5701H44.6096V11.4495H35.2543V8.17342H47.4804V1.05288H28.0802V28.9605H47.4804ZM69.3948 28.9605V21.8461H58.0543V1.05288H50.8802V28.9605H69.3948ZM83.4516 8.14897C86.2273 8.14897 88.1411 9.85424 88.8544 11.8406L96.4862 11.8468C95.6774 5.61247 90.2274 0.600586 83.3446 0.600586C75.2077 0.600586 69.5434 6.62707 69.5434 15.0006C69.5434 23.3741 75.3979 29.4006 83.3446 29.4006C90.061 29.4006 95.446 25.006 96.5748 18.1789L88.8247 18.1727C88.1352 20.3608 86.0074 21.8522 83.4456 21.8522C79.6476 21.8522 77.0681 19.0285 77.0681 15.0006C77.0741 10.9727 79.5585 8.14897 83.4516 8.14897ZM98.6374 1.05288V28.9605H118.038V21.8461H105.811V18.5701H115.167V11.4495H105.811V8.17342H118.038V1.05288H98.6374ZM139.941 28.9605V21.8461H128.605V1.05288H121.431V28.9605H139.941ZM149.854 1.05288H142.681V28.9605H161.189V21.8461H149.854V1.05288Z"/></svg>';
+const CARD_SHOWN = CARD_ON_PAGE || (LOCAL && params.has('card'));
+// The ways to pay, in the order they are offered.
+const METHODS = [
+  { id: 'idram', name: 'Idram', logo: IDRAM_LOGO, ready: true, where: 'Վճարում ես Idram-ի էջում։' },
+  { id: 'telcell', name: 'Telcell', logo: TELCELL_LOGO, ready: TELCELL_READY, where: 'Վճարում ես Telcell-ի էջում։' },
+  ...(CARD_SHOWN ? [{ id: 'card', name: 'Բանկային քարտ', logo: '', ready: true, where: 'Վճարում ես Ամերիաբանկի էջում՝ Visa, Mastercard կամ ArCa քարտով։' }] : []),
+];
+let method = 'idram';
+const methodOf = (id) => METHODS.find((m) => m.id === id) || METHODS[0];
 
 const yearly = () => choice === 'yearly';
 const productId = () => (yearly() ? 'all_yearly' : selected.size ? `subj${selected.size}_${choice}` : null);
@@ -543,112 +669,259 @@ function renderHeader() {
   }
 }
 
-// ---------------------------------------------------------------- plans
+// ---------------------------------------------------------------- packages
 
-function renderPlans() {
-  $('picker').hidden = access.kind !== 'none';
-  if (access.kind === 'all') {
-    $('plans-title').textContent = 'Բոլոր առարկաները բաց են';
-    $('plans-sub').textContent = `Քո փաթեթը գործում է մինչև ${day(access.until)}`;
-    return;
-  }
-  if (access.kind === 'bundle') {
-    // Not sold on top of a running plan: the server pools every bundle and
-    // lets them lapse together, so a second one bought here could lose its
-    // subject when the first ends (functions/lib/plans.js resolveSelection).
-    $('plans-title').textContent = 'Քո փաթեթը գործում է';
-    $('plans-sub').textContent = `${access.subjects.map(label).join(', ')} · մինչև ${day(access.until)}։ Նոր փաթեթ այստեղ կարելի է գնել, երբ այս մեկն ավարտվի։`;
-    return;
-  }
-  $('plans-title').textContent = 'Փաթեթներ';
-  $('plans-sub').textContent = `Ընտրիր առարկաներդ և ժամկետը․ վճարում ես մեկ անգամ՝ ${IDRAM_SHOWN ? 'քարտով կամ Idram-ով' : 'բանկային քարտով'}`;
+const LOCK = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 10V7.5a5 5 0 0 1 10 0V10h.5A2.5 2.5 0 0 1 20 12.5v7a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 19.5v-7A2.5 2.5 0 0 1 6.5 10H7zm2.5 0h5V7.5a2.5 2.5 0 0 0-5 0V10z"/></svg>';
+const PLUS = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 
-  // 1 — subjects
-  const count = selected.size;
-  const atCap = count >= MAX_BUNDLE_SIZE;
-  $('subjects-hint').textContent = `Մինչև ${MAX_BUNDLE_SIZE} առարկա, կամ բոլորը՝ տարեկան փաթեթով`;
-  $('subjects').innerHTML = '';
-  for (const s of SUBJECTS) {
-    const on = yearly() || selected.has(s.id);
+/** What `count` subjects cost for `period`, or the year. */
+const priceOf = (count, period) => (period === 'yearly' ? PRICES.all_yearly : count ? PRICES[`subj${count}_${period}`] : null);
+/** About a month of `price`, to ten drams, as the app's «≈ … / ամիս». */
+const monthly = (price, months) => money(Math.round(price / months / 10) * 10);
+const lengthOf = (period) => DURATIONS.find((d) => d.id === period);
+
+/**
+ * Rebuild a row of buttons. Only the ones that were not there before come in
+ * with the small rise, so a tap doesn't make the whole row flicker.
+ */
+function refill(box, items, make) {
+  const before = new Set([...box.children].map((c) => c.dataset.id));
+  box.innerHTML = '';
+  for (const item of items) {
+    const el = make(item);
+    el.dataset.id = item.id;
+    if (!before.has(item.id)) el.classList.add('enter');
+    box.appendChild(el);
+  }
+}
+
+/** The subjects of the plan: the app's SubjectCard. */
+function renderCovers(list, state) {
+  const box = $('covers');
+  box.classList.toggle('single', list.length === 1);
+  refill(box, list, (s) => {
+    const { on = false, blocked = false, locked = false } = state(s);
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'subject' + (!yearly() && atCap && !on ? ' blocked' : '');
+    b.className = 'cover' + (blocked ? ' blocked' : '');
     b.style.setProperty('--cloth', s.cloth);
     b.setAttribute('role', 'checkbox');
     b.setAttribute('aria-checked', String(on));
-    b.innerHTML = `<span class="name"><span></span><small>${s.books} գիրք · ${number(s.questions)}+ հարց</small></span><span class="check">${CHECK}</span>`;
+    if (blocked) b.setAttribute('aria-disabled', 'true');
+    b.disabled = locked;
+    b.innerHTML = `<span class="name"><span></span><small></small></span><span class="tick">${locked ? LOCK : CHECK}</span>`;
     b.querySelector('.name span').textContent = s.label;
-    b.addEventListener('click', () => toggleSubject(s.id));
-    $('subjects').appendChild(b);
+    b.querySelector('small').innerHTML = locked ? 'Քո փաթեթում' : `<span class="books">${s.books} գիրք · </span>${number(s.questions)}+ հարց`;
+    if (!locked) b.addEventListener('click', () => toggleSubject(s.id));
+    return b;
+  });
+}
+
+/** One length, as the app's plan row: what it bills, a month of it, the saving. */
+function planRow(id, title, price, per, off = 0) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'plan';
+  b.setAttribute('role', 'radio');
+  b.setAttribute('aria-checked', String(choice === id));
+  b.innerHTML = `<span class="radio"></span><span class="body"><span class="title"><span></span>${off > 0 ? `<span class="badge">-${off}%</span>` : ''}</span>${per ? `<span class="per">${per}</span>` : ''}</span><span class="price">${money(price)}</span>`;
+  b.querySelector('.title span').textContent = title;
+  b.addEventListener('click', () => {
+    if (choice === id) return;
+    choice = id;
+    say($('pay-msg'), '', '');
+    renderPlans();
+  });
+  return b;
+}
+
+function renderPlans() {
+  const owned = access.kind !== 'none';
+  $('checkout').classList.toggle('owned', owned);
+  $('eyebrow').hidden = owned;
+  $('eyebrow').textContent = `Մինչև քննությունը՝ ${EXAM_DAYS} օր`;
+  $('plans').innerHTML = '';
+  $('more').hidden = owned;
+  if (owned) {
+    $('compare').hidden = true;
+    $('chips').hidden = true;
+    $('cap-hint').hidden = true;
+    // Not sold on top of a running plan: the server pools every bundle and
+    // lets them lapse together, so a second one bought here could lose its
+    // subject when the first ends (functions/lib/plans.js resolveSelection).
+    const all = access.kind === 'all';
+    $('plans-title').textContent = all ? 'Բոլոր առարկաները բաց են' : 'Քո փաթեթը գործում է';
+    $('plans-sub').textContent = all
+      ? `Քո փաթեթը գործում է մինչև ${day(access.until)}`
+      : `Մինչև ${day(access.until)}։ Նոր փաթեթ այստեղ կարելի է գնել, երբ այս մեկն ավարտվի։`;
+    renderCovers(SUBJECTS.filter((s) => all || access.subjects.includes(s.id)), () => ({ on: true, locked: true }));
+    fitLabels();
+    return;
   }
+
+  $('plans-title').textContent = 'Ընտրիր առարկաներդ';
+  $('plans-sub').textContent = `Մինչև ${MAX_BUNDLE_SIZE} առարկա, կամ բոլորը՝ տարեկան փաթեթով`;
+
+  const count = selected.size;
+  const year = yearly();
+  const nothing = !year && count === 0;
+  const atCap = count >= MAX_BUNDLE_SIZE;
+
+  // Up top and large, what the plan is for: the chosen subjects, or all of
+  // them when the year is picked or nothing is chosen yet. The rest below, as
+  // chips: a tap adds one.
+  renderCovers(SUBJECTS.filter((s) => year || nothing || selected.has(s.id)),
+    (s) => ({ on: year || selected.has(s.id), blocked: !year && atCap && !selected.has(s.id) }));
+  const rest = year || nothing ? [] : SUBJECTS.filter((s) => !selected.has(s.id));
+  $('chips').hidden = !rest.length;
+  refill($('chips'), rest, (s) => {
+    const c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'chip' + (atCap ? ' full' : '');
+    c.style.setProperty('--cloth', s.cloth);
+    c.setAttribute('aria-label', `Ավելացնել ${s.label}`);
+    if (atCap) c.setAttribute('aria-disabled', 'true');
+    c.innerHTML = `<i></i><span></span>${PLUS}`;
+    c.querySelector('span').textContent = s.label;
+    c.addEventListener('click', () => toggleSubject(s.id));
+    return c;
+  });
   const cap = $('cap-hint');
-  cap.hidden = yearly() || !atCap;
+  cap.hidden = year || !atCap || !rest.length;
   cap.textContent = `Առավելագույնը ${MAX_BUNDLE_SIZE} առարկա մեկ փաթեթում․ բոլորը՝ տարեկան փաթեթով`;
 
-  // 2 — for how long. A month and three months are priced by the number of
-  // subjects chosen; the year is every subject.
-  $('plans').innerHTML = '';
-  for (const d of DURATIONS) {
-    const year = d.id === 'yearly';
-    const price = year ? PRICES.all_yearly : count ? PRICES[`subj${count}_${d.id}`] : null;
-    const off = !year && count && d.months > 1 ? Math.round((1 - price / (PRICES[`subj${count}_monthly`] * d.months)) * 100) : 0;
-    const perMonth = price != null && d.months > 1 ? `≈ ${money(Math.round(price / d.months / 10) * 10)} / ամիս` : '';
-    const detail = year
-      ? `<span>Բոլոր ${SUBJECTS.length} առարկաները</span><span>${perMonth}</span>`
-      : `<span>${price == null ? 'Նախ ընտրիր առարկա' : perMonth || `${count} առարկա`}</span>`;
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'period';
-    b.disabled = price == null;
-    b.dataset.plan = d.id;
-    b.setAttribute('role', 'radio');
-    b.setAttribute('aria-checked', String(choice === d.id && price != null));
-    b.innerHTML = `<span class="top"><span class="radio"></span><span>${d.label}</span></span>`
-      + `<span class="price">${price == null ? '—' : money(price)}</span>`
-      + `<span class="detail">${detail}${off > 0 ? `<span class="badge">−${off}%</span>` : ''}</span>`;
-    b.addEventListener('click', () => { choice = d.id; say($('pay-msg'), '', ''); renderPlans(); });
-    $('plans').appendChild(b);
+  // For how long. The year leads while the exam is far, and sits last when it is close.
+  const rows = [];
+  if (count > 0) {
+    const m1 = priceOf(count, 'monthly');
+    const m3 = priceOf(count, '3month');
+    rows.push(planRow('monthly', `${count} առարկա · ${lengthOf('monthly').label}`, m1, ''));
+    rows.push(planRow('3month', `${count} առարկա · ${lengthOf('3month').label}`, m3, `≈ ${monthly(m3, 3)} / ամիս`, Math.round((1 - m3 / (m1 * 3)) * 100)));
   }
+  const yearRow = planRow('yearly', `Բոլոր առարկաները · ${lengthOf('yearly').label}`, PRICES.all_yearly, `≈ ${monthly(PRICES.all_yearly, 12)} / ամիս`);
+  if (YEAR_FIRST) rows.unshift(yearRow);
+  else rows.push(yearRow);
+  for (const r of rows) $('plans').appendChild(r);
 
   renderOrder();
+  fitLabels();
 }
 
-/** The order beside the steps: what is chosen, until when, for how much. */
+/**
+ * The app's adjustsFontSizeToFit (minimumFontScale 0.85): a one-line label
+ * that does not fit shrinks a little. Still too long, it takes two lines where
+ * it has two words («Հայոց պատմություն» needs 155px at 14.5px; a phone's card
+ * has 100–120), and a single long word shrinks a little more.
+ */
+function fitLabels() {
+  for (const el of document.querySelectorAll('.cover .name > span, .plan .title > span:first-child')) {
+    const box = el.closest('.cover, .plan');
+    box.classList.remove('two-lines');
+    el.style.fontSize = '';
+    const full = parseFloat(getComputedStyle(el).fontSize);
+    const over = () => el.scrollWidth > el.clientWidth + 0.5;
+    let size = full;
+    const shrink = (min) => {
+      while (over() && size > min) {
+        size -= 0.5;
+        el.style.fontSize = `${size}px`;
+      }
+    };
+    shrink(full * 0.85);
+    if (!over()) continue;
+    if (/\s/.test(el.textContent.trim())) {
+      el.style.fontSize = '';
+      box.classList.add('two-lines');
+      size = parseFloat(getComputedStyle(el).fontSize);
+    }
+    // The longest word must still fit: 11px at the least.
+    shrink(11);
+  }
+}
+let fitting = 0;
+addEventListener('resize', () => {
+  cancelAnimationFrame(fitting);
+  fitting = requestAnimationFrame(fitLabels);
+});
+
+/** The order: on a computer the card beside the choices, on a phone the pinned button. */
 function renderOrder() {
   const id = productId();
-  const duration = DURATIONS.find((d) => d.id === choice);
-  const names = yearly()
-    ? `Բոլոր ${SUBJECTS.length} առարկաները`
-    : SUBJECTS.filter((s) => selected.has(s.id)).map((s) => s.label).join('<br>') || '—';
-  const rows = [
-    ['Առարկաներ', names],
-    ['Ժամկետ', id ? duration.label : '—'],
-    ['Գործում է մինչև', id ? day(endAfter(duration.months)) : '—'],
-  ];
-  $('order').innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
-  $('total').textContent = id ? money(PRICES[id]) : '—';
+  const d = lengthOf(choice);
+  const price = id ? PRICES[id] : null;
 
-  $('methods').hidden = !IDRAM_SHOWN;
-  for (const b of $('methods').children) b.setAttribute('aria-checked', String(b.dataset.method === method));
+  const tags = yearly() ? [{ id: 'all', label: `Բոլոր ${SUBJECTS.length} առարկաները` }] : SUBJECTS.filter((s) => selected.has(s.id));
+  const chosen = $('o-subjects');
+  chosen.innerHTML = '';
+  for (const s of tags.length ? tags : [{ id: 'none', label: 'Ընտրիր առարկա' }]) {
+    const t = document.createElement('span');
+    if (s.cloth) t.style.setProperty('--cloth', s.cloth);
+    if (s.id === 'none') t.className = 'none';
+    t.textContent = s.label;
+    chosen.appendChild(t);
+  }
+  $('o-length').textContent = id ? d.label : '—';
+  $('o-until').textContent = id ? day(endAfter(d.months)) : '—';
+  $('o-account').textContent = user?.email || '—';
+  $('o-account').title = user?.email || '';
+  $('o-total').textContent = price != null ? money(price) : '—';
+  $('o-per').textContent = price != null && d.months > 1 ? `≈ ${monthly(price, d.months)} / ամիս` : '';
+
+  // How to pay: each way as a tile in its maker's colours; the button below
+  // takes the chosen one's.
+  const m = methodOf(method);
+  const tiles = $('methods');
+  tiles.innerHTML = '';
+  tiles.style.setProperty('--count', METHODS.length);
+  for (const x of METHODS) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = `method ${x.id}`;
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', String(x.id === method));
+    b.setAttribute('aria-label', x.ready ? x.name : `${x.name}, շուտով`);
+    b.innerHTML = `<span class="radio"></span><span class="brand-logo">${x.logo || '<b></b>'}</span>${x.ready ? '' : '<em>Շուտով</em>'}`;
+    if (!x.logo) b.querySelector('b').textContent = x.name;
+    b.addEventListener('click', () => {
+      if (method === x.id) return;
+      method = x.id;
+      say($('pay-msg'), '', '');
+      renderOrder();
+    });
+    tiles.appendChild(b);
+  }
 
   const pay = $('pay-btn');
-  if (!pay.dataset.label) {
-    pay.disabled = !id;
-    pay.textContent = !id ? 'Ընտրիր գոնե մեկ առարկա' : method === 'idram' ? 'Վճարել Idram-ով' : 'Վճարել քարտով';
+  if (pay.dataset.label == null) {
+    // The amount only: the chosen plan's row (and on a computer the order) says
+    // for how long, and a longer label is cut off beside the logo.
+    const what = !id ? 'Ընտրիր գոնե մեկ առարկա' : m.ready ? `Վճարել · ${money(price)}` : 'Շուտով';
+    pay.disabled = !id || !m.ready;
+    pay.className = `pay ${m.id}${m.ready ? '' : ' soon'}`;
+    pay.innerHTML = id && m.logo ? `${m.logo}<span class="sep"></span><span></span>` : '<span></span>';
+    pay.lastElementChild.textContent = what;
+    pay.setAttribute('aria-label', id ? `${what}${m.ready ? ` / ${d.label}` : ''}, ${m.name}` : what);
   }
-  $('fine').textContent = 'Մեկանգամյա վճար է․ ժամկետի վերջում ինքնաբերաբար չի երկարաձգվում։ '
-    + (method === 'idram' ? 'Վճարում ես Idram-ի էջում՝ Idram դրամապանակով։ ' : 'Վճարում ես Ամերիաբանկի էջում՝ Visa, Mastercard կամ ArCa քարտով։ ')
-    + `Փաթեթը կբացվի հավելվածում${user?.email ? `՝ ${user.email} հաշվով` : ''}։`;
+
+  const fine = $('fine');
+  fine.innerHTML = '<span class="desk"></span><span class="phone"></span>';
+  fine.firstElementChild.textContent = 'Մեկանգամյա վճար՝ առանց ինքնաշխատ երկարաձգման։ '
+    + (m.ready ? m.where : `${m.name}-ով վճարումը շուտով կմիանա։`);
+  fine.lastElementChild.textContent = 'Մեկանգամյա վճար՝ առանց ինքնաշխատ երկարաձգման'
+    + (user?.email ? ` · ${user.email}` : '');
 }
 
-for (const b of $('methods').children) {
-  b.addEventListener('click', () => { method = b.dataset.method; say($('pay-msg'), '', ''); renderOrder(); });
-}
+$('more').addEventListener('click', () => {
+  const open = $('compare').hidden;
+  $('compare').hidden = !open;
+  $('more').setAttribute('aria-expanded', String(open));
+  $('more').firstElementChild.textContent = open ? 'Թաքցնել' : 'Իմանալ ավելին';
+});
 
 function toggleSubject(id) {
   // The year covers everything; touching a subject means choosing them.
   if (yearly()) choice = '3month';
-  if (!selected.has(id) && selected.size >= MAX_BUNDLE_SIZE) { renderPlans(); return; }
+  if (!selected.has(id) && selected.size >= MAX_BUNDLE_SIZE) return;
   if (selected.has(id)) selected.delete(id);
   else selected.add(id);
   say($('pay-msg'), '', '');
@@ -672,7 +945,7 @@ $('pay-btn').addEventListener('click', async () => {
     const functions = getFunctions(app, FUNCTIONS_REGION);
     if (EMULATOR) connectFunctionsEmulator(functions, '127.0.0.1', 5001);
     const createWebOrder = httpsCallable(functions, 'createWebOrder');
-    const { data } = await createWebOrder({ product: id, subjects, provider: IDRAM_SHOWN ? method : 'card' });
+    const { data } = await createWebOrder({ product: id, subjects, provider: method });
     // The bank's own payment page; it sends the buyer back with ?result=…
     if (data && data.redirect) { location.assign(data.redirect); return; }
     // Idram takes the order as a form posted from the browser (its document, section 2).
@@ -701,7 +974,7 @@ $('pay-btn').addEventListener('click', async () => {
       'has-plan': 'Այս հաշիվն արդեն ունի գործող փաթեթ։',
       'test-mode': 'Վճարումը դեռ փորձարկվում է և շուտով կբացվի։',
       'too-many-orders': 'Շատ փորձեր եղան։ Փորձիր մի փոքր ուշ։',
-      'idram-not-connected': 'Idram-ով վճարումը դեռ միացված չէ։ Ընտրիր բանկային քարտը։',
+      'idram-not-connected': 'Idram-ով վճարումը դեռ միացված չէ։',
     }[e?.message] || 'Չհաջողվեց սկսել վճարումը։ Ստուգիր ինտերնետը և փորձիր կրկին։';
     // On this Mac the error itself too: a server that is not there and a
     // network that is down read the same above.
