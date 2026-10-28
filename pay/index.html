@@ -1681,6 +1681,16 @@ async function confirmPayment() {
     }
     await new Promise((r) => setTimeout(r, 2500));
   }
+  // Back in a tab that did not start the payment (Idram's app on a phone can
+  // open another): a gift paid in the last half hour is the likely reason.
+  await loadMyGifts();
+  const fresh = (myGifts || []).find((g) => g.status === 'unused' && Date.now() - Date.parse(g.created_at) < 30 * 60 * 1000);
+  if (fresh) {
+    pageMode = 'gift';
+    history.replaceState(null, '', `${location.pathname}?gift=1`);
+    showGift(fresh);
+    return;
+  }
   renderResult('late');
 }
 
