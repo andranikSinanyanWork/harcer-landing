@@ -569,6 +569,10 @@ const CARD_ON_PAGE = false;
 // add tell-cell button"). Shown, but not payable until the server has it: that
 // needs Telcell's merchant agreement, keys and API, none of which exist yet.
 const TELCELL_READY = false;
+// The «Ինձ համար | Երեխայիս համար» switch. Off since 29 Oct 2026, when Idram
+// opened for students and Andranik asked for "one version very simple": sign
+// in, pick, pay. Gift codes still work; `?gift=1` shows the switch.
+const GIFTS_ON_PAGE = false;
 
 // Apple sign-in on the web needs a Services ID and key in Firebase's Apple
 // provider; the project has only the iPhone app's set-up (checked 12 Oct 2026).
@@ -854,6 +858,8 @@ if (DURATIONS.some((d) => d.id === params.get('plan'))) { choice = params.get('p
 const codeInLink = /^#code(?:=(.*))?$/.exec(location.hash);
 let pageMode = codeInLink || params.has('code') ? 'redeem' : params.has('gift') ? 'gift' : 'self';
 let redeemCode = codeInLink ? decodeURIComponent(codeInLink[1] || '') : (params.get('code') || '');
+// Whether the switch is shown (GIFTS_ON_PAGE); once a gift is on the page it stays.
+let giftsShown = GIFTS_ON_PAGE || pageMode === 'gift' || (preview || '').includes('gift');
 // A gift: how many subjects it holds (the year is choice 'yearly').
 let giftCount = 1;
 // The code being activated, as giftCodes 'look' gave it: { code, product, status, activate_by }.
@@ -1093,7 +1099,8 @@ function renderLengths(count) {
 
 /** «Ինձ համար» or «Երեխայիս համար»; not shown while a code is being activated. */
 function renderSeg() {
-  $('seg').hidden = pageMode === 'redeem';
+  if (pageMode === 'gift') giftsShown = true;
+  $('seg').hidden = pageMode === 'redeem' || !giftsShown;
   $('seg-self').setAttribute('aria-selected', String(pageMode === 'self'));
   $('seg-gift').setAttribute('aria-selected', String(pageMode === 'gift'));
 }
