@@ -2337,6 +2337,12 @@ $('pw-toggle').addEventListener('click', () => {
   $('pw-toggle').setAttribute('aria-pressed', String(!showing));
 });
 
+// Another link opened in this tab changes only the # part, which loads nothing:
+// start again for it.
+addEventListener('hashchange', () => {
+  if (/^#(p|code)=/.test(location.hash)) location.reload();
+});
+
 // Instagram's and Facebook's built-in browsers: Google refuses to sign in
 // inside them, so the button would only lead to Google's error page.
 if (/Instagram|FBAN|FBAV|FB_IAB/i.test(navigator.userAgent)) {
