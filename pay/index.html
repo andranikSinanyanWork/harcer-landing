@@ -38,6 +38,17 @@
   account they use in the app, picks the subjects and activates it; the plan
   follows the same rules as a purchase. Activating happens here and never in
   the app (functions/lib/webPay.js giftCodes says why).
+
+  "Let my parent pay" (30 Oct 2026: parents in Armenia know neither their
+  child's e-mail nor an ID, and many students have no Idram): under the pay
+  button the student taps «Թող ծնողս վճարի», which makes a link for this
+  account's plan (payLinks 'make') and sends it from the phone's share sheet.
+  The parent opens harcer.am/pay/#p=TOKEN, sees the plan, the price and the
+  account (masked), three steps and one Idram button — no account, nothing to
+  type. Back from Idram, this browser remembers the payment (localStorage
+  'pay-link'), so ?result=… is read as the parent's. Back signed out with
+  nothing remembered (Idram's app may open another browser), the page says
+  what happens next instead of showing the sign-in card.
 -->
 <style>
   :root {
@@ -315,6 +326,7 @@
     .fine svg { display: none; }
     .fine .phone { display: inline; }
     .fine .desk { display: none; }
+    .ask { height: 42px; margin-top: 8px; font-size: 14px; }
   }
   @media (min-width: 861px) {
     .more, .compare { display: none !important; }
@@ -355,6 +367,29 @@
   .how { margin: 20px 0 0; padding: 14px 16px 14px 34px; border-radius: 14px; background: var(--surface-alt); text-align: left; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
   .how li + li { margin-top: 4px; }
   .linkish { display: block; margin: 14px auto 0; padding: 6px; border: 0; background: none; color: var(--primary); font-size: 14px; font-weight: 700; }
+  .order-no { margin: 14px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--surface-alt); font-size: 14px; color: var(--text); }
+  .result .order-no { color: var(--text); }
+
+  /* ---- "Let my parent pay" ---- */
+  /* Under the pay button: the student sends the plan to a parent instead */
+  .ask { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 46px; margin-top: 10px; border: 1.5px solid var(--border-strong); border-radius: 14px; background: var(--surface); color: var(--text); font-size: 15px; font-weight: 700; }
+  .ask:not(:disabled):hover { background: var(--bg); }
+  .ask:disabled { color: var(--faint); cursor: default; }
+  .ask svg { flex: none; color: var(--primary); }
+  .ask .spinner { width: 20px; height: 20px; border-width: 2.5px; }
+  /* The parent's page: what is paid for, three steps, one button */
+  .parent { max-width: 460px; }
+  .parent h1 { font-size: 25px; }
+  .parent .bill { margin-top: 18px; padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg); }
+  .parent .bill .rows { margin-top: 10px; }
+  .parent .bill .total { margin-top: 10px; padding-top: 12px; }
+  .parent .change { margin: 14px 0 0; }
+  .steps-title { margin: 22px 0 0; font-size: 15px; font-weight: 800; }
+  .steps { list-style: none; counter-reset: step; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }
+  .steps li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; line-height: 1.45; }
+  .steps li::before { content: counter(step); flex: none; width: 26px; height: 26px; margin-top: -2px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-dark); display: grid; place-items: center; font-size: 13px; font-weight: 800; }
+  .parent .pay { margin-top: 20px; }
+  .parent .help { margin: 18px 0 0; text-align: center; color: var(--muted); font-size: 13.5px; }
   .field input.code-input { font: 700 19px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1px; text-transform: uppercase; }
 
   .loading { display: grid; place-items: center; min-height: 260px; }
@@ -478,6 +513,10 @@
           <p class="change" id="change-note" hidden></p>
           <div class="methods" id="methods" role="radiogroup" aria-label="Վճարման եղանակ"></div>
           <button type="button" class="pay" id="pay-btn"></button>
+          <button type="button" class="ask" id="ask-btn" hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            <span>Թող ծնողս վճարի</span>
+          </button>
           <p class="msg" id="pay-msg" role="status" hidden></p>
           <p class="fine"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span id="fine"></span></p>
         </div>
@@ -491,6 +530,7 @@
       <div class="mark" id="result-mark"></div>
       <h1 id="result-title"></h1>
       <p id="result-text"></p>
+      <p class="order-no" id="result-no" hidden></p>
       <button type="button" class="btn primary" id="result-btn" hidden></button>
     </div>
   </section>
@@ -512,6 +552,57 @@
         <li>Ժամկետը սկսվում է ակտիվացնելու օրը։</li>
       </ol>
       <button type="button" class="linkish" id="gift-back">Իմ նվեր-կոդերը</button>
+    </div>
+  </section>
+
+  <!-- "Let my parent pay": the link the student sends -->
+  <section id="view-ask" hidden>
+    <div class="card narrow result">
+      <div class="mark ok"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+      <h1>Ուղարկիր հղումը ծնողիդ</h1>
+      <p id="ask-what"></p>
+      <button type="button" class="btn primary" id="ask-share">Ուղարկել ծնողիս</button>
+      <button type="button" class="btn secondary" id="ask-copy">Պատճենել հղումը</button>
+      <p class="msg" id="ask-msg" role="status" hidden></p>
+      <ol class="how">
+        <li>Ուղարկիր հղումը մայրիկիդ կամ հայրիկիդ՝ Viber-ով, WhatsApp-ով կամ Telegram-ով։</li>
+        <li>Նա բացում է հղումը և վճարում Idram-ով․ գրանցվել պետք չէ։</li>
+        <li id="ask-how-open">Վճարելուց հետո առարկաները բացվում են քո հաշվում։</li>
+        <li>Հղումը գործում է 3 օր։</li>
+      </ol>
+      <button type="button" class="linkish" id="ask-back">Վերադառնալ փաթեթներին</button>
+    </div>
+  </section>
+
+  <!-- A parent paying a student's link: no account, Idram only -->
+  <section id="view-parent" hidden>
+    <div class="card narrow parent">
+      <p class="eyebrow">Վճարում ծնողի համար</p>
+      <h1 id="p-title"></h1>
+      <p class="sub" id="p-sub"></p>
+      <div class="bill" id="p-bill">
+        <div class="chosen" id="p-subjects"></div>
+        <dl class="rows">
+          <div><dt>Ժամկետ</dt><dd id="p-length"></dd></div>
+          <div><dt id="p-until-label">Գործելու է մինչև</dt><dd id="p-until"></dd></div>
+          <div><dt>Երեխայի հաշիվը</dt><dd id="p-account"></dd></div>
+        </dl>
+        <div class="total"><span>Վճարելու գումարը</span><span><strong id="p-total"></strong></span></div>
+      </div>
+      <p class="change" id="p-note" hidden></p>
+      <p class="order-no" id="p-order" hidden></p>
+      <div id="p-howpay">
+        <h2 class="steps-title">Ինչպես վճարել</h2>
+        <ol class="steps">
+          <li>Սեղմեք ներքևի նարնջագույն կոճակը։</li>
+          <li>Idram-ում մուտք գործեք և հաստատեք վճարումը։</li>
+          <li>Պատրաստ է․ առարկաները կբացվեն երեխայի հավելվածում։</li>
+        </ol>
+        <button type="button" class="pay" id="p-pay"></button>
+        <p class="msg" id="p-msg" role="status" hidden></p>
+        <p class="fine"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span>Մեկանգամյա վճար՝ առանց ինքնաշխատ երկարաձգման։ Գրանցվել պետք չէ։</span></p>
+      </div>
+      <p class="help">Հարցեր ունե՞ք․ գրեք <a href="mailto:support@harcer.am">support@harcer.am</a></p>
     </div>
   </section>
 
@@ -630,6 +721,27 @@ const GIFT_ERRORS = {
   'too-many-tries': 'Շատ փորձեր եղան։ Փորձիր մեկ ժամից։',
 };
 
+// "Let my parent pay" (30 Oct 2026: a parent in Armenia does not know the
+// child's e-mail, so the child sends the parent a link instead). The link
+// carries its token in the # part, which no server sees; the parent pays it
+// here with no account (functions/lib/webPay.js payLinks).
+// What the server says a link can no longer do, or why it cannot be paid now,
+// as the parent reads it.
+const LINK_ERRORS = {
+  'no-such-link': 'Այս հղումը սխալ է։ Խնդրեք երեխային ուղարկել այն նորից։',
+  'link-expired': 'Հղումը գործում է 3 օր, և դրա ժամկետն անցել է։ Խնդրեք երեխային ուղարկել նոր հղում։',
+  'link-paid': 'Այս փաթեթն արդեն վճարված է։',
+  'has-all': 'Երեխայի հաշվում բոլոր առարկաներն արդեն բաց են․ վճարել պետք չէ։',
+  'plan-in-store': 'Երեխայի հաշվում արդեն կա App Store-ում կամ Google Play-ում վճարված փաթեթ, ուստի այս վճարումը հնարավոր չէ։',
+  'keep-your-subjects': 'Երեխայի փաթեթն այս ընթացքում փոխվել է։ Խնդրեք երեխային ուղարկել նոր հղում։',
+  'too-far-ahead': 'Փաթեթը չի կարելի երկարացնել ավելի քան 2 տարի առաջ։',
+  'too-many-tries': 'Շատ փորձեր եղան։ Փորձեք մեկ ժամից։',
+  'test-mode': 'Վճարումը դեռ միացված չէ։ Փորձեք մի փոքր ուշ։',
+};
+const LINK_FAILED = 'Չհաջողվեց սկսել վճարումը։ Ստուգեք ինտերնետը և փորձեք կրկին։';
+// How long after a parent leaves for Idram the page still takes ?result=… as theirs.
+const LINK_RETURN_MS = 3 * 60 * 60 * 1000;
+
 // ---------------------------------------------------------------- helpers
 
 const $ = (id) => document.getElementById(id);
@@ -680,7 +792,7 @@ const EXAM_DAYS = daysToExam();
 const YEAR_FIRST = EXAM_DAYS > 120;
 
 function show(view) {
-  for (const v of ['loading', 'login', 'plans', 'result', 'gift', 'code']) $(`view-${v}`).hidden = v !== view;
+  for (const v of ['loading', 'login', 'plans', 'result', 'gift', 'code', 'ask', 'parent']) $(`view-${v}`).hidden = v !== view;
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function say(el, kind, text) {
@@ -858,6 +970,11 @@ if (DURATIONS.some((d) => d.id === params.get('plan'))) { choice = params.get('p
 const codeInLink = /^#code(?:=(.*))?$/.exec(location.hash);
 let pageMode = codeInLink || params.has('code') ? 'redeem' : params.has('gift') ? 'gift' : 'self';
 let redeemCode = codeInLink ? decodeURIComponent(codeInLink[1] || '') : (params.get('code') || '');
+// A parent's link: #p=TOKEN. The page is then the parent's, with no sign-in.
+const linkInHash = /^#p=([A-Za-z0-9_-]{16})$/.exec(location.hash);
+const parentToken = linkInHash ? linkInHash[1] : null;
+// Where the student's link points: this page (on this Mac, the local one).
+const PAY_LINK = LOCAL ? `${location.origin}/pay/#p=` : 'https://harcer.am/pay/#p=';
 // Whether the switch is shown (GIFTS_ON_PAGE); once a gift is on the page it stays.
 let giftsShown = GIFTS_ON_PAGE || pageMode === 'gift' || (preview || '').includes('gift');
 // A gift: how many subjects it holds (the year is choice 'yearly').
@@ -1236,13 +1353,13 @@ function showGift(g) {
   say($('gift-msg'), '', '');
   scrollTo(0, 0);
 }
-async function copy(text, done) {
+async function copy(text, done, el = $('gift-msg')) {
   try {
     await navigator.clipboard.writeText(text);
-    say($('gift-msg'), 'ok', done);
+    say(el, 'ok', done);
   } catch {
     // No clipboard here: the text itself, to copy by hand.
-    say($('gift-msg'), 'info', text);
+    say(el, 'info', text);
   }
 }
 $('gift-share').addEventListener('click', async () => {
@@ -1487,6 +1604,13 @@ function renderOrder() {
     pay.lastElementChild.textContent = what;
     pay.setAttribute('aria-label', id ? `${what}${m.ready ? ` / ${d.label}` : ''}, ${m.name}` : what);
   }
+  // "Let my parent pay": a plan for this account only, paid by Idram whatever
+  // wallet is chosen here.
+  const ask = $('ask-btn');
+  if (ask.dataset.label == null) {
+    ask.hidden = pageMode !== 'self';
+    ask.disabled = !id;
+  }
 
   const fine = $('fine');
   fine.innerHTML = '<span class="desk"></span><span class="phone"></span>';
@@ -1549,6 +1673,8 @@ $('pay-btn').addEventListener('click', async () => {
     if (gift) sessionStorage.removeItem('pay-before');
     else sessionStorage.setItem('pay-before', planSignature(access));
     sessionStorage.removeItem('pay-gift');
+    // This browser's own payment now, not a parent's link paid in it before.
+    localStorage.removeItem('pay-link');
   } catch {}
   busy(pay, true);
   try {
@@ -1557,42 +1683,286 @@ $('pay-btn').addEventListener('click', async () => {
     if (gift && data?.no) { try { sessionStorage.setItem('pay-gift', String(data.no)); } catch {} }
     // The bank's own payment page; it sends the buyer back with ?result=…
     if (data && data.redirect) { location.assign(data.redirect); return; }
-    // Idram takes the order as a form posted from the browser (its document, section 2).
-    if (data && data.form) {
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = data.form.action;
-      for (const [name, value] of Object.entries(data.form.fields)) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        input.value = value;
-        form.appendChild(input);
-      }
-      document.body.appendChild(form);
-      form.submit();
-      return;
-    }
+    if (data && data.form) { postForm(data.form); return; }
     throw new Error('no-way-to-pay');
   } catch (e) {
     console.warn('[pay] order failed', e?.code, e?.message);
     busy(pay, false);
     renderPlans();
-    // The server's reasons (functions/lib/webPay.js createWebOrder).
-    const reason = {
-      'has-all': 'Բոլոր առարկաներն արդեն բաց են։',
-      'plan-in-store': 'Քո փաթեթը վճարվում է App Store-ում կամ Google Play-ում․ փոխիր այն այնտեղից։',
-      'keep-your-subjects': 'Փաթեթի առարկաները մնում են․ կարող ես միայն ավելացնել։',
-      'too-far-ahead': 'Փաթեթը կարելի է երկարացնել առավելագույնը 2 տարի առաջ։',
-      'test-mode': 'Վճարումը դեռ փորձարկվում է և շուտով կբացվի։',
-      'too-many-orders': 'Շատ փորձեր եղան։ Փորձիր մի փոքր ուշ։',
-      'idram-not-connected': 'Idram-ով վճարումը դեռ միացված չէ։',
-    }[e?.message] || 'Չհաջողվեց սկսել վճարումը։ Ստուգիր ինտերնետը և փորձիր կրկին։';
-    // On this Mac the error itself too: a server that is not there and a
-    // network that is down read the same above.
-    say(msg, 'error', LOCAL ? `${reason} [${LIVE_HERE ? 'live' : EMULATOR ? 'local' : '-'} · ${e?.code || ''} ${e?.message || ''}]` : reason);
+    say(msg, 'error', orderReason(e));
   }
 });
+
+/** Idram takes the order as a form posted from the browser (its document, section 2). */
+function postForm({ action, fields }) {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = action;
+  for (const [name, value] of Object.entries(fields)) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  }
+  document.body.appendChild(form);
+  form.submit();
+}
+
+/** Why an order (or a parent's link) could not be started, as the student reads it. */
+function orderReason(e) {
+  // The server's reasons (functions/lib/webPay.js createWebOrder, payLinks).
+  const reason = {
+    'has-all': 'Բոլոր առարկաներն արդեն բաց են։',
+    'plan-in-store': 'Քո փաթեթը վճարվում է App Store-ում կամ Google Play-ում․ փոխիր այն այնտեղից։',
+    'keep-your-subjects': 'Փաթեթի առարկաները մնում են․ կարող ես միայն ավելացնել։',
+    'too-far-ahead': 'Փաթեթը կարելի է երկարացնել առավելագույնը 2 տարի առաջ։',
+    'test-mode': 'Վճարումը դեռ փորձարկվում է և շուտով կբացվի։',
+    'too-many-orders': 'Շատ փորձեր եղան։ Փորձիր մի փոքր ուշ։',
+    'idram-not-connected': 'Idram-ով վճարումը դեռ միացված չէ։',
+  }[e?.message] || 'Չհաջողվեց սկսել վճարումը։ Ստուգիր ինտերնետը և փորձիր կրկին։';
+  // On this Mac the error itself too: a server that is not there and a
+  // network that is down read the same above.
+  return LOCAL ? `${reason} [${LIVE_HERE ? 'live' : EMULATOR ? 'local' : '-'} · ${e?.code || ''} ${e?.message || ''}]` : reason;
+}
+
+// ---------------------------------------------------------------- "let my parent pay"
+
+/** A plan in words: «Անգլերեն, Մաթեմատիկա · 1 ամիս», «Բոլոր առարկաները · 1 տարի». */
+function planWhat(product, subjects) {
+  const p = classify(product);
+  if (!p) return '';
+  return p.kind === 'all' ? `Բոլոր առարկաները · ${lengthOf('yearly').label}`
+    : `${(subjects || []).map(label).join(', ')} · ${lengthOf(p.period).label}`;
+}
+
+let askShown = null;
+/** What the student sends: who it is from is the sender's own phone; the plan, the price, the link. */
+function askMessage(l) {
+  return `Բարև։ Խնդրում եմ, վճարիր Harcer.am հավելվածում իմ փաթեթի համար՝ ${planWhat(l.product, l.subjects).replace(' · ', ', ')}, ${money(l.amount)}։ `
+    + `Կարող ես վճարել Idram-ով, գրանցվել պետք չէ։ Բացիր այս հղումը՝\n${PAY_LINK}${l.token}`;
+}
+/** The link made: what it pays for, and the buttons that send it. */
+function showAsk(l) {
+  askShown = l;
+  show('ask');
+  $('ask-what').textContent = `${planWhat(l.product, l.subjects)} · ${money(l.amount)}`;
+  $('ask-how-open').textContent = `Վճարելուց հետո առարկաները բացվում են քո հաշվում${user?.email ? `՝ ${user.email}` : ''}։`;
+  say($('ask-msg'), '', '');
+  scrollTo(0, 0);
+}
+
+$('ask-btn').addEventListener('click', async () => {
+  const id = productId();
+  if (!id) return;
+  const subjects = yearly() ? [] : SUBJECTS.filter((s) => selected.has(s.id)).map((s) => s.id);
+  const msg = $('pay-msg');
+  say(msg, '', '');
+  if (preview) {
+    showAsk({ token: 'Ab3dEf6hIj9kLm2n', product: id, subjects, amount: PRICES[id], expires_at: new Date(Date.now() + 3 * DAY).toISOString() });
+    return;
+  }
+  const ask = $('ask-btn');
+  busy(ask, true);
+  try {
+    const { data } = await (await callable('payLinks'))({ action: 'make', product: id, subjects });
+    busy(ask, false);
+    showAsk(data);
+  } catch (e) {
+    console.warn('[pay] link failed', e?.code, e?.message);
+    busy(ask, false);
+    renderPlans();
+    say(msg, 'error', orderReason(e));
+  }
+});
+$('ask-share').addEventListener('click', async () => {
+  const text = askMessage(askShown);
+  // A phone's share sheet (Viber, WhatsApp, Telegram…); elsewhere, the clipboard.
+  if (navigator.share) {
+    try { await navigator.share({ text }); return; } catch (e) { if (e?.name === 'AbortError') return; }
+  }
+  await copy(text, 'Հաղորդագրությունը պատճենվեց․ տեղադրիր այն Viber-ում, WhatsApp-ում կամ Telegram-ում և ուղարկիր ծնողիդ։', $('ask-msg'));
+});
+$('ask-copy').addEventListener('click', () => copy(`${PAY_LINK}${askShown.token}`, 'Հղումը պատճենվեց։', $('ask-msg')));
+$('ask-back').addEventListener('click', () => {
+  show('plans');
+  renderPlans();
+});
+
+// The parent's side. `parentLink` is payLinks 'look' with the token, or { token, error }.
+let parentLink = null;
+
+/** The link a parent opened: what it pays for, then the one button. */
+async function openParent(token) {
+  show('loading');
+  try {
+    const { data } = await (await callable('payLinks'))({ action: 'look', token });
+    parentLink = { token, ...data };
+  } catch (e) {
+    console.warn('[pay] link not read', e?.code, e?.message);
+    parentLink = { token, error: e?.message === 'no-such-link' ? 'no-such-link' : 'unreachable' };
+  }
+  renderParent();
+  show('parent');
+}
+
+function renderParent() {
+  const l = parentLink;
+  const bill = $('p-bill');
+  const how = $('p-howpay');
+  const note = $('p-note');
+  note.hidden = true;
+  $('p-order').hidden = true;
+  if (l.error) {
+    bill.hidden = true;
+    how.hidden = true;
+    $('p-title').textContent = l.error === 'unreachable' ? 'Էջը չբացվեց' : 'Հղումը չի գործում';
+    $('p-sub').textContent = l.error === 'unreachable' ? 'Ստուգեք ինտերնետը և թարմացրեք էջը։' : LINK_ERRORS[l.error];
+    return;
+  }
+  bill.hidden = false;
+  const chosen = $('p-subjects');
+  chosen.innerHTML = '';
+  const tags = classify(l.product)?.kind === 'all' ? [{ label: `Բոլոր ${SUBJECTS.length} առարկաները` }] : SUBJECTS.filter((s) => (l.subjects || []).includes(s.id));
+  for (const s of tags) {
+    const t = document.createElement('span');
+    if (s.cloth) t.style.setProperty('--cloth', s.cloth);
+    t.textContent = s.label;
+    chosen.appendChild(t);
+  }
+  const p = classify(l.product);
+  $('p-length').textContent = lengthOf(p?.kind === 'all' ? 'yearly' : p?.period)?.label || '—';
+  $('p-until-label').textContent = l.status === 'paid' ? 'Գործում է մինչև' : 'Գործելու է մինչև';
+  $('p-until').textContent = l.ends_at ? day(Date.parse(l.ends_at)) : '—';
+  $('p-account').textContent = l.account || '—';
+  $('p-total').textContent = money(l.amount);
+
+  if (l.status === 'paid') {
+    $('p-title').textContent = 'Այս փաթեթն արդեն վճարված է';
+    $('p-sub').textContent = 'Վճարումն ընդունվել է, և առարկաները բաց են երեխայի հաշվում։';
+    how.hidden = true;
+    if (l.paid_order) { $('p-order').hidden = false; $('p-order').textContent = `Պատվերի համարը՝ ${l.paid_order}`; }
+    return;
+  }
+  if (l.status !== 'open' || l.refusal) {
+    $('p-title').textContent = l.status === 'expired' ? 'Հղման ժամկետն անցել է' : 'Այս վճարումն այլևս հնարավոր չէ';
+    $('p-sub').textContent = LINK_ERRORS[l.status === 'expired' ? 'link-expired' : l.refusal] || LINK_FAILED;
+    how.hidden = true;
+    return;
+  }
+  $('p-title').textContent = 'Վճարեք երեխայի փաթեթը';
+  $('p-sub').textContent = 'Ձեր երեխան խնդրում է վճարել Harcer.am հավելվածի այս փաթեթի համար։';
+  // An extension or an upgrade of the plan the child holds, said before paying.
+  if (l.change === 'extend') {
+    note.hidden = false;
+    note.textContent = `Երեխան արդեն ունի փաթեթ․ նոր ժամկետը կսկսվի ${day(Date.parse(l.starts_at))}-ին՝ դրա ավարտից հետո։`;
+  } else if (l.change === 'upgrade') {
+    note.hidden = false;
+    note.textContent = 'Երեխայի ընթացիկ փաթեթը կմիանա այս մեկին, և դրա չօգտագործված օրերը կավելանան վերջում։';
+  }
+  how.hidden = false;
+  const pay = $('p-pay');
+  if (pay.dataset.label == null) {
+    pay.innerHTML = `${IDRAM_LOGO}<span class="sep"></span><span></span>`;
+    pay.lastElementChild.textContent = `Վճարել · ${money(l.amount)}`;
+    pay.setAttribute('aria-label', `Վճարել ${money(l.amount)} Idram-ով`);
+  }
+}
+
+$('p-pay').addEventListener('click', async () => {
+  const pay = $('p-pay');
+  const msg = $('p-msg');
+  say(msg, '', '');
+  if (preview) { say(msg, 'info', 'Նախադիտում․ վճարումը չի սկսվում։'); return; }
+  busy(pay, true);
+  try {
+    const { data } = await (await callable('payLinks'))({ action: 'pay', token: parentLink.token });
+    // Idram sends the parent back to ?result=… with nothing of ours in it:
+    // this browser remembers whose payment that is.
+    try { localStorage.setItem('pay-link', JSON.stringify({ token: parentLink.token, no: data.no, at: Date.now() })); } catch {}
+    postForm(data.form);
+  } catch (e) {
+    console.warn('[pay] link payment failed', e?.code, e?.message);
+    busy(pay, false);
+    const code = e?.message;
+    // A link that changed meanwhile (paid, expired, a plan bought): read it again.
+    if (['link-paid', 'link-expired', 'has-all', 'plan-in-store', 'keep-your-subjects'].includes(code)) { await openParent(parentLink.token); return; }
+    say(msg, 'error', LINK_ERRORS[code] || LINK_FAILED);
+  }
+});
+
+/** The parent's payment this browser started in the last hours, or null. */
+function recentLink() {
+  try {
+    const back = JSON.parse(localStorage.getItem('pay-link') || 'null');
+    return back && back.token && Date.now() - back.at < LINK_RETURN_MS ? back : null;
+  } catch { return null; }
+}
+
+/** Back from Idram with a parent's payment: wait for the link to be paid, then say so. */
+async function parentResult(result, back) {
+  show('result');
+  if (result === 'fail') { renderParentResult('fail', back); return; }
+  renderParentResult('checking', back);
+  for (let i = 0; i < 8; i++) {
+    try {
+      const { data } = await (await callable('payLinks'))({ action: 'look', token: back.token });
+      parentLink = { token: back.token, ...data };
+      if (data.status === 'paid') {
+        try { localStorage.removeItem('pay-link'); } catch {}
+        renderParentResult('ok', back);
+        return;
+      }
+    } catch (e) {
+      console.warn('[pay] link not read', e?.code, e?.message);
+    }
+    await sleep(2500);
+  }
+  renderParentResult('late', back);
+}
+
+function renderParentResult(state, back) {
+  const mark = $('result-mark');
+  const button = $('result-btn');
+  const no = (state === 'ok' && parentLink?.paid_order) || back.no;
+  button.hidden = true;
+  $('result-no').hidden = !no;
+  $('result-no').textContent = no ? `Պատվերի համարը՝ ${no}` : '';
+  if (state === 'fail') {
+    mark.className = 'mark fail';
+    mark.innerHTML = RESULT_FAIL;
+    $('result-title').textContent = 'Վճարումը չկատարվեց';
+    $('result-text').textContent = 'Կարող եք փորձել կրկին։ Եթե գումարը գանձվել է, գրեք support@harcer.am՝ նշելով պատվերի համարը։';
+    button.hidden = false;
+    button.textContent = 'Փորձել կրկին';
+    button.onclick = () => {
+      history.replaceState(null, '', `${location.pathname}#p=${back.token}`);
+      openParent(back.token);
+    };
+    return;
+  }
+  mark.className = 'mark ok';
+  if (state === 'ok') {
+    const l = parentLink;
+    mark.innerHTML = RESULT_OK;
+    $('result-title').textContent = 'Շնորհակալություն, վճարումն ընդունված է';
+    $('result-text').textContent = `${planWhat(l.product, l.subjects)}։ Առարկաները բացվեցին ${l.account ? `${l.account} հաշվում` : 'երեխայի հաշվում'}`
+      + `${l.ends_at ? `՝ մինչև ${day(Date.parse(l.ends_at))}` : ''}։ Երեխան կարող է բացել հավելվածը․ եթե այն արդեն բաց է, թող փակի և նորից բացի։`;
+    return;
+  }
+  mark.innerHTML = '<div class="spinner"></div>';
+  if (state === 'checking') {
+    $('result-title').textContent = 'Վճարումը ստուգվում է…';
+    $('result-text').textContent = '';
+    return;
+  }
+  // Idram has not confirmed yet: nobody knows whether it was paid.
+  $('result-title').textContent = 'Վճարումը դեռ չի հաստատվել';
+  $('result-text').textContent = 'Եթե գումարը գանձվել է, առարկաները կբացվեն երեխայի հաշվում մի քանի րոպեում։ Եթե չբացվեն, գրեք support@harcer.am՝ նշելով պատվերի համարը։';
+  button.hidden = false;
+  button.textContent = 'Ստուգել կրկին';
+  button.onclick = () => parentResult('ok', back);
+}
 
 // ---------------------------------------------------------------- result
 
@@ -1603,6 +1973,23 @@ function renderResult(state) {
   const mark = $('result-mark');
   const button = $('result-btn');
   button.hidden = true;
+  $('result-no').hidden = true;
+  if (state === 'out-ok' || state === 'out-fail') {
+    // Back from Idram in a browser with no account signed in and no parent's
+    // payment remembered (Idram's own app may open another browser): what is
+    // true for a parent and for a student alike, and a way to check.
+    const ok = state === 'out-ok';
+    mark.className = `mark ${ok ? 'ok' : 'fail'}`;
+    mark.innerHTML = ok ? RESULT_OK : RESULT_FAIL;
+    $('result-title').textContent = ok ? 'Շնորհակալություն' : 'Վճարումը չկատարվեց';
+    $('result-text').textContent = ok
+      ? 'Վճարումը ստանալուց հետո առարկաները բացվում են ինքնաբերաբար՝ մի քանի րոպեում։ Եթե վճարել եք երեխայի համար, թող նա բացի հավելվածը։ Հարցերի դեպքում գրեք support@harcer.am՝ նշելով Idram-ի անդորրագրի պատվերի համարը։'
+      : 'Եթե գումարը գանձվել է, գրեք support@harcer.am՝ նշելով Idram-ի անդորրագրի պատվերի համարը։';
+    button.hidden = false;
+    button.textContent = ok ? 'Մուտք գործել և ստուգել' : 'Մուտք գործել';
+    button.onclick = () => show('login');
+    return;
+  }
   if (state === 'fail') {
     mark.className = 'mark fail';
     mark.innerHTML = RESULT_FAIL;
@@ -1771,12 +2158,23 @@ function renderLoginText() {
   $('register').hidden = pageMode === 'gift';
 }
 
+let signedOutResultShown = false;
 async function start() {
   renderHeader();
   renderLoginText();
-  if (!user) { show('login'); return; }
   // As the address is now: a retry replaces ?result=… with the page's own address.
   const result = new URLSearchParams(location.search).get('result');
+  if (!user) {
+    // Back from Idram signed out: say what happens, then sign in to check.
+    if (['ok', 'fail'].includes(result) && !signedOutResultShown) {
+      signedOutResultShown = true;
+      show('result');
+      renderResult(result === 'ok' ? 'out-ok' : 'out-fail');
+      return;
+    }
+    show('login');
+    return;
+  }
   if (result === 'fail' && location.search) { show('result'); renderResult('fail'); return; }
   if ((result === 'unknown' || result === 'duplicate') && location.search) { show('result'); renderResult(result); return; }
   if (result === 'ok' && location.search) { await confirmPayment(); return; }
@@ -1796,7 +2194,9 @@ async function start() {
 async function boot() {
   if (preview) {
     // No Firebase: a made-up account, for looking at a state.
-    user = preview.startsWith('login') ? null : { uid: 'preview', email: 'ani.petrosyan@gmail.com' };
+    // Parents' links: ?preview=ask | parent | parent-paid | parent-expired | parent-store | parent-bad
+    // | parent-ok | parent-late | parent-fail; back signed out: out-ok | out-fail
+    user = /^(login|parent|out)/.test(preview) ? null : { uid: 'preview', email: 'ani.petrosyan@gmail.com' };
     const at = (days) => new Date(Date.now() + days * DAY).toISOString();
     // Gift codes: ?preview=gift | giftcode | giftlate | code | redeem | redeem-up | redeem-store | redeem-year | login-gift | login-redeem
     const sampleGifts = [
@@ -1823,6 +2223,28 @@ async function boot() {
     startFromHeld();
     renderHeader();
     renderLoginText();
+    if (preview === 'ask') {
+      showAsk({ token: 'Ab3dEf6hIj9kLm2n', product: 'subj2_monthly', subjects: ['english', 'math'], amount: PRICES.subj2_monthly, expires_at: at(3) });
+      return;
+    }
+    if (preview.startsWith('parent')) {
+      const sample = { token: 'Ab3dEf6hIj9kLm2n', product: 'subj2_monthly', subjects: ['english', 'math'], amount: PRICES.subj2_monthly, account: 'an***@gmail.com', status: 'open', expires_at: at(3), refusal: null, change: 'new', starts_at: at(0), ends_at: at(31), paid_order: null };
+      const state = {
+        parent: {}, 'parent-paid': { status: 'paid', paid_order: 3100140 }, 'parent-expired': { status: 'expired' },
+        'parent-store': { refusal: 'plan-in-store' }, 'parent-extend': { change: 'extend', starts_at: at(12), ends_at: at(42) },
+      }[preview];
+      if (state || preview === 'parent-bad') {
+        parentLink = preview === 'parent-bad' ? { token: sample.token, error: 'no-such-link' } : { ...sample, ...state };
+        renderParent();
+        show('parent');
+        return;
+      }
+      parentLink = { ...sample, status: 'paid', paid_order: 3100140 };
+      show('result');
+      renderParentResult(preview.slice('parent-'.length), { token: sample.token, no: 3100140 });
+      return;
+    }
+    if (preview === 'out-ok' || preview === 'out-fail') { show('result'); renderResult(preview); return; }
     if (preview === 'giftcode') { showGift(sampleGifts[0]); return; }
     if (preview === 'code') { showCodeEntry(); return; }
     if (preview === 'giftlate') { show('result'); renderResult('gift-late'); return; }
@@ -1830,6 +2252,19 @@ async function boot() {
       show('result');
       renderResult(preview === 'ok' ? 'active' : preview);
     } else if (user) { show('plans'); renderPlans(); } else show('login');
+    return;
+  }
+
+  // A parent: the link, or back from Idram with the payment this browser
+  // started. No sign-in on this side at all.
+  const result = params.get('result');
+  const back = result ? recentLink() : null;
+  if (parentToken || back) {
+    const { initializeApp } = await import(`${FB}firebase-app.js`);
+    app = initializeApp(firebaseConfig);
+    renderHeader();
+    if (back) await parentResult(result, back);
+    else await openParent(parentToken);
     return;
   }
 
