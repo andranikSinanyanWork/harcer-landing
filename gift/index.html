@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="hy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#4F6D7B">
+<title>Նվեր երեխային · Հարցեր.am</title>
+<meta property="og:title" content="Նվեր՝ Harcer.am-ի փաթեթ երեխայի համար">
+<meta property="og:description" content="Գնեք փաթեթ առանց գրանցվելու, վճարեք Idram-ով և ուղարկեք կոդը երեխային։">
+<!--
+  The address for parents' ads: harcer.am/gift → the checkout's gift page,
+  where a parent buys a code with no account (web/pay/index.html, ?gift=1).
+  Whatever the ad adds (utm_…) goes along. Published as gift/index.html in the
+  GitHub Pages repo andranikSinanyanWork/harcer-landing.
+-->
+<script>
+  var extra = location.search.replace(/^\?/, '');
+  location.replace('/pay/?gift=1' + (extra ? '&' + extra : ''));
+</script>
+<style>
+  body { margin: 0; padding: 32px 16px; background: #fff; color: #1A202C; font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Armenian", Arial, sans-serif; text-align: center; }
+  a { color: #4F6D7B; font-weight: 700; }
+</style>
+</head>
+<body>
+<a href="/pay/?gift=1">Գնել փաթեթ երեխայի համար</a>
+</body>
+</html>
