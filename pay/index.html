@@ -65,8 +65,8 @@
   send, no account, ?gift=1) or «Ինձ համար» (one's own plan). The gift
   pages' words fit a child and a friend alike. Both are the same plans page,
   with the two as a switch on top. One's own plan is chosen signed out too;
-  the account is asked for at «Վճարել» or «Թող ծնողս վճարի», and the page
-  comes back to the same choice once signed in (signInFor).
+  the account is asked for at «Վճարել» or «Թող ծնողս վճարի», in a dialog,
+  and once signed in the page carries on to Idram or the link (signInFor).
 -->
 <style>
   :root {
@@ -2481,14 +2481,15 @@ async function start() {
   renderPlans();
   if (pageMode === 'gift') loadMyGifts();
   if (signInFor) {
-    // Back from the sign-in it asked for: the same choice, one tap from paying,
-    // with the account it goes on named — or what the plan held changed in it.
+    // Signed in from «Վճարել» or «Թող ծնողս վճարի»: carry on with it — on to
+    // Idram, or the parent's link (Andranik, 30 Oct 2026: "not redirect back
+    // but redirect to idram"). Unless the plan held changed the choice: that
+    // is shown first.
     const why = signInFor;
     signInFor = null;
     if (why !== 'look' && pageMode === 'self' && !$('checkout').classList.contains('owned')) {
-      say($('pay-msg'), 'info', choiceSignature() === signInChoice
-        ? `Փաթեթը կբացվի ${user.email || 'այս'} հաշվում։`
-        : 'Քո հաշվում արդեն փաթեթ կա․ ընտրությունը թարմացվեց՝ ստուգիր այն վճարելուց առաջ։');
+      if (choiceSignature() === signInChoice) $(why === 'ask' ? 'ask-btn' : 'pay-btn').click();
+      else say($('pay-msg'), 'info', 'Քո հաշվում արդեն փաթեթ կա․ ընտրությունը թարմացվեց՝ ստուգիր այն վճարելուց առաջ։');
     }
   }
 }
