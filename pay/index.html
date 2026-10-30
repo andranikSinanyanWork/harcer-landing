@@ -13,7 +13,7 @@
 
   Redesigned 28 Oct 2026 ("make web mobile look like we have on the mobile
   but with armenian prices"; the computer layout left to me): the packages
-  are the app's own screen, piece for piece — the subject cards, the chips,
+  are the app's own screen, piece for piece — the subject cards,
   the plan rows, «Իմանալ ավելին». On a phone the pay button is pinned to the
   bottom like the app's; on a computer the order sits beside the choices,
   naming the account the plan goes to (a parent may be the one paying).
@@ -234,16 +234,39 @@
   .cover[aria-checked="true"] .tick svg { display: block; }
   .cover:disabled { cursor: default; }
   .cover.blocked { opacity: 0.4; }
-  .cover.enter, .chip.enter { animation: rise 0.25s ease-out both; }
+  .cover.enter { animation: rise 0.25s ease-out both; }
+  /* Every subject at once: one card for all of them, which is the year */
+  .cover.all { grid-column: 1 / -1; }
   @keyframes rise { from { opacity: 0; transform: translateY(4px); } }
 
-  /* The rest, smaller: a tap adds one */
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .chip { --cloth: var(--primary); display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 9px 0 11px; border: 1px solid transparent; border-radius: 17px; background: var(--surface-alt); color: var(--muted); font-size: 13px; font-weight: 700; }
-  .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--cloth); }
-  .chip:not(.full):hover { background: #E8EDF3; color: var(--text); }
-  .chip.full { opacity: 0.4; cursor: default; }
   .cap { margin: 10px 0 0; text-align: center; font-size: 13px; font-weight: 600; color: var(--muted); }
+
+  /* The choice in two parts, one open at a time (Andranik, 30 Oct 2026: "user
+     choose subject then close that part with dropdown, and user will choose
+     the period") */
+  .part { border: 1.5px solid var(--border); border-radius: 18px; background: var(--surface); }
+  .part + .part { margin-top: 12px; }
+  .part-head { display: flex; align-items: center; gap: 12px; width: 100%; padding: 16px 18px; border: 0; background: none; color: var(--text); text-align: left; }
+  .part-head .text { flex: 1; min-width: 0; }
+  .part-title { display: block; font-size: 18px; font-weight: 800; }
+  .part-sum { display: block; margin-top: 2px; font-size: 13.5px; font-weight: 600; color: var(--muted); }
+  .part.done .part-sum { color: var(--primary-dark); }
+  .part.locked .part-title { color: var(--faint); }
+  .part-head .chev { flex: none; color: var(--faint); transition: transform 0.2s; }
+  .part.open .part-head .chev { transform: rotate(180deg); }
+  .part-head:disabled { cursor: default; }
+  .part-head:disabled .chev { opacity: 0.4; }
+  .part-body { padding: 0 14px 16px; }
+  .part:not(.open) .part-body { display: none; }
+  .part-body .covers, .part-body .plans { margin-top: 0; }
+  .next { display: block; width: 100%; height: 48px; margin-top: 14px; border: 0; border-radius: 14px; background: var(--primary); color: #fff; font-size: 15.5px; font-weight: 800; }
+  .next:disabled { background: var(--surface-alt); color: var(--faint); cursor: default; }
+  /* A plan held only to look at, or a code being activated: no parts, only what is in them */
+  .part.flat { border: 0; background: none; }
+  .part.flat .part-head, .part.flat .next { display: none; }
+  .part.flat .part-body { display: block; padding: 0; }
+  .part.flat .covers { margin-top: 18px; }
+  .part.flat + .part.flat { margin-top: 0; }
 
   /* For how long */
   .plans { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 18px; }
@@ -258,6 +281,7 @@
   .plan .title > span:first-child { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .plan.two-lines .title > span:first-child { white-space: normal; }
   .plan .price { flex: none; font-size: 18px; font-weight: 900; letter-spacing: -0.2px; white-space: nowrap; }
+  .plan .when { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 600; color: var(--faint); }
   .badge { border-radius: 999px; padding: 1px 7px; background: var(--gold); color: #fff; font-size: 11px; font-weight: 900; }
 
 
@@ -521,10 +545,26 @@
         </div>
         <h1 id="plans-title"></h1>
         <p class="sub" id="plans-sub"></p>
-        <div class="covers" id="covers" role="group" aria-label="Առարկաներ"></div>
-        <div class="chips" id="chips" hidden></div>
-        <p class="cap" id="cap-hint" hidden></p>
-        <div class="plans" id="plans" role="radiogroup" aria-label="Ժամկետ"></div>
+        <section class="part" id="part-subjects">
+          <button type="button" class="part-head" id="head-subjects" aria-controls="body-subjects">
+            <span class="text"><span class="part-title" id="title-subjects">Ընտրիր առարկաներդ</span><span class="part-sum" id="sum-subjects"></span></span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="part-body" id="body-subjects">
+            <div class="covers" id="covers" role="group" aria-label="Առարկաներ"></div>
+            <p class="cap" id="cap-hint" hidden></p>
+            <button type="button" class="next" id="subjects-next">Շարունակել</button>
+          </div>
+        </section>
+        <section class="part" id="part-length">
+          <button type="button" class="part-head" id="head-length" aria-controls="body-length">
+            <span class="text"><span class="part-title">Ընտրիր ժամկետը</span><span class="part-sum" id="sum-length"></span></span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="part-body" id="body-length">
+            <div class="plans" id="plans" role="radiogroup" aria-label="Ժամկետ"></div>
+          </div>
+        </section>
         <section class="gifts" id="gifts" hidden>
           <h2>Ձեր նվեր-կոդերը</h2>
           <div id="gift-list"></div>
@@ -830,7 +870,6 @@ function daysToExam(now = new Date()) {
 const EXAM_DAYS = daysToExam();
 // More days than this to the exam and the year leads (SubjectPackages.tsx
 // YEAR_LEADS_ABOVE_DAYS); closer, the 3-month plans do.
-const YEAR_FIRST = EXAM_DAYS > 120;
 
 function show(view) {
   closeSignIn();
@@ -999,7 +1038,8 @@ let app = null;
 let user = null;
 let access = { kind: 'none' };
 const selected = new Set();
-let choice = YEAR_FIRST ? 'yearly' : '3month';
+// The length; it counts as chosen only once picked (choiceTouched) or the year is.
+let choice = '3month';
 
 // A link can arrive with the choice made: ?subjects=math,english&plan=yearly
 for (const id of (params.get('subjects') || '').split(',')) {
@@ -1100,7 +1140,6 @@ function renderHeader() {
 // ---------------------------------------------------------------- packages
 
 const LOCK = '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 10V7.5a5 5 0 0 1 10 0V10h.5A2.5 2.5 0 0 1 20 12.5v7a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 19.5v-7A2.5 2.5 0 0 1 6.5 10H7zm2.5 0h5V7.5a2.5 2.5 0 0 0-5 0V10z"/></svg>';
-const PLUS = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 
 /** What `count` subjects cost for `period`, or the year. */
 const priceOf = (count, period) => (period === 'yearly' ? PRICES.all_yearly : count ? PRICES[`subj${count}_${period}`] : null);
@@ -1122,15 +1161,18 @@ function refill(box, items, make) {
 }
 
 /** The subjects of the plan: the app's SubjectCard. */
+// The last card: every subject, which only the year holds.
+const ALL_CARD = { id: 'all', label: 'Բոլոր առարկաները', cloth: 'var(--gold)' };
 function renderCovers(list, state) {
   const box = $('covers');
   box.classList.toggle('single', list.length === 1);
   refill(box, list, (s) => {
     // `held`: locked because the account has it (a padlock), not because a gift names it.
     const { on = false, blocked = false, locked = false, held = locked } = state(s);
+    const all = s === ALL_CARD;
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'cover' + (blocked ? ' blocked' : '');
+    b.className = 'cover' + (blocked ? ' blocked' : '') + (all ? ' all' : '');
     b.style.setProperty('--cloth', s.cloth);
     b.setAttribute('role', 'checkbox');
     b.setAttribute('aria-checked', String(on));
@@ -1138,28 +1180,94 @@ function renderCovers(list, state) {
     b.disabled = locked;
     b.innerHTML = `<span class="name"><span></span><small></small></span><span class="tick">${held ? LOCK : CHECK}</span>`;
     b.querySelector('.name span').textContent = s.label;
-    b.querySelector('small').innerHTML = held ? 'Քո փաթեթում' : `<span class="books">${s.books} գիրք · </span>${number(s.questions)}+ հարց`;
-    if (!locked) b.addEventListener('click', () => toggleSubject(s.id));
+    b.querySelector('small').innerHTML = all ? `${SUBJECTS.length} առարկա · ${lengthOf('yearly').label} · ${money(PRICES.all_yearly)}`
+      : held ? 'Քո փաթեթում' : `<span class="books">${s.books} գիրք · </span>${number(s.questions)}+ հարց`;
+    if (!locked) b.addEventListener('click', () => (all ? chooseAll() : toggleSubject(s.id)));
     return b;
   });
 }
 
-/** One length, as the app's plan row: what it bills, and the saving. */
-function planRow(id, title, price, off = 0) {
+/** One length, as the app's plan row: what it bills, the saving, and (one's own plan) the day it ends. */
+function planRow(id, title, price, off = 0, product = null) {
+  const picked = choice === id && (choiceTouched || yearly());
+  const ends = product && pageMode === 'self' ? planDatesFor(planChangeFor(product), product).end : null;
   const b = document.createElement('button');
   b.type = 'button';
   b.className = 'plan';
   b.setAttribute('role', 'radio');
-  b.setAttribute('aria-checked', String(choice === id));
-  b.innerHTML = `<span class="radio"></span><span class="body"><span class="title"><span></span>${off > 0 ? `<span class="badge">-${off}%</span>` : ''}</span></span><span class="price">${money(price)}</span>`;
+  b.setAttribute('aria-checked', String(picked));
+  b.innerHTML = `<span class="radio"></span><span class="body"><span class="title"><span></span>${off > 0 ? `<span class="badge">-${off}%</span>` : ''}</span>${ends ? `<span class="when">մինչև ${day(ends)}</span>` : ''}</span><span class="price">${money(price)}</span>`;
   b.querySelector('.title span').textContent = title;
   b.addEventListener('click', () => {
-    if (choice === id) return;
+    if (picked) return;
     choice = id;
+    choiceTouched = true;
     say($('pay-msg'), '', '');
     renderPlans();
   });
   return b;
+}
+
+/** The two parts while choosing; a plan held only to look at (and a code being activated) shows their content alone. */
+function setParts(choosing) {
+  $('plans-title').hidden = choosing;
+  $('plans-sub').hidden = choosing;
+  for (const id of ['part-subjects', 'part-length']) $(id).classList.toggle('flat', !choosing);
+}
+
+/** Which part is open: the subjects first, then the length; one at a time. */
+let openPart = null;
+const subjectsChosen = () => yearly() || selected.size > 0;
+/** The parts' heads: which is open, and what was chosen in the closed one. */
+function renderParts(owned) {
+  const chosen = subjectsChosen();
+  const lengthOpen = openPart === 'length' && chosen;
+  const id = productId();
+  $('part-subjects').classList.toggle('open', !lengthOpen);
+  $('part-subjects').classList.toggle('done', lengthOpen);
+  $('part-length').classList.toggle('open', lengthOpen);
+  $('part-length').classList.toggle('locked', !chosen);
+  $('part-length').classList.toggle('done', !lengthOpen && chosen && (choiceTouched || yearly()));
+  $('head-subjects').setAttribute('aria-expanded', String(!lengthOpen));
+  $('head-length').setAttribute('aria-expanded', String(lengthOpen));
+  $('head-length').disabled = !chosen;
+  $('subjects-next').disabled = !chosen;
+  $('sum-subjects').textContent = lengthOpen
+    ? (yearly() ? `Բոլոր ${SUBJECTS.length} առարկաները` : SUBJECTS.filter((x) => selected.has(x.id)).map((x) => x.label).join(', '))
+    : owned.length ? `Քո փաթեթում՝ ${owned.length} առարկա․ ավելացրու կամ վերցրու բոլորը`
+    : `Մինչև ${MAX_BUNDLE_SIZE} առարկա, կամ բոլորը՝ մեկ տարով`;
+  $('sum-length').textContent = !chosen ? 'Նախ ընտրիր առարկաները'
+    : lengthOpen ? (yearly() ? 'Բոլոր առարկաները՝ մեկ տարով' : `Գները՝ ${selected.size} առարկայի համար`)
+    : choiceTouched || yearly() ? `${lengthOf(choice).label} · ${money(PRICES[id])}`
+    : '1 կամ 3 ամիս';
+}
+$('head-subjects').addEventListener('click', () => {
+  openPart = openPart !== 'length' && subjectsChosen() ? 'length' : 'subjects';
+  renderPlans();
+});
+$('head-length').addEventListener('click', () => {
+  if (!subjectsChosen()) return;
+  openPart = openPart === 'length' ? 'subjects' : 'length';
+  renderPlans();
+});
+$('subjects-next').addEventListener('click', () => {
+  if (!subjectsChosen()) return;
+  openPart = 'length';
+  renderPlans();
+  $('part-length').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
+
+/** The «Բոլոր առարկաները» card: the year, every subject; tapped again, back to the subjects ticked. */
+function chooseAll() {
+  if (yearly()) {
+    choice = '3month';
+    choiceTouched = false;
+  } else {
+    choice = 'yearly';
+    choiceTouched = true;
+  }
+  say($('pay-msg'), '', '');
+  renderPlans();
 }
 
 function renderPlans() {
@@ -1176,10 +1284,8 @@ function renderPlans() {
   const closed = mode === 'has-all' || mode === 'other-store';
   $('checkout').classList.toggle('owned', closed);
   $('plans').innerHTML = '';
-  if (closed || mode === 'web-all') {
-    $('chips').hidden = true;
-    $('cap-hint').hidden = true;
-  }
+  setParts(!closed && mode !== 'web-all');
+  if (closed || mode === 'web-all') $('cap-hint').hidden = true;
   if (closed) {
     const store = (access.live || []).find((x) => x.store !== 'web')?.store;
     $('plans-title').textContent = access.kind === 'all' ? 'Բոլոր առարկաները բաց են' : 'Քո փաթեթը գործում է';
@@ -1196,68 +1302,50 @@ function renderPlans() {
     $('plans-title').textContent = 'Բոլոր առարկաները բաց են';
     $('plans-sub').textContent = `Քո փաթեթը գործում է մինչև ${day(access.until)}․ կարող ես երկարացնել այն`;
     renderCovers(SUBJECTS, () => ({ on: true, locked: true }));
-    $('plans').appendChild(planRow('yearly', `Բոլոր առարկաները · ${lengthOf('yearly').label}`, PRICES.all_yearly));
+    $('plans').appendChild(planRow('yearly', `Բոլոր առարկաները · ${lengthOf('yearly').label}`, PRICES.all_yearly, 0, 'all_yearly'));
     renderOrder();
     fitLabels();
     return;
   }
 
   // The app's titles: a new plan, or one to add to (SubjectPackages.tsx).
-  $('plans-title').textContent = gift ? 'Ընտրիր առարկաները' : owned.length ? 'Ավելացրու առարկա' : 'Ընտրիր առարկաներդ';
-  $('plans-sub').textContent = owned.length
-    ? `Քո փաթեթում՝ ${owned.length} առարկա․ ավելացրու կամ վերցրու բոլորը տարով`
-    : `Մինչև ${MAX_BUNDLE_SIZE} առարկա, կամ բոլորը՝ տարեկան փաթեթով`;
-
-  renderPicker(owned, `Առավելագույնը ${MAX_BUNDLE_SIZE} առարկա մեկ փաթեթում․ բոլորը՝ տարեկան փաթեթով`);
+  $('title-subjects').textContent = gift ? 'Ընտրիր առարկաները' : owned.length ? 'Ավելացրու առարկա' : 'Ընտրիր առարկաներդ';
+  // Opened at the subjects; at the length when a link or a sign-in brought the whole choice.
+  if (!openPart) openPart = subjectsChosen() && choiceTouched ? 'length' : 'subjects';
+  renderPicker(owned, `Առավելագույնը ${MAX_BUNDLE_SIZE} առարկա․ ավելին՝ «Բոլոր առարկաները»`, true);
   renderLengths(selected.size);
+  renderParts(owned);
   renderOrder();
   fitLabels();
 }
 
 /**
- * Up top and large, what the plan is for: the chosen subjects (the ones held
- * locked in), or all of them when the year is picked or nothing is chosen
- * yet. The rest below, as chips: a tap adds one, up to capOf().
+ * Every subject in its place, ticked or not (the ones held locked in), up to
+ * capOf(); with `all`, the card for every subject (the year) after them.
  */
-function renderPicker(owned, capText) {
-  const count = selected.size;
+function renderPicker(owned, capText, all = false) {
   const year = yearly();
-  const nothing = !year && count === 0;
-  const atCap = count >= capOf();
-  renderCovers(SUBJECTS.filter((x) => year || nothing || selected.has(x.id)),
-    (x) => ({ on: year || selected.has(x.id), locked: (year && pageMode === 'redeem') || owned.includes(x.id), blocked: !year && atCap && !selected.has(x.id) }));
-  const rest = year || nothing ? [] : SUBJECTS.filter((x) => !selected.has(x.id));
-  $('chips').hidden = !rest.length;
-  refill($('chips'), rest, (x) => {
-    const c = document.createElement('button');
-    c.type = 'button';
-    c.className = 'chip' + (atCap ? ' full' : '');
-    c.style.setProperty('--cloth', x.cloth);
-    c.setAttribute('aria-label', `Ավելացնել ${x.label}`);
-    if (atCap) c.setAttribute('aria-disabled', 'true');
-    c.innerHTML = `<i></i><span></span>${PLUS}`;
-    c.querySelector('span').textContent = x.label;
-    c.addEventListener('click', () => toggleSubject(x.id));
-    return c;
-  });
+  const atCap = selected.size >= capOf();
+  renderCovers(all ? [...SUBJECTS, ALL_CARD] : SUBJECTS, (x) => (x === ALL_CARD ? { on: year }
+    : { on: year || selected.has(x.id), locked: (year && pageMode === 'redeem') || owned.includes(x.id), blocked: !year && atCap && !selected.has(x.id) }));
   const cap = $('cap-hint');
-  cap.hidden = year || !atCap || !rest.length;
+  cap.hidden = year || !atCap;
   cap.textContent = capText;
 }
 
-/** For how long: `count` subjects for one or three months, and the year — which leads while the exam is far, and sits last when it is close. */
+/** For how long: one or three months for the `count` subjects ticked; the year when every subject is. */
 function renderLengths(count) {
-  const rows = [];
-  if (count > 0) {
-    const m1 = priceOf(count, 'monthly');
-    const m3 = priceOf(count, '3month');
-    rows.push(planRow('monthly', `${count} առարկա · ${lengthOf('monthly').label}`, m1));
-    rows.push(planRow('3month', `${count} առարկա · ${lengthOf('3month').label}`, m3, Math.round((1 - m3 / (m1 * 3)) * 100)));
+  if (yearly()) {
+    $('plans').appendChild(planRow('yearly', lengthOf('yearly').label, PRICES.all_yearly, 0, 'all_yearly'));
+    return;
   }
-  const yearRow = planRow('yearly', `Բոլոր առարկաները · ${lengthOf('yearly').label}`, PRICES.all_yearly);
-  if (YEAR_FIRST) rows.unshift(yearRow);
-  else rows.push(yearRow);
-  for (const r of rows) $('plans').appendChild(r);
+  if (!count) return;
+  const m1 = priceOf(count, 'monthly');
+  const m3 = priceOf(count, '3month');
+  $('plans').append(
+    planRow('monthly', lengthOf('monthly').label, m1, 0, `subj${count}_monthly`),
+    planRow('3month', lengthOf('3month').label, m3, Math.round((1 - m3 / (m1 * 3)) * 100), `subj${count}_3month`),
+  );
 }
 
 // ---------------------------------------------------------------- gift codes
@@ -1282,8 +1370,8 @@ function renderRedeem() {
   const owned = ownedSubjects();
   const waits = ['has-all', 'other-store', 'downgrade'].includes(change.type);
   $('checkout').classList.toggle('owned', waits);
+  setParts(false);
   $('plans').innerHTML = '';
-  $('chips').hidden = true;
   $('cap-hint').hidden = true;
   if (waits) {
     const store = STORE_NAMES[change.store];
@@ -1305,7 +1393,6 @@ function renderRedeem() {
   if (named.length) {
     // Chosen by whoever bought it.
     renderCovers(SUBJECTS.filter((x) => named.includes(x.id)), () => ({ on: true, locked: true, held: false }));
-    $('chips').hidden = true;
   } else renderPicker(owned, `Այս նվերում՝ ${capOf()} առարկա`);
   renderOrder();
   fitLabels();
@@ -1633,6 +1720,8 @@ function renderOrder() {
   const price = id ? PRICES[id] : null;
   // Activating: ready once exactly the gift's number of subjects is ticked.
   const ready = !redeem || yearly() || selected.size === capOf();
+  // Buying: the length counts once picked, never by default.
+  const needLength = !redeem && !!id && !yearly() && !choiceTouched;
 
   $('o-title').textContent = gift ? 'Նվեր-կոդ' : redeem ? 'Քո նվերը' : 'Քո փաթեթը';
   const tags = yearly() ? [{ id: 'all', label: `Բոլոր ${SUBJECTS.length} առարկաները` }]
@@ -1649,12 +1738,12 @@ function renderOrder() {
   // A gift bought does nothing to the buyer's plan; it starts when activated.
   const change = id && !gift ? planChangeFor(id) : { type: gift ? 'gift' : 'new' };
   const dates = id && !gift ? planDatesFor(change, id) : null;
-  $('o-length').textContent = id ? d.label : '—';
+  $('o-length').textContent = id && !needLength ? d.label : '—';
   $('o-until-label').textContent = gift ? 'Ակտիվացնել մինչև' : 'Գործում է մինչև';
-  $('o-until').textContent = gift ? day(addMonths(Date.now(), GIFT_LIFE_MONTHS)) : id && ready ? day(dates.end) : '—';
+  $('o-until').textContent = gift ? day(addMonths(Date.now(), GIFT_LIFE_MONTHS)) : id && ready && !needLength ? day(dates.end) : '—';
   // What happens to the plan held, said before paying (the app's planNote).
   const note = $('change-note');
-  note.hidden = !id || !['upgrade', 'extend', 'gift'].includes(change.type);
+  note.hidden = !id || needLength || !['upgrade', 'extend', 'gift'].includes(change.type);
   if (gift) {
     note.textContent = 'Կոդը կստանաք անմիջապես․ ժամկետը կսկսվի, երբ ստացողն ակտիվացնի այն։';
   } else if (id && change.type === 'upgrade') {
@@ -1672,7 +1761,7 @@ function renderOrder() {
   $('o-account').title = user?.email || '';
   // A gift being activated is paid for already.
   $('o-total-row').hidden = redeem;
-  $('o-total').textContent = price != null ? money(price) : '—';
+  $('o-total').textContent = price != null && !needLength ? money(price) : '—';
 
   // How to pay: each way as a tile in its maker's colours; the button below
   // takes the chosen one's.
@@ -1712,10 +1801,10 @@ function renderOrder() {
     // The amount only: the chosen plan's row (and on a computer the order) says
     // for how long, and a longer label is cut off beside the logo.
     const verb = change.type === 'extend' ? 'Երկարացնել' : 'Վճարել';
-    const what = !id ? 'Ընտրիր գոնե մեկ առարկա' : m.ready ? `${verb} · ${money(price)}` : 'Շուտով';
-    pay.disabled = !id || !m.ready;
+    const what = !id ? 'Ընտրիր գոնե մեկ առարկա' : needLength ? 'Ընտրիր ժամկետը' : m.ready ? `${verb} · ${money(price)}` : 'Շուտով';
+    pay.disabled = !id || needLength || !m.ready;
     pay.className = `pay ${m.id}${m.ready ? '' : ' soon'}`;
-    pay.innerHTML = id && m.logo ? `${m.logo}<span class="sep"></span><span></span>` : '<span></span>';
+    pay.innerHTML = id && !needLength && m.logo ? `${m.logo}<span class="sep"></span><span></span>` : '<span></span>';
     pay.lastElementChild.textContent = what;
     pay.setAttribute('aria-label', id ? `${what}${m.ready ? ` / ${d.label}` : ''}, ${m.name}` : what);
   }
@@ -1724,7 +1813,7 @@ function renderOrder() {
   const ask = $('ask-btn');
   if (ask.dataset.label == null) {
     ask.hidden = pageMode !== 'self';
-    ask.disabled = !id;
+    ask.disabled = !id || needLength;
   }
 
   const fine = $('fine');
@@ -1749,8 +1838,11 @@ function renderOrder() {
 
 function toggleSubject(id) {
   if (ownedSubjects().includes(id) || giftSubjects().length) return;
-  // The year covers everything; touching a subject means choosing them.
-  if (yearly()) choice = '3month';
+  // The year covers everything; touching a subject means choosing them, and the length again.
+  if (yearly()) {
+    choice = '3month';
+    choiceTouched = false;
+  }
   if (!selected.has(id) && selected.size >= capOf()) return;
   if (selected.has(id)) selected.delete(id);
   else selected.add(id);

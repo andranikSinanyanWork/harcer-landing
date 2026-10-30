@@ -56,6 +56,13 @@ body[data-theme="page"] .topbar { background: rgba(255,255,255,.9); -webkit-back
   display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: background .3s, color .3s, transform .15s; }
 .topbar .get:hover { transform: translateY(-1px); }
 body[data-theme="sun"] .topbar .get { background: var(--ink); color: #fff; }
+/* Buying on the website (harcer.am/pay), beside the download (Andranik, 30 Oct 2026) */
+.tb-actions { display: flex; align-items: center; gap: 8px; }
+.topbar .buy { height: 40px; padding: 0 16px; border-radius: 20px; background: rgba(255,255,255,.16); color: #fff; font-weight: 800; font-size: 14px;
+  display: inline-flex; align-items: center; text-decoration: none; transition: background .3s, color .3s, transform .15s; }
+.topbar .buy:hover { transform: translateY(-1px); background: rgba(255,255,255,.24); }
+body:not([data-theme="teal"]) .topbar .buy { background: rgba(26,32,44,.07); color: var(--ink); }
+.topbar .buy, .topbar .get { white-space: nowrap; }
 
 /* ───────── the story ───────── */
 .bgs, .rail, .prog, .device { display: none; }
@@ -193,6 +200,7 @@ body[data-theme="sun"] .topbar .get { background: var(--ink); color: #fff; }
   .topbar { height: 56px; }
   .topbar .logo img { height: 26px; }
   .topbar .get { height: 36px; padding: 0 15px; font-size: 13px; }
+  .topbar .buy { height: 36px; padding: 0 13px; font-size: 13px; }
   .chap { padding: 84px 22px 48px; }
   .js .wrap { display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 60px 0 0; }
   .js .caps { display: block; position: relative; flex: none; margin: 10px 22px 14px; }
@@ -236,6 +244,10 @@ body[data-theme="sun"] .topbar .get { background: var(--ink); color: #fff; }
 .free .in { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 48px; align-items: center; }
 .free .note { margin-top: 22px; font-size: 15px; color: #475569; max-width: 34em; }
 .free .note + .note { margin-top: 12px; }
+.buy-cta { display: inline-flex; flex-direction: column; margin-top: 22px; padding: 12px 22px; border-radius: 16px; background: var(--teal2); color: #fff; text-decoration: none; transition: background .2s, transform .15s; }
+.buy-cta b { font-size: 16px; font-weight: 800; }
+.buy-cta span { font-size: 13px; font-weight: 600; opacity: .85; }
+.buy-cta:hover { background: var(--teal); transform: translateY(-1px); }
 .tbl { background: #fff; border-radius: 22px; box-shadow: 0 20px 50px rgba(15,23,42,.1), 0 0 0 1px rgba(15,23,42,.05); overflow: hidden; }
 .tbl table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
 .tbl th, .tbl td { padding: 17px 16px; text-align: center; white-space: nowrap; }
@@ -282,13 +294,22 @@ footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); pa
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01s !important; }
 }
+/* The smallest phones: the two top-bar buttons beside the logo on one line */
+@media (max-width: 380px) {
+  .topbar .logo img { height: 23px; }
+  .tb-actions { gap: 6px; }
+  .topbar .buy, .topbar .get { height: 34px; padding: 0 11px; font-size: 12.5px; }
+}
 </style>
 </head>
 <body data-theme="teal">
 
 <header class="topbar">
   <a class="logo" href="#top" aria-label="Հարցեր.am"><img class="w" src="site/logo-white.svg" alt="Հարցեր.am"><img class="t" src="site/logo-teal.svg" alt=""></a>
-  <a class="get" href="#download">Ներբեռնել</a>
+  <div class="tb-actions">
+    <a class="buy" href="pay/">Գնել փաթեթ</a>
+    <a class="get" href="#download">Ներբեռնել</a>
+  </div>
 </header>
 
 <main>
@@ -395,8 +416,9 @@ footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); pa
     <div>
       <h2>Ի՞նչն է անվճար</h2>
       <p class="sub">Սկսելու համար վճարել պետք չէ։ Փաթեթը բացում է մնացածը։</p>
-      <p class="note">Փաթեթ կարող ես վերցնել 1, 2 կամ 3 առարկայի համար՝ 1 կամ 3 ամսով, կամ բոլոր 5 առարկաների համար՝ մեկ տարով։ Գները՝ հավելվածում։</p>
+      <p class="note">Փաթեթ կարող ես վերցնել 1, 2 կամ 3 առարկայի համար՝ 1 կամ 3 ամսով, կամ բոլոր 5 առարկաների համար՝ մեկ տարով։</p>
       <p class="note">Հարցեր.am-ը հավելյալ նյութ է՝ դպրոցի և կրկնուսույցի պարապմունքներին զուգահեռ ավելի շատ վարժվելու համար։</p>
+      <a class="buy-cta" href="pay/"><b>Գնել փաթեթ</b><span>Idram-ով՝ 2 300 ֏-ից · նաև նվեր կամ երեխայի համար</span></a>
     </div>
     <div class="tbl">
       <table>
