@@ -692,5 +692,38 @@ footer .copy { flex-basis: 100%; border-top: 1px solid rgba(255,255,255,.12); pa
   }).catch(() => html.classList.remove('js'));   // no screens: fall back to the plain page
 })();
 </script>
+<script>
+// Google Analytics: the app's property, web stream «Harcer.am» (G-46HHJN9G9E),
+// as on harcer.am/pay (Andranik, 30 Oct 2026: "we need it"). Loaded once the
+// page is up, so the first view stays as light as it was; off on this Mac
+// unless ?ga=1. Counts the visit and the taps that leave for buying or a store.
+(function () {
+  var LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if (LOCAL && !/[?&]ga=1/.test(location.search)) return;
+  var ID = 'G-46HHJN9G9E';
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { window.dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', ID, LOCAL ? { debug_mode: true } : {});
+  addEventListener('load', function () {
+    setTimeout(function () {
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID;
+      document.head.appendChild(s);
+    }, 1500);
+  });
+  // Where on the page a tap came from: the top bar, the first screen, the plans, the end.
+  function place(a) {
+    return a.closest('.topbar') ? 'topbar' : a.closest('.chap') ? 'top' : a.closest('.free') ? 'plans' : a.closest('#download') ? 'download' : 'other';
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a');
+    if (!a) return;
+    if (a.classList.contains('buy') || a.classList.contains('buy-cta')) gtag('event', 'buy_click', { place: place(a) });
+    else if (a.classList.contains('store') || a.classList.contains('get')) gtag('event', 'store_click', { store: a.classList.contains('ios') ? 'ios' : a.classList.contains('android') ? 'android' : 'download', place: place(a) });
+  }, true);
+})();
+</script>
 </body>
 </html>

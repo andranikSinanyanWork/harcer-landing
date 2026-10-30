@@ -847,6 +847,39 @@ const EMULATOR = (() => {
 // (the deployed server takes orders from the owner only until it is opened).
 const LIVE_HERE = LOCAL && !EMULATOR && params.has('live');
 
+// Google Analytics: the app's own property (461563766), web stream «Harcer.am»
+// G-46HHJN9G9E, so the steps here sit beside the app's events, under the same
+// account id once signed in (Andranik, 30 Oct 2026: "do we have analytics for
+// it? we need it"). Off on this Mac unless ?ga=1, then marked as debug.
+const GA_ID = 'G-46HHJN9G9E';
+const GA_ON = (!LOCAL || params.has('ga')) && !preview;
+window.dataLayer = window.dataLayer || [];
+function gtag() { window.dataLayer.push(arguments); }
+if (GA_ON) {
+  gtag('js', new Date());
+  // The address as it came (ad tags included), before the page tidies it.
+  gtag('config', GA_ID, { page_location: location.href, page_title: 'Վճարում', ...(LOCAL ? { debug_mode: true } : {}) });
+  const ga = document.createElement('script');
+  ga.async = true;
+  ga.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  document.head.appendChild(ga);
+}
+/** One step on the way to paying, with whose page it is. */
+function track(name, extra = {}) {
+  if (GA_ON) gtag('event', name, { page_mode: pageMode, signed_in: !!user, ...extra });
+}
+/** A plan as Analytics' e-commerce fields: amount in drams, the product as the item. */
+const sale = (product, value) => ({ currency: 'AMD', value, items: [{ item_id: product, item_name: product, price: value, quantity: 1 }] });
+// The order sent to the wallet, kept for the way back: its purchase is counted once confirmed.
+function rememberSale(no, product, value) {
+  try { sessionStorage.setItem('pay-sale', JSON.stringify({ no, product, value })); } catch {}
+}
+function trackPurchase(fallback = null) {
+  let s = fallback;
+  try { s = JSON.parse(sessionStorage.getItem('pay-sale') || 'null') || fallback; sessionStorage.removeItem('pay-sale'); } catch {}
+  if (s && s.no) track('purchase', { transaction_id: String(s.no), ...sale(s.product, s.value) });
+}
+
 const number = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 const money = (n) => `${number(n)} ֏`;
 const two = (n) => String(n).padStart(2, '0');
@@ -1068,6 +1101,8 @@ let selfChosen = params.has('subjects') || params.has('plan') || params.has('log
 // up top), and the choice as it was then.
 let signInFor = null;
 let signInChoice = '';
+// How the sign-in under way is being made, for Analytics' «login».
+let loginMethod = null;
 // Whether the switch is shown (GIFTS_ON_PAGE); once a gift is on the page it stays.
 let giftsShown = GIFTS_ON_PAGE || pageMode === 'gift' || (preview || '').includes('gift');
 // The code being activated, as giftCodes 'look' gave it: { code, product, subjects, status, activate_by }.
@@ -1200,6 +1235,7 @@ function planRow(id, title, price, off = 0, product = null) {
   b.querySelector('.title span').textContent = title;
   b.addEventListener('click', () => {
     if (picked) return;
+    track('length_pick', { length: id, count: selected.size });
     choice = id;
     choiceTouched = true;
     say($('pay-msg'), '', '');
@@ -1252,6 +1288,7 @@ $('head-length').addEventListener('click', () => {
 });
 $('subjects-next').addEventListener('click', () => {
   if (!subjectsChosen()) return;
+  track('subjects_done', { count: yearly() ? SUBJECTS.length : selected.size, all: yearly(), subjects: yearly() ? 'all' : [...selected].join(',') });
   openPart = 'length';
   renderPlans();
   $('part-length').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1493,6 +1530,7 @@ async function guestGiftResult(result, back) {
         try { localStorage.removeItem('pay-guest-gift'); } catch {}
         pageMode = 'gift';
         history.replaceState(null, '', location.pathname + '?gift=1');
+        trackPurchase({ no: data.no, product: data.product, value: PRICES[data.product] });
         showGift(guestGiftRow(data));
         return;
       }
@@ -1562,6 +1600,7 @@ async function copy(text, done, el = $('gift-msg')) {
   }
 }
 $('gift-share').addEventListener('click', async () => {
+  track('share', { content_type: 'gift_code', method: navigator.share ? 'share_sheet' : 'clipboard' });
   const text = giftMessage(shownGift);
   // A phone's share sheet (WhatsApp, Viber, Telegram…); elsewhere, the clipboard.
   if (navigator.share) {
@@ -1580,6 +1619,7 @@ $('gift-back').addEventListener('click', () => {
 
 $('seg-self').addEventListener('click', async () => {
   if (pageMode === 'self') return;
+  track('switch_for', { to: 'self' });
   pageMode = 'self';
   history.replaceState(null, '', location.pathname);
   say($('pay-msg'), '', '');
@@ -1591,6 +1631,7 @@ $('seg-self').addEventListener('click', async () => {
 });
 $('seg-gift').addEventListener('click', () => {
   if (pageMode === 'gift') return;
+  track('switch_for', { to: 'gift' });
   pageMode = 'gift';
   history.replaceState(null, '', location.pathname + '?gift=1');
   say($('pay-msg'), '', '');
@@ -1649,6 +1690,7 @@ async function activateGift() {
   busy(pay, true);
   try {
     await (await callable('giftCodes'))({ action: 'use', code: giftInfo.code, subjects });
+    track('code_activate', { product: giftInfo.product });
   } catch (e) {
     console.warn('[pay] activation failed', e?.code, e?.message);
     busy(pay, false);
@@ -1865,6 +1907,7 @@ $('pay-btn').addEventListener('click', async () => {
   if (pageMode === 'redeem') { await activateGift(); return; }
   const id = productId();
   if (!id) return;
+  track('begin_checkout', sale(id, PRICES[id]));
   if (!user && pageMode === 'self') { askToSignIn('pay'); return; }
   const gift = pageMode === 'gift';
   const subjects = yearly() ? [] : SUBJECTS.filter((s) => selected.has(s.id)).map((s) => s.id);
@@ -1891,18 +1934,25 @@ $('pay-btn').addEventListener('click', async () => {
       // A parent with no account: the code is shown to this browser (the claim).
       const { data } = await (await callable('guestGifts'))({ action: 'buy', product: id, subjects });
       rememberGuestGift(data);
+      rememberSale(data.no, id, PRICES[id]);
+      track('add_payment_info', { payment_type: 'idram', order_no: String(data.no), guest: true, ...sale(id, PRICES[id]) });
       postForm(data.form);
       return;
     }
     const createWebOrder = await callable('createWebOrder');
     const { data } = await createWebOrder(gift ? { gift: true, product: id, subjects, provider: method } : { product: id, subjects, provider: method });
     if (gift && data?.no) { try { sessionStorage.setItem('pay-gift', String(data.no)); } catch {} }
+    if (data?.no) {
+      rememberSale(data.no, id, PRICES[id]);
+      track('add_payment_info', { payment_type: method, order_no: String(data.no), ...sale(id, PRICES[id]) });
+    }
     // The bank's own payment page; it sends the buyer back with ?result=…
     if (data && data.redirect) { location.assign(data.redirect); return; }
     if (data && data.form) { postForm(data.form); return; }
     throw new Error('no-way-to-pay');
   } catch (e) {
     console.warn('[pay] order failed', e?.code, e?.message);
+    track('pay_refused', { reason: e?.message || 'unknown' });
     busy(pay, false);
     renderPlans();
     say(msg, 'error', orderReason(e));
@@ -1984,6 +2034,7 @@ $('ask-btn').addEventListener('click', async () => {
   try {
     const { data } = await (await callable('payLinks'))({ action: 'make', product: id, subjects });
     busy(ask, false);
+    track('ask_link', sale(id, data.amount));
     showAsk(data);
   } catch (e) {
     console.warn('[pay] link failed', e?.code, e?.message);
@@ -1993,6 +2044,7 @@ $('ask-btn').addEventListener('click', async () => {
   }
 });
 $('ask-share').addEventListener('click', async () => {
+  track('share', { content_type: 'pay_link', method: navigator.share ? 'share_sheet' : 'clipboard' });
   const text = askMessage(askShown);
   // A phone's share sheet (Viber, WhatsApp, Telegram…); elsewhere, the clipboard.
   if (navigator.share) {
@@ -2019,6 +2071,7 @@ async function openParent(token) {
     console.warn('[pay] link not read', e?.code, e?.message);
     parentLink = { token, error: e?.message === 'no-such-link' ? 'no-such-link' : 'unreachable' };
   }
+  track('parent_open', { status: parentLink.error || parentLink.status || 'unknown', value: parentLink.amount || 0, currency: 'AMD' });
   renderParent();
   show('parent');
 }
@@ -2100,6 +2153,8 @@ $('p-pay').addEventListener('click', async () => {
       localStorage.setItem('pay-link', JSON.stringify({ token: parentLink.token, no: data.no, at: Date.now() }));
       localStorage.removeItem('pay-guest-gift');
     } catch {}
+    rememberSale(data.no, parentLink.product, parentLink.amount);
+    track('add_payment_info', { payment_type: 'idram', order_no: String(data.no), via: 'parent_link', ...sale(parentLink.product, parentLink.amount) });
     postForm(data.form);
   } catch (e) {
     console.warn('[pay] link payment failed', e?.code, e?.message);
@@ -2130,6 +2185,7 @@ async function parentResult(result, back) {
       parentLink = { token: back.token, ...data };
       if (data.status === 'paid') {
         try { localStorage.removeItem('pay-link'); } catch {}
+        trackPurchase({ no: back.no, product: data.product, value: data.amount });
         renderParentResult('ok', back);
         return;
       }
@@ -2290,6 +2346,7 @@ async function confirmPayment() {
     await loadAccess();
     if (access.kind !== 'none' && (!before || planSignature(access) !== before)) {
       try { sessionStorage.removeItem('pay-before'); } catch {}
+      trackPurchase();
       renderResult('active');
       return;
     }
@@ -2317,6 +2374,7 @@ async function confirmGift(no) {
       try { sessionStorage.removeItem('pay-gift'); } catch {}
       pageMode = 'gift';
       history.replaceState(null, '', location.pathname + '?gift=1');
+      trackPurchase({ no, product: g.product, value: PRICES[g.product] });
       showGift(g);
       return;
     }
@@ -2427,6 +2485,7 @@ addEventListener('keydown', (e) => {
 const choiceSignature = () => `${productId()}|${[...selected].sort().join(',')}`;
 /** Signed out, at «Վճարել», «Թող ծնողս վճարի» or «Մուտք»: the account, then back to the choice as it was. */
 function askToSignIn(why) {
+  track('login_prompt', { why });
   signInFor = why;
   signInChoice = choiceSignature();
   const id = productId();
@@ -2459,8 +2518,9 @@ function showGuestGift() {
   renderPlans();
   loadMyGifts();
 }
-$('way-gift').addEventListener('click', showGuestGift);
+$('way-gift').addEventListener('click', () => { track('choose_for', { for: 'gift' }); showGuestGift(); });
 $('way-self').addEventListener('click', () => {
+  track('choose_for', { for: 'self' });
   selfChosen = true;
   pageMode = 'self';
   history.replaceState(null, '', location.pathname);
@@ -2500,6 +2560,7 @@ async function start() {
     if (['ok', 'fail'].includes(result) && !signedOutResultShown) {
       signedOutResultShown = true;
       show('result');
+      if (result === 'fail') track('pay_failed');
       renderResult(result === 'ok' ? 'out-ok' : 'out-fail');
       return;
     }
@@ -2510,7 +2571,7 @@ async function start() {
     show('login');
     return;
   }
-  if (result === 'fail' && location.search) { show('result'); renderResult('fail'); return; }
+  if (result === 'fail' && location.search) { track('pay_failed'); show('result'); renderResult('fail'); return; }
   if ((result === 'unknown' || result === 'duplicate') && location.search) { show('result'); renderResult(result); return; }
   if (result === 'ok' && location.search) { await confirmPayment(); return; }
   // Signed in from the dialog: the plans stay on screen while the account is read.
@@ -2640,6 +2701,8 @@ async function boot() {
   // Guests of the app are anonymous accounts; nothing can be bought for one.
   onAuthStateChanged(auth, (u) => {
     user = u && !u.isAnonymous ? u : null;
+    if (GA_ON) gtag('set', { user_id: user ? user.uid : null });
+    if (user && loginMethod) { track('login', { method: loginMethod, after: signInFor || 'none' }); loginMethod = null; }
     access = { kind: 'none' };
     start();
   });
@@ -2655,6 +2718,7 @@ async function boot() {
 
   $('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    loginMethod = 'password';
     const email = $('email').value.trim();
     const password = $('password').value;
     if (!email || !password) { say(msg, 'error', 'Լրացրեք էլ․ փոստը և գաղտնաբառը'); return; }
@@ -2674,6 +2738,7 @@ async function boot() {
   });
 
   const popup = (button, provider) => async () => {
+    loginMethod = provider.providerId;
     say(msg, '', '');
     busy(button, true);
     try { await signInWithPopup(auth, provider); } catch (err) { fail(err); }
