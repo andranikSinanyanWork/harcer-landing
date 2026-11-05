@@ -17,8 +17,8 @@
   the plan rows, «Իմանալ ավելին». On a phone the pay button is pinned to the
   bottom like the app's; on a computer the order sits beside the choices,
   naming the account the plan goes to (a parent may be the one paying).
-  Idram only for now (CARD_ON_PAGE below; the server side is
-  functions/lib/webPay.js), with Idram's button in Idram's colours. Live at
+  Idram, and Telcell once TELCELL_READY (CARD_ON_PAGE below; the server side
+  is functions/lib/webPay.js), each wallet's button in its colours. Live at
   harcer.am/pay/, the address Idram has for us: this file is pay/index.html
   in the GitHub Pages repo andranikSinanyanWork/harcer-landing; publishing =
   copy it there, push.
@@ -736,8 +736,11 @@ const FUNCTIONS_REGION = 'us-east1';
 // shows it on this Mac.
 const CARD_ON_PAGE = false;
 // Telcell Wallet as a second wallet beside Idram (Andranik, 28 Oct 2026: "also
-// add tell-cell button"). Shown, but not payable until the server has it: that
-// needs Telcell's merchant agreement, keys and API, none of which exist yet.
+// add tell-cell button"). Live on the server since 5 Nov 2026 (createWebOrder,
+// guestGifts and telcellResult, from Telcell's WEB API.pdf; shop
+// support@harcer.am), for the owner alone until TELCELL_OPEN is "true"; until
+// this is true everyone else's tile says «Շուտով». `?telcell=1` makes it
+// payable on this Mac (with `?emulator=…` or `?live=1`).
 const TELCELL_READY = false;
 // The «Ինձ համար | Նվեր կամ երեխայիս համար» switch. Off on 29 Oct 2026 ("one
 // version very simple"), on again the next day, when Andranik asked for the
@@ -1139,10 +1142,25 @@ function startFromHeld() {
 // Telcell's wordmark, from telcell.am's header (28 Oct 2026).
 const TELCELL_LOGO = '<svg class="telcell" viewBox="0 0 162 30" fill="currentColor" aria-hidden="true"><path d="M16.3593 1.05288V28.9605H9.18531V8.17342H0.733398V1.05288H16.3593ZM18.6001 8.17954H25.7741V1.05899H18.6001V8.17954ZM47.4804 28.9605V21.8461H35.2543V18.5701H44.6096V11.4495H35.2543V8.17342H47.4804V1.05288H28.0802V28.9605H47.4804ZM69.3948 28.9605V21.8461H58.0543V1.05288H50.8802V28.9605H69.3948ZM83.4516 8.14897C86.2273 8.14897 88.1411 9.85424 88.8544 11.8406L96.4862 11.8468C95.6774 5.61247 90.2274 0.600586 83.3446 0.600586C75.2077 0.600586 69.5434 6.62707 69.5434 15.0006C69.5434 23.3741 75.3979 29.4006 83.3446 29.4006C90.061 29.4006 95.446 25.006 96.5748 18.1789L88.8247 18.1727C88.1352 20.3608 86.0074 21.8522 83.4456 21.8522C79.6476 21.8522 77.0681 19.0285 77.0681 15.0006C77.0741 10.9727 79.5585 8.14897 83.4516 8.14897ZM98.6374 1.05288V28.9605H118.038V21.8461H105.811V18.5701H115.167V11.4495H105.811V8.17342H118.038V1.05288H98.6374ZM139.941 28.9605V21.8461H128.605V1.05288H121.431V28.9605H139.941ZM149.854 1.05288H142.681V28.9605H161.189V21.8461H149.854V1.05288Z"/></svg>';
 const CARD_SHOWN = CARD_ON_PAGE || (LOCAL && params.has('card'));
+const TELCELL_ON = TELCELL_READY || (LOCAL && params.has('telcell'));
+// Before TELCELL_READY, Telcell is payable on the live page for the owner's
+// account alone (Andranik, 5 Nov 2026: "make it live but only accessible for
+// me"), told by the SHA-256 of the account's e-mail so the address is not in
+// the page. Only what the page shows: createWebOrder lets nobody else order
+// through Telcell until TELCELL_OPEN.
+const TELCELL_OWNER_SHA256 = '60ccead55a981004e56c6fec21038f1afc6b10ff8a528ac6d5e1a8bd1fa401f2';
+let telcellForMe = false;
+async function isTelcellOwner(u) {
+  if (!u || !u.email) return false;
+  try {
+    const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(u.email.trim().toLowerCase()));
+    return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('') === TELCELL_OWNER_SHA256;
+  } catch { return false; }
+}
 // The ways to pay, in the order they are offered.
 const METHODS = [
   { id: 'idram', name: 'Idram', logo: IDRAM_LOGO, ready: true, where: 'Վճարում ես Idram-ի էջում։' },
-  { id: 'telcell', name: 'Telcell', logo: TELCELL_LOGO, ready: TELCELL_READY, where: 'Վճարում ես Telcell-ի էջում։' },
+  { id: 'telcell', name: 'Telcell', logo: TELCELL_LOGO, get ready() { return TELCELL_ON || telcellForMe; }, where: 'Վճարում ես Telcell-ի էջում։' },
   ...(CARD_SHOWN ? [{ id: 'card', name: 'Բանկային քարտ', logo: '', ready: true, where: 'Վճարում ես Ամերիաբանկի էջում՝ Visa, Mastercard կամ ArCa քարտով։' }] : []),
 ];
 let method = 'idram';
@@ -1932,10 +1950,10 @@ $('pay-btn').addEventListener('click', async () => {
   try {
     if (gift && !user) {
       // A parent with no account: the code is shown to this browser (the claim).
-      const { data } = await (await callable('guestGifts'))({ action: 'buy', product: id, subjects });
+      const { data } = await (await callable('guestGifts'))({ action: 'buy', product: id, subjects, provider: method });
       rememberGuestGift(data);
       rememberSale(data.no, id, PRICES[id]);
-      track('add_payment_info', { payment_type: 'idram', order_no: String(data.no), guest: true, ...sale(id, PRICES[id]) });
+      track('add_payment_info', { payment_type: method, order_no: String(data.no), guest: true, ...sale(id, PRICES[id]) });
       postForm(data.form);
       return;
     }
@@ -1959,11 +1977,16 @@ $('pay-btn').addEventListener('click', async () => {
   }
 });
 
-/** Idram takes the order as a form posted from the browser (its document, section 2). */
+/**
+ * Idram and Telcell take the order as a form posted from the browser (Idram's
+ * document, section 2; Telcell's "Перенаправление пользователя на оплату счёта").
+ * In UTF-8: Telcell's currency is the dram sign, signed as those bytes.
+ */
 function postForm({ action, fields }) {
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = action;
+  form.acceptCharset = 'UTF-8';
   for (const [name, value] of Object.entries(fields)) {
     const input = document.createElement('input');
     input.type = 'hidden';
@@ -1986,6 +2009,7 @@ function orderReason(e) {
     'test-mode': 'Վճարումը դեռ փորձարկվում է և շուտով կբացվի։',
     'too-many-orders': 'Շատ փորձեր եղան։ Փորձիր մի փոքր ուշ։',
     'idram-not-connected': 'Idram-ով վճարումը դեռ միացված չէ։',
+    'telcell-not-connected': 'Telcell-ով վճարումը դեռ միացված չէ։',
   }[e?.message] || 'Չհաջողվեց սկսել վճարումը։ Ստուգիր ինտերնետը և փորձիր կրկին։';
   // On this Mac the error itself too: a server that is not there and a
   // network that is down read the same above.
@@ -2258,9 +2282,10 @@ function renderResult(state) {
     mark.className = `mark ${ok ? 'ok' : 'fail'}`;
     mark.innerHTML = ok ? RESULT_OK : RESULT_FAIL;
     $('result-title').textContent = ok ? 'Շնորհակալություն' : 'Վճարումը չկատարվեց';
+    const receipt = TELCELL_ON ? 'Idram-ի կամ Telcell-ի' : 'Idram-ի';
     $('result-text').textContent = ok
-      ? 'Վճարումը ստանալուց հետո առարկաները բացվում են ինքնաբերաբար՝ մի քանի րոպեում։ Եթե վճարել եք երեխայի համար, թող նա բացի հավելվածը։ Առանց գրանցման գնված նվեր-կոդը երևում է այն դիտարկիչում, որով վճարել եք։ Հարցերի դեպքում գրեք support@harcer.am՝ նշելով Idram-ի անդորրագրի պատվերի համարը։'
-      : 'Եթե գումարը գանձվել է, գրեք support@harcer.am՝ նշելով Idram-ի անդորրագրի պատվերի համարը։';
+      ? `Վճարումը ստանալուց հետո առարկաները բացվում են ինքնաբերաբար՝ մի քանի րոպեում։ Եթե վճարել եք երեխայի համար, թող նա բացի հավելվածը։ Առանց գրանցման գնված նվեր-կոդը երևում է այն դիտարկիչում, որով վճարել եք։ Հարցերի դեպքում գրեք support@harcer.am՝ նշելով ${receipt} անդորրագրի պատվերի համարը։`
+      : `Եթե գումարը գանձվել է, գրեք support@harcer.am՝ նշելով ${receipt} անդորրագրի պատվերի համարը։`;
     button.hidden = false;
     button.textContent = ok ? 'Մուտք գործել և ստուգել' : 'Մուտք գործել';
     button.onclick = () => show('login');
@@ -2505,7 +2530,7 @@ $('signin-top').addEventListener('click', () => askToSignIn('look'));
 
 /** The main screen signed out: a gift, a child's plan, or one's own. */
 function showChoose() {
-  $('choose-note').textContent = `Մեկանգամյա վճար Idram-ով՝ ${money(Math.min(...Object.values(PRICES)))}-ից`;
+  $('choose-note').textContent = `Մեկանգամյա վճար ${TELCELL_ON ? 'Idram-ով կամ Telcell-ով' : 'Idram-ով'}՝ ${money(Math.min(...Object.values(PRICES)))}-ից`;
   show('choose');
   scrollTo(0, 0);
 }
@@ -2699,8 +2724,9 @@ async function boot() {
   if (EMULATOR === 'all') connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
 
   // Guests of the app are anonymous accounts; nothing can be bought for one.
-  onAuthStateChanged(auth, (u) => {
+  onAuthStateChanged(auth, async (u) => {
     user = u && !u.isAnonymous ? u : null;
+    telcellForMe = await isTelcellOwner(user);
     if (GA_ON) gtag('set', { user_id: user ? user.uid : null });
     if (user && loginMethod) { track('login', { method: loginMethod, after: signInFor || 'none' }); loginMethod = null; }
     access = { kind: 'none' };
