@@ -829,6 +829,13 @@ const LINK_RETURN_MS = 3 * 60 * 60 * 1000;
 // ---------------------------------------------------------------- helpers
 
 const $ = (id) => document.getElementById(id);
+// Telcell sends the buyer back to our address with its own "?order=N" added
+// (seen 6 Nov 2026: /pay/?result=ok?order=3100163). The second "?" would make
+// ?result read "ok?order=…", and the page would open the plans instead of the
+// result. It becomes "&" before anything here reads the address.
+if (/^\?[^?]*\?/.test(location.search)) {
+  history.replaceState(null, '', location.pathname + '?' + location.search.slice(1).replace(/\?/g, '&') + location.hash);
+}
 const params = new URLSearchParams(location.search);
 const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 // States without an account, for looking at the page on this Mac only:
