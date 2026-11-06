@@ -443,6 +443,7 @@
   .steps li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; line-height: 1.45; }
   .steps li::before { content: counter(step); flex: none; width: 26px; height: 26px; margin-top: -2px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-dark); display: grid; place-items: center; font-size: 13px; font-weight: 800; }
   .parent .pay { margin-top: 20px; }
+  .parent .pay + .pay { margin-top: 10px; }
   .parent .help { margin: 18px 0 0; text-align: center; color: var(--muted); font-size: 13.5px; }
   .field input.code-input { font: 700 19px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1px; text-transform: uppercase; }
 
@@ -719,7 +720,7 @@
       <p class="msg" id="ask-msg" role="status" hidden></p>
       <ol class="how">
         <li>Ուղարկիր հղումը մայրիկիդ կամ հայրիկիդ՝ Viber-ով, WhatsApp-ով կամ Telegram-ով։</li>
-        <li>Նա բացում է հղումը և վճարում Idram-ով․ գրանցվել պետք չէ։</li>
+        <li id="ask-how-pay">Նա բացում է հղումը և վճարում Idram-ով․ գրանցվել պետք չէ։</li>
         <li id="ask-how-open">Վճարելուց հետո առարկաները բացվում են քո հաշվում։</li>
         <li>Հղումը գործում է 3 օր։</li>
       </ol>
@@ -727,7 +728,7 @@
     </div>
   </section>
 
-  <!-- A parent paying a student's link: no account, Idram only -->
+  <!-- A parent paying a student's link: no account; Idram, and Telcell once TELCELL_ON -->
   <section id="view-parent" hidden>
     <div class="card narrow parent">
       <p class="eyebrow">Վճարում ծնողի համար</p>
@@ -747,11 +748,12 @@
       <div id="p-howpay">
         <h2 class="steps-title">Ինչպես վճարել</h2>
         <ol class="steps">
-          <li>Սեղմեք ներքևի նարնջագույն կոճակը։</li>
-          <li>Idram-ում մուտք գործեք և հաստատեք վճարումը։</li>
+          <li id="p-step1">Սեղմեք ներքևի նարնջագույն կոճակը։</li>
+          <li id="p-step2">Idram-ում մուտք գործեք և հաստատեք վճարումը։</li>
           <li>Պատրաստ է․ առարկաները կբացվեն երեխայի հավելվածում։</li>
         </ol>
         <button type="button" class="pay" id="p-pay"></button>
+        <button type="button" class="pay telcell" id="p-pay-telcell" hidden></button>
         <p class="msg" id="p-msg" role="status" hidden></p>
         <p class="fine"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span>Մեկանգամյա վճար՝ առանց ինքնաշխատ երկարաձգման։ Գրանցվել պետք չէ։</span></p>
       </div>
@@ -837,6 +839,9 @@ const SUBJECTS = [
   { id: 'math', label: 'Մաթեմատիկա', cloth: '#4E6B79', books: 2, questions: 4100 },
   { id: 'biology', label: 'Կենսաբանություն', cloth: '#2F6B5E', books: 4, questions: 5700 },
   { id: 'history', label: 'Հայոց պատմություն', cloth: '#7A5A2E', books: 3, questions: 4800 },
+  // Chemistry: 7,689 items (1 Nov 2026), in the app since 1.0.8; on the live
+  // site since 6 Nov 2026, once every web payment function knew the subject.
+  { id: 'chemistry', label: 'Քիմիա', cloth: '#5A4A80', books: 3, questions: 7600 },
 ];
 // Must match MAX_BUNDLE_SIZE in functions/lib/plans.js.
 const MAX_BUNDLE_SIZE = 3;
@@ -895,6 +900,7 @@ const LINK_ERRORS = {
   'too-far-ahead': 'Փաթեթը չի կարելի երկարացնել ավելի քան 2 տարի առաջ։',
   'too-many-tries': 'Շատ փորձեր եղան։ Փորձեք մեկ ժամից։',
   'test-mode': 'Վճարումը դեռ միացված չէ։ Փորձեք մի փոքր ուշ։',
+  'telcell-not-connected': 'Telcell-ով վճարումը հիմա հասանելի չէ։ Վճարեք Idram-ով։',
 };
 const LINK_FAILED = 'Չհաջողվեց սկսել վճարումը։ Ստուգեք ինտերնետը և փորձեք կրկին։';
 // How long after a parent leaves for Idram the page still takes ?result=… as theirs.
@@ -1234,6 +1240,8 @@ function startFromHeld() {
 const TELCELL_LOGO = '<svg class="telcell" viewBox="0 0 162 30" fill="currentColor" aria-hidden="true"><path d="M16.3593 1.05288V28.9605H9.18531V8.17342H0.733398V1.05288H16.3593ZM18.6001 8.17954H25.7741V1.05899H18.6001V8.17954ZM47.4804 28.9605V21.8461H35.2543V18.5701H44.6096V11.4495H35.2543V8.17342H47.4804V1.05288H28.0802V28.9605H47.4804ZM69.3948 28.9605V21.8461H58.0543V1.05288H50.8802V28.9605H69.3948ZM83.4516 8.14897C86.2273 8.14897 88.1411 9.85424 88.8544 11.8406L96.4862 11.8468C95.6774 5.61247 90.2274 0.600586 83.3446 0.600586C75.2077 0.600586 69.5434 6.62707 69.5434 15.0006C69.5434 23.3741 75.3979 29.4006 83.3446 29.4006C90.061 29.4006 95.446 25.006 96.5748 18.1789L88.8247 18.1727C88.1352 20.3608 86.0074 21.8522 83.4456 21.8522C79.6476 21.8522 77.0681 19.0285 77.0681 15.0006C77.0741 10.9727 79.5585 8.14897 83.4516 8.14897ZM98.6374 1.05288V28.9605H118.038V21.8461H105.811V18.5701H115.167V11.4495H105.811V8.17342H118.038V1.05288H98.6374ZM139.941 28.9605V21.8461H128.605V1.05288H121.431V28.9605H139.941ZM149.854 1.05288H142.681V28.9605H161.189V21.8461H149.854V1.05288Z"/></svg>';
 const CARD_SHOWN = CARD_ON_PAGE || (LOCAL && params.has('card'));
 const TELCELL_ON = TELCELL_READY || (LOCAL && params.has('telcell'));
+// The wallets on a parent's page, as the student's message and steps name them.
+const PARENT_WALLETS = TELCELL_ON ? 'Idram-ով կամ Telcell' : 'Idram';
 // Before TELCELL_READY, Telcell is payable on the live page for the owner's
 // account alone (Andranik, 5 Nov 2026: "make it live but only accessible for
 // me"), told by the SHA-256 of the account's e-mail so the address is not in
@@ -1972,8 +1980,8 @@ function renderOrder() {
     pay.lastElementChild.textContent = what;
     pay.setAttribute('aria-label', id ? `${what}${m.ready ? ` / ${d.label}` : ''}, ${m.name}` : what);
   }
-  // "Let my parent pay": a plan for this account only, paid by Idram whatever
-  // wallet is chosen here.
+  // "Let my parent pay": a plan for this account only; the parent picks the
+  // wallet on their own page, whatever is chosen here.
   const ask = $('ask-btn');
   if (ask.dataset.label == null) {
     ask.hidden = pageMode !== 'self';
@@ -2394,7 +2402,7 @@ let askShown = null;
 /** What the student sends: who it is from is the sender's own phone; the plan, the price, the link. */
 function askMessage(l) {
   return `Բարև։ Խնդրում եմ, վճարիր Harcer.am հավելվածում իմ փաթեթի համար՝ ${planWhat(l.product, l.subjects).replace(' · ', ', ')}, ${money(l.amount)}։ `
-    + `Կարող ես վճարել Idram-ով, գրանցվել պետք չէ։ Բացիր այս հղումը՝\n${PAY_LINK}${l.token}`;
+    + `Կարող ես վճարել ${PARENT_WALLETS}-ով, գրանցվել պետք չէ։ Բացիր այս հղումը՝\n${PAY_LINK}${l.token}`;
 }
 /** The link made: what it pays for, and the buttons that send it. */
 function showAsk(l) {
@@ -2402,6 +2410,7 @@ function showAsk(l) {
   show('ask');
   $('ask-what').textContent = `${planWhat(l.product, l.subjects)} · ${money(l.amount)}`;
   $('ask-how-open').textContent = `Վճարելուց հետո առարկաները բացվում են քո հաշվում${user?.email ? `՝ ${user.email}` : ''}։`;
+  $('ask-how-pay').textContent = `Նա բացում է հղումը և վճարում ${PARENT_WALLETS}-ով․ գրանցվել պետք չէ։`;
   say($('ask-msg'), '', '');
   scrollTo(0, 0);
 }
@@ -2519,23 +2528,32 @@ function renderParent() {
     note.textContent = 'Երեխայի ընթացիկ փաթեթը կմիանա այս մեկին, և դրա չօգտագործված օրերը կավելանան վերջում։';
   }
   how.hidden = false;
-  const pay = $('p-pay');
-  if (pay.dataset.label == null) {
-    pay.innerHTML = `${IDRAM_LOGO}<span class="sep"></span><span></span>`;
+  // A button per wallet, each in its own colours (Andranik, 6 Nov 2026: "why
+  // not with tellcell as well?"); the parent's page has no account, so Telcell
+  // shows when it is open to everyone.
+  $('p-step1').textContent = TELCELL_ON ? 'Սեղմեք Idram-ի կամ Telcell-ի կոճակը։' : 'Սեղմեք ներքևի նարնջագույն կոճակը։';
+  $('p-step2').textContent = TELCELL_ON ? 'Մուտք գործեք Ձեր դրամապանակ և հաստատեք վճարումը։' : 'Idram-ում մուտք գործեք և հաստատեք վճարումը։';
+  for (const [id, logo, name, shown] of [['p-pay', IDRAM_LOGO, 'Idram', true], ['p-pay-telcell', TELCELL_LOGO, 'Telcell', TELCELL_ON]]) {
+    const pay = $(id);
+    pay.hidden = !shown;
+    if (pay.dataset.label != null) continue;
+    pay.innerHTML = `${logo}<span class="sep"></span><span></span>`;
     pay.lastElementChild.textContent = `Վճարել · ${money(l.amount)}`;
-    pay.setAttribute('aria-label', `Վճարել ${money(l.amount)} Idram-ով`);
+    pay.setAttribute('aria-label', `Վճարել ${money(l.amount)} ${name}-ով`);
   }
 }
 
-$('p-pay').addEventListener('click', async () => {
-  const pay = $('p-pay');
+async function payParent(provider) {
+  const pay = $(provider === 'telcell' ? 'p-pay-telcell' : 'p-pay');
+  const other = $(provider === 'telcell' ? 'p-pay' : 'p-pay-telcell');
   const msg = $('p-msg');
   say(msg, '', '');
   if (preview) { say(msg, 'info', 'Նախադիտում․ վճարումը չի սկսվում։'); return; }
   busy(pay, true);
+  other.disabled = true;
   try {
-    const { data } = await (await callable('payLinks'))({ action: 'pay', token: parentLink.token });
-    // Idram sends the parent back to ?result=… with nothing of ours in it:
+    const { data } = await (await callable('payLinks'))({ action: 'pay', token: parentLink.token, provider });
+    // The wallet sends the parent back to ?result=… with nothing of ours in it:
     // this browser remembers whose payment that is.
     try {
       localStorage.setItem('pay-link', JSON.stringify({ token: parentLink.token, no: data.no, at: Date.now() }));
@@ -2543,17 +2561,20 @@ $('p-pay').addEventListener('click', async () => {
       localStorage.removeItem('pay-email-gift');
     } catch {}
     rememberSale(data.no, parentLink.product, parentLink.amount);
-    track('add_payment_info', { payment_type: 'idram', order_no: String(data.no), via: 'parent_link', ...sale(parentLink.product, parentLink.amount) });
+    track('add_payment_info', { payment_type: provider, order_no: String(data.no), via: 'parent_link', ...sale(parentLink.product, parentLink.amount) });
     postForm(data.form);
   } catch (e) {
     console.warn('[pay] link payment failed', e?.code, e?.message);
     busy(pay, false);
+    other.disabled = false;
     const code = e?.message;
     // A link that changed meanwhile (paid, expired, a plan bought): read it again.
     if (['link-paid', 'link-expired', 'has-all', 'plan-in-store', 'keep-your-subjects'].includes(code)) { await openParent(parentLink.token); return; }
     say(msg, 'error', LINK_ERRORS[code] || LINK_FAILED);
   }
-});
+}
+$('p-pay').addEventListener('click', () => payParent('idram'));
+$('p-pay-telcell').addEventListener('click', () => payParent('telcell'));
 
 /** The parent's payment this browser started in the last hours, or null. */
 function recentLink() {
